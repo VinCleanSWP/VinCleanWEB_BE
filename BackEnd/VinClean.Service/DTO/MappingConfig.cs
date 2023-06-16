@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 using VinClean.Repo.Models;
 
 using VinClean.Service.DTO.Account;
+using VinClean.Service.DTO.Blog;
+using VinClean.Service.DTO.Category;
+using VinClean.Service.DTO.Comment;
 using VinClean.Service.DTO.CustomerResponse;
 
 using VinClean.Service.DTO.Employee;
@@ -29,6 +32,10 @@ namespace VinClean.Service.DTO
             CreateMap<VinClean.Repo.Models.Order, OrderDTO>().ReverseMap();
             CreateMap<OrderDetail,OrderDetailDTO>().ReverseMap();
             CreateMap<VinClean.Repo.Models.FinshedBy, FinishedByDTO>().ReverseMap();
+
+            CreateMap<Repo.Models.Blog, BlogDTO>().ReverseMap();
+            CreateMap<Repo.Models.Comment, CommentDTO>().ReverseMap();
+            CreateMap<Repo.Models.Category, CategoryDTO>().ReverseMap();
         }
     }
 }
