@@ -61,6 +61,13 @@ builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
+builder.Services.AddScoped<ISvcService, SvcService>();
+builder.Services.AddScoped<IServiceManageRepository, ServiceManageRepository>();
+builder.Services.AddScoped<ISvcManageService, SvcManageService>();
+
 builder.Services.AddAutoMapper(typeof(MappingConfig));
 
 
