@@ -12,6 +12,7 @@ using VinClean.Repo.Repository;
 using VinClean.Service.DTO;
 using VinClean.Service.DTO.Account;
 
+
 namespace VinClean.Service.Service
 {
     public interface IAccountService
@@ -20,9 +21,11 @@ namespace VinClean.Service.Service
         Task<ServiceResponse<AccountdDTO>> GetAccountById(int id);
         Task<ServiceResponse<AccountdDTO>> AddAccount(AccountdDTO request);
         Task<ServiceResponse<AccountdDTO>> UpdateAccount(AccountdDTO request);
+
         Task<ServiceResponse<AccountdDTO>> SoftDeleteAccount(int id);
         Task<ServiceResponse<AccountdDTO>> HardDeleteAccount(int id);
         Task<ServiceResponse<AccountdDTO>> Login(string email, string password);
+
 
     }
 
@@ -90,6 +93,7 @@ namespace VinClean.Service.Service
             return _response;
                 
         }
+
 
         public async Task<ServiceResponse<AccountdDTO>> Login(string email, string password)
         {
@@ -211,7 +215,9 @@ namespace VinClean.Service.Service
             return _response;
         }
 
+
         public async Task<ServiceResponse<AccountdDTO>> SoftDeleteAccount(int id)
+
         {
             ServiceResponse<AccountdDTO> _response = new();
             try
@@ -224,6 +230,7 @@ namespace VinClean.Service.Service
                     _response.Data = null;
                     return _response;
                 }
+
 
                 if(!await _repository.SoftDeleteAccount(id))
                 {
@@ -282,10 +289,10 @@ namespace VinClean.Service.Service
                 _response.Success = false;
                 _response.Message = "error";
                 _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message)};
+
             }
             return _response;
         }
-
 
 
 

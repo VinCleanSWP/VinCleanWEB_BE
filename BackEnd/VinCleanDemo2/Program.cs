@@ -1,9 +1,13 @@
 using Microsoft.EntityFrameworkCore;
+
 using System.Text.Json.Serialization;
+
 using VinClean.Repo.Models;
 using VinClean.Repo.Repository;
 using VinClean.Service.DTO;
 using VinClean.Service.Service;
+
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +19,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ServiceAppContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("VinClean")));
+
 
 builder.Services.AddCors(p => p.AddPolicy("VinClean", build =>
 {
@@ -34,6 +39,26 @@ builder.Services.AddAutoMapper(typeof(MappingConfig));
 //    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
 //});
 
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+
+builder.Services.AddScoped<IFinishedByRepository, FinishedByRepository>();
+builder.Services.AddScoped<IFinishedByService, FinishedByService>();
+
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+
+builder.Services.AddScoped<IOrderDetailRepository,OrderDetailRepository>();
+builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
+
+
+
+builder.Services.AddAutoMapper(typeof(MappingConfig));
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -44,7 +69,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 app.UseCors("VinClean");
+
+
 
 app.UseAuthorization();
 

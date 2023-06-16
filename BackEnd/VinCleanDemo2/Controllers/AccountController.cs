@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using VinClean.Repo.Models;
 using VinClean.Service.DTO;
 using VinClean.Service.DTO.Account;
+
 using VinClean.Service.Service;
 
 namespace VinCleanDemo2.Controllers
@@ -194,7 +196,9 @@ namespace VinCleanDemo2.Controllers
                 return StatusCode(500, ModelState);
             }
 
+
             return Ok(deleteAccount);
+
 
         }
 

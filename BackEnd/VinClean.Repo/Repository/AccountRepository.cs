@@ -14,11 +14,14 @@ namespace VinClean.Repo.Repository
             Task<ICollection<Account>> GetAccountList();
             Task<Account> GetAccountById(int id);
             Task<bool> AddAccount(Account account);
+
             Task<bool> SoftDeleteAccount(int id);
             Task<bool> HardDeleteAccount(Account account);
             Task<bool> UpdateAccount(Account account);
             Task<bool> CheckEmailAccountExist(String email);
             Task<Account> Login(string email, string password);
+
+
     }
 
         public class AccountRepository : IAccountRepository
@@ -74,6 +77,7 @@ namespace VinClean.Repo.Repository
 
         }
 
+
         async Task<bool> IAccountRepository.UpdateAccount(Account account)
         {
             _context.Accounts.Update(account);
@@ -89,6 +93,7 @@ namespace VinClean.Repo.Repository
         {
             return await _context.Accounts.Include(e => e.Role).FirstOrDefaultAsync(u => u.Email == email&& u.Password == password);
         }
+
     }
 
 }
