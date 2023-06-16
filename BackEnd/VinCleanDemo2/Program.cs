@@ -68,6 +68,11 @@ builder.Services.AddScoped<ISvcService, SvcService>();
 builder.Services.AddScoped<IServiceManageRepository, ServiceManageRepository>();
 builder.Services.AddScoped<ISvcManageService, SvcManageService>();
 
+builder.Services.AddScoped<IProcessRepository, ProcessRepository>();
+builder.Services.AddScoped<IProcessService, ProcessService>();
+builder.Services.AddScoped<IRatingRepository, RatingRepository>();
+builder.Services.AddScoped<IRatingService, RatingService>();
+
 builder.Services.AddAutoMapper(typeof(MappingConfig));
 
 
