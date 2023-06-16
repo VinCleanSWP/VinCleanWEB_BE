@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+// Data holder
+
 namespace VinClean.Service.DTO.Rating
 {
     public class RatingDTO

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +9,8 @@ using VinClean.Repo.Models;
 using VinClean.Repo.Repository;
 using VinClean.Service.DTO;
 using VinClean.Service.DTO.Rating;
+
+// Pass data from Repo to Controller
 
 namespace VinClean.Service.Service
 {

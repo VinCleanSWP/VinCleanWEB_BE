@@ -4,48 +4,52 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VinClean.Repo.Repository;
 using VinClean.Repo.Models;
+using VinClean.Repo.Repository;
 using VinClean.Service.DTO;
-using System.ComponentModel;
-
-// Pass data from Repo to Controller
+using VinClean.Service.DTO.CustomerResponse;
+using VinClean.Service.DTO.Process;
 
 namespace VinClean.Service.Service
 {
-    public interface IProcessService
+    public interface IProcessDetailService
     {
-        Task<ServiceResponse<List<ProcessDTO>>> GetProcessList();
-        Task<ServiceResponse<ProcessDTO>> GetProcessById(int id);
-        Task<ServiceResponse<ProcessDTO>> AddProcess(ProcessDTO process);
-        Task<ServiceResponse<ProcessDTO>> UpdateProcess(ProcessDTO process);
-        Task<ServiceResponse<ProcessDTO>> DeleteProcess(int id);
+        Task<ServiceResponse<List<ProcessDetailDTO>>> GetPD();
+        Task<ServiceResponse<ProcessDetailDTO>> GetPDById(int id);
+        Task<ServiceResponse<ProcessDetailDTO>> CreatePD(ProcessDetailDTO processDetailDTO);
+        Task<ServiceResponse<ProcessDetailDTO>> UpdatePD(ProcessDetailDTO processDetailDTO);
+        Task<ServiceResponse<ProcessDetailDTO>> DeletePD(int id);
     }
 
-    public class ProcessService : IProcessService
+    public class ProcessDetailService : IProcessDetailService
     {
-        private readonly IProcessRepository _repository;
-        public readonly IMapper _mapper;
-        public ProcessService(IProcessRepository repository, IMapper mapper)
+        private readonly IProcessDetailRepository _pdRepository;
+        private readonly IMapper _mapper;
+        private readonly IServiceRepository _serviceRepository;
+
+        public ProcessDetailService(IProcessDetailRepository pdRepository, IMapper mapper, IServiceRepository serviceRepository)
         {
-            _repository = repository;
+            _serviceRepository = serviceRepository;
+            _pdRepository = pdRepository;
             _mapper = mapper;
         }
 
-        public async Task<ServiceResponse<List<ProcessDTO>>> GetProcessList()
+        public async Task<ServiceResponse<List<ProcessDetailDTO>>> GetPDList()
         {
-            ServiceResponse<List<ProcessDTO>> _response = new();
+            ServiceResponse<List<ProcessDetailDTO>> _response = new();
             try
             {
-                var listProcess = await _repository.GetProcesslist();
-                var listProcessDTO = new List<ProcessDTO>();
-                foreach (var process in listProcess)
+                var listProcessDetail = await _pdRepository.GetPDList();
+                var listProcessDetailDTO = new List<ProcessDetailDTO>();
+                foreach (var processDetail in listProcessDetail)
                 {
-                    listProcessDTO.Add(_mapper.Map<ProcessDTO>(process));
+                    var processDetailDTO = _mapper.Map<ProcessDetailDTO>(processDetail);
+                    listProcessDetailDTO.Add(processDetailDTO);
+
                 }
                 _response.Success = true;
                 _response.Message = "OK";
-                _response.Data = listProcessDTO;
+                _response.Data = listProcessDetailDTO;
             }
             catch (Exception ex)
             {
@@ -55,24 +59,25 @@ namespace VinClean.Service.Service
                 _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
             }
             return _response;
+
         }
 
-        public async Task<ServiceResponse<ProcessDTO>> GetProcessById(int id)
+        public async Task<ServiceResponse<ProcessDetailDTO>> GetPDById(int id)
         {
-            ServiceResponse<ProcessDTO> _response = new();
+            ServiceResponse<ProcessDetailDTO> _response = new();
             try
             {
-                var process = await _repository.GetProcessById(id);
-                if (process == null)
+                var processDetail = await _pdRepository.GetPDById(id);
+                if (processDetail == null)
                 {
                     _response.Success = false;
                     _response.Message = "NotFound";
                     return _response;
                 }
-                var processDTO = _mapper.Map<ProcessDTO>(process);
                 _response.Success = true;
                 _response.Message = "OK";
-                _response.Data = processDTO;
+                _response.Data = _mapper.Map<ProcessDetailDTO>(processDetail);
+
 
             }
             catch (Exception ex)
@@ -83,24 +88,22 @@ namespace VinClean.Service.Service
                 _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
             }
             return _response;
+
         }
 
-        public async Task<ServiceResponse<ProcessDTO>> AddProcess(ProcessDTO request)
+        public async Task<ServiceResponse<ProcessDetailDTO>> CreatePD(ProcessDetailDTO request)
         {
-            ServiceResponse<ProcessDTO> _response = new();
+            ServiceResponse<ProcessDetailDTO> _response = new();
             try
             {
-                Process _newProcess = new Process()
+                ProcessDetail _newProcessDetail = new ProcessDetail()
                 {
                     ProcessId = request.ProcessId,
-                    //CustomerId = request.CustomerId,
-                    Note = request.Note,
-                    Status = "Processing",
-                    CreatedDate = DateTime.Now,
-                    IsDeleted = false,
+                    ServiceId = request.ServiceId,
+                    
                 };
 
-                if (!await _repository.AddProcess(_newProcess))
+                if (!await _pdRepository.AddPD(_newProcessDetail))
                 {
                     _response.Error = "RepoError";
                     _response.Success = false;
@@ -109,7 +112,7 @@ namespace VinClean.Service.Service
                 }
 
                 _response.Success = true;
-                _response.Data = _mapper.Map<ProcessDTO>(_newProcess);
+                _response.Data = _mapper.Map<ProcessDetailDTO>(_newProcessDetail);
                 _response.Message = "Created";
 
             }
@@ -124,38 +127,33 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<ProcessDTO>> UpdateProcess(ProcessDTO request)
+        public async Task<ServiceResponse<ProcessDetailDTO>> UpdatePD(ProcessDetailDTO request)
         {
-            ServiceResponse<ProcessDTO> _response = new();
+            ServiceResponse<ProcessDetailDTO> _response = new();
             try
             {
-                var existingProcess = await _repository.GetProcessById(request.ProcessId);
-                if (existingProcess == null)
+                var existingPd = await _pdRepository.GetPDById(request.ProcessId);
+                if (existingPd == null)
                 {
-                    _response.Success = false;
                     _response.Message = "NotFound";
-                    _response.Data = null;
-                    return _response;
-                }
-
-                existingProcess.Note = request.Note;
-                existingProcess.Status = request.Status;
-                existingProcess.IsDeleted = request.isDelete;
-                //existingProcess.ModifiedDate = DateTime.Now;
-                //existingProcess.ModifiedBy = request.ModifiedBy;
-
-                if (!await _repository.UpdateProcess(existingProcess))
-                {
                     _response.Success = false;
-                    _response.Message = "RepoError";
+                    _response.Data = null;
+                    return _response;
+                }
+                var _newProcessDetail = await _pdRepository.GetPDById(request.ProcessId);
+                
+
+                if (!await _pdRepository.UpdatePD(existingPd))
+                {
+                    _response.Error = "RepoError";
+                    _response.Success = false;
                     _response.Data = null;
                     return _response;
                 }
 
-                var _processDTO = _mapper.Map<ProcessDTO>(existingProcess);
                 _response.Success = true;
-                _response.Data = _processDTO;
-                _response.Message = "Process Updated";
+                _response.Data = _mapper.Map<ProcessDetailDTO>(existingPd);
+                _response.Message = "Created";
 
             }
             catch (Exception ex)
@@ -165,16 +163,17 @@ namespace VinClean.Service.Service
                 _response.Message = "Error";
                 _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
             }
-            return _response;
-        }
 
-        public async Task<ServiceResponse<ProcessDTO>> DeleteProcess(int id)
+            return _response;
+
+        }
+        public async Task<ServiceResponse<ProcessDetailDTO>> DeletePD(int id)
         {
-            ServiceResponse<ProcessDTO> _response = new();
+            ServiceResponse<ProcessDetailDTO> _response = new();
             try
             {
-                var existingProcess = await _repository.GetProcessById(id);
-                if (existingProcess == null)
+                var existingPd = await _pdRepository.GetPDById(id);
+                if (existingPd == null)
                 {
                     _response.Success = false;
                     _response.Message = "NotFound";
@@ -182,7 +181,7 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                if (!await _repository.DeleteProcess(existingProcess))
+                if (!await _pdRepository.DeletePD(existingPd))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";
@@ -190,9 +189,9 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                var _processDTO = _mapper.Map<ProcessDTO>(existingProcess);
+                var _processDetailDTO = _mapper.Map<ProcessDetailDTO>(existingPd);
                 _response.Success = true;
-                _response.Data = _processDTO;
+                _response.Data = _processDetailDTO;
                 _response.Message = "Deleted";
 
             }

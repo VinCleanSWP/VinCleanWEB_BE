@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using VinClean.Repo.Models;
 
+// lay table
+
 namespace VinClean.Repo.Repository
 {
     public interface IProcessRepository

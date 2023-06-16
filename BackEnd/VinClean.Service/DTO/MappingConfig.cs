@@ -14,6 +14,7 @@ using VinClean.Service.DTO.CustomerResponse;
 
 using VinClean.Service.DTO.Employee;
 using VinClean.Service.DTO.Order;
+using VinClean.Service.DTO.Process;
 using VinClean.Service.DTO.Rating;
 using VinClean.Service.DTO.Roles;
 using VinClean.Service.DTO.Service;
@@ -44,8 +45,10 @@ namespace VinClean.Service.DTO
             CreateMap<Repo.Models.Service, ServicesDTO>().ReverseMap();
             CreateMap<Repo.Models.ServiceManage, SvcManageDTO>().ReverseMap();
 
-            CreateMap<Process, ProcessDTO>().ReverseMap();
+            CreateMap<Repo.Models.Process, ProcessDTO>().ReverseMap();
             CreateMap<Repo.Models.Rating, RatingDTO>().ReverseMap();
+            CreateMap<ProcessDetail, ProcessDetailDTO>().ReverseMap();
+            CreateMap<ProcessSlot, ProcessSlotDTO>().ReverseMap();
         }
     }
 }

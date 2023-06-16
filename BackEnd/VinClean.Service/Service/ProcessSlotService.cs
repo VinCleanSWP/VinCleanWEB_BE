@@ -4,48 +4,46 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VinClean.Repo.Repository;
 using VinClean.Repo.Models;
+using VinClean.Repo.Repository;
 using VinClean.Service.DTO;
-using System.ComponentModel;
-
-// Pass data from Repo to Controller
+using VinClean.Service.DTO.Process;
 
 namespace VinClean.Service.Service
 {
-    public interface IProcessService
+    public interface IProcessSlotService
     {
-        Task<ServiceResponse<List<ProcessDTO>>> GetProcessList();
-        Task<ServiceResponse<ProcessDTO>> GetProcessById(int id);
-        Task<ServiceResponse<ProcessDTO>> AddProcess(ProcessDTO process);
-        Task<ServiceResponse<ProcessDTO>> UpdateProcess(ProcessDTO process);
-        Task<ServiceResponse<ProcessDTO>> DeleteProcess(int id);
+        Task<ServiceResponse<List<ProcessSlotDTO>>> GetPS();
+        Task<ServiceResponse<ProcessSlotDTO>> GetPSById(int id);
+        Task<ServiceResponse<ProcessSlotDTO>> CreatePS(ProcessSlotDTO processSlotDTO);
+        Task<ServiceResponse<ProcessSlotDTO>> UpdatePS(ProcessSlotDTO processSlotDTO);
+        Task<ServiceResponse<ProcessSlotDTO>> DeletePS(int id);
     }
-
-    public class ProcessService : IProcessService
+    public class ProcessSlotService : IProcessSlotService
     {
-        private readonly IProcessRepository _repository;
+        private readonly IProcessSlotRepository _repository;
         public readonly IMapper _mapper;
-        public ProcessService(IProcessRepository repository, IMapper mapper)
+
+        public ProcessSlotService(IProcessSlotRepository repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
         }
 
-        public async Task<ServiceResponse<List<ProcessDTO>>> GetProcessList()
+        public async Task<ServiceResponse<List<ProcessSlotDTO>>> GetPS()
         {
-            ServiceResponse<List<ProcessDTO>> _response = new();
+            ServiceResponse<List<ProcessSlotDTO>> _response = new();
             try
             {
-                var listProcess = await _repository.GetProcesslist();
-                var listProcessDTO = new List<ProcessDTO>();
-                foreach (var process in listProcess)
+                var listPS = await _repository.GetPSList();
+                var listPSDTO = new List<ProcessSlotDTO>();
+                foreach (var processSlot in listPS)
                 {
-                    listProcessDTO.Add(_mapper.Map<ProcessDTO>(process));
+                    listPSDTO.Add(_mapper.Map<ProcessSlotDTO>(processSlot));
                 }
                 _response.Success = true;
                 _response.Message = "OK";
-                _response.Data = listProcessDTO;
+                _response.Data = listPSDTO;
             }
             catch (Exception ex)
             {
@@ -57,22 +55,22 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<ProcessDTO>> GetProcessById(int id)
+        public async Task<ServiceResponse<ProcessSlotDTO>> GetPSById(int id)
         {
-            ServiceResponse<ProcessDTO> _response = new();
+            ServiceResponse<ProcessSlotDTO> _response = new();
             try
             {
-                var process = await _repository.GetProcessById(id);
+                var process = await _repository.GetPSById(id);
                 if (process == null)
                 {
                     _response.Success = false;
                     _response.Message = "NotFound";
                     return _response;
                 }
-                var processDTO = _mapper.Map<ProcessDTO>(process);
+                var processSlotDTO = _mapper.Map<ProcessSlotDTO>(process);
                 _response.Success = true;
                 _response.Message = "OK";
-                _response.Data = processDTO;
+                _response.Data = processSlotDTO;
 
             }
             catch (Exception ex)
@@ -85,22 +83,18 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<ProcessDTO>> AddProcess(ProcessDTO request)
+        public async Task<ServiceResponse<ProcessSlotDTO>> CreatePS(ProcessSlotDTO request)
         {
-            ServiceResponse<ProcessDTO> _response = new();
+            ServiceResponse<ProcessSlotDTO> _response = new();
             try
             {
-                Process _newProcess = new Process()
+                ProcessSlot _newProcess = new ProcessSlot()
                 {
                     ProcessId = request.ProcessId,
-                    //CustomerId = request.CustomerId,
-                    Note = request.Note,
-                    Status = "Processing",
-                    CreatedDate = DateTime.Now,
-                    IsDeleted = false,
+                    SlotId = request.SlotId,
                 };
 
-                if (!await _repository.AddProcess(_newProcess))
+                if (!await _repository.AddPS(_newProcess))
                 {
                     _response.Error = "RepoError";
                     _response.Success = false;
@@ -109,7 +103,7 @@ namespace VinClean.Service.Service
                 }
 
                 _response.Success = true;
-                _response.Data = _mapper.Map<ProcessDTO>(_newProcess);
+                _response.Data = _mapper.Map<ProcessSlotDTO>(_newProcess);
                 _response.Message = "Created";
 
             }
@@ -124,12 +118,12 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<ProcessDTO>> UpdateProcess(ProcessDTO request)
+        public async Task<ServiceResponse<ProcessSlotDTO>> UpdatePS(ProcessSlotDTO request)
         {
-            ServiceResponse<ProcessDTO> _response = new();
+            ServiceResponse<ProcessSlotDTO> _response = new();
             try
             {
-                var existingProcess = await _repository.GetProcessById(request.ProcessId);
+                var existingProcess = await _repository.GetPSById(request.ProcessId);
                 if (existingProcess == null)
                 {
                     _response.Success = false;
@@ -138,13 +132,10 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                existingProcess.Note = request.Note;
-                existingProcess.Status = request.Status;
-                existingProcess.IsDeleted = request.isDelete;
-                //existingProcess.ModifiedDate = DateTime.Now;
-                //existingProcess.ModifiedBy = request.ModifiedBy;
+                existingProcess.ProcessId = request.ProcessId;
+                existingProcess.SlotId = request.SlotId;
 
-                if (!await _repository.UpdateProcess(existingProcess))
+                if (!await _repository.UpdatePS(existingProcess))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";
@@ -152,9 +143,9 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                var _processDTO = _mapper.Map<ProcessDTO>(existingProcess);
+                var _processSlotDTO = _mapper.Map<ProcessSlotDTO>(existingProcess);
                 _response.Success = true;
-                _response.Data = _processDTO;
+                _response.Data = _processSlotDTO;
                 _response.Message = "Process Updated";
 
             }
@@ -168,12 +159,12 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<ProcessDTO>> DeleteProcess(int id)
+        public async Task<ServiceResponse<ProcessSlotDTO>> DeletePS(int id)
         {
-            ServiceResponse<ProcessDTO> _response = new();
+            ServiceResponse<ProcessSlotDTO> _response = new();
             try
             {
-                var existingProcess = await _repository.GetProcessById(id);
+                var existingProcess = await _repository.GetPSById(id);
                 if (existingProcess == null)
                 {
                     _response.Success = false;
@@ -182,7 +173,7 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                if (!await _repository.DeleteProcess(existingProcess))
+                if (!await _repository.DeletePS(existingProcess))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";
@@ -190,9 +181,9 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                var _processDTO = _mapper.Map<ProcessDTO>(existingProcess);
+                var _processSlotDTO = _mapper.Map<ProcessSlotDTO>(existingProcess);
                 _response.Success = true;
-                _response.Data = _processDTO;
+                _response.Data = _processSlotDTO;
                 _response.Message = "Deleted";
 
             }

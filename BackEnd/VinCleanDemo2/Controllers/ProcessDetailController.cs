@@ -1,40 +1,40 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using VinClean.Repo.Models;
 using VinClean.Service.DTO;
+using VinClean.Service.DTO.Process;
 using VinClean.Service.Service;
 
-namespace VinCleanDemo2.Controllers
+namespace VinClean.Controllers
 {
-    // API Deploy
-
     [Route("api/[controller]")]
     [ApiController]
-    public class ProcessController : ControllerBase
+    public class ProcessDetailController : ControllerBase
     {
-        private readonly IProcessService _service;
-        public ProcessController(IProcessService service)
+        private readonly IProcessDetailService _service;
+        public ProcessDetailController(IProcessDetailService service)
         {
             _service = service;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<ProcessDTO>>> Process()
+        public async Task<ActionResult<List<ProcessDetailDTO>>> ProcessDetail()
         {
-            return Ok(await _service.GetProcessList());
+            return Ok(await _service.GetPD());
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ProcessDTO))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ProcessDetailDTO))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<Process>> GetById(int id)
+        public async Task<ActionResult<ProcessDetail>> GetById(int id)
         {
             if (id <= 0)
             {
                 return BadRequest(id);
             }
-            var processFound = await _service.GetProcessById(id);
+            var processFound = await _service.GetPDById(id);
             if (processFound == null)
             {
                 return NotFound();
@@ -42,11 +42,11 @@ namespace VinCleanDemo2.Controllers
             return Ok(processFound);
         }
         [HttpPost]
-        public async Task<ActionResult<Process>> CreateProcess(ProcessDTO request)
+        public async Task<ActionResult<ProcessDetail>> CreateProcess(ProcessDetailDTO request)
         {
 
 
-            var newProcess = await _service.AddProcess(request);
+            var newProcess = await _service.CreatePD(request);
             if (newProcess.Success == false && newProcess.Message == "Exist")
             {
                 return Ok(newProcess);
@@ -66,7 +66,7 @@ namespace VinCleanDemo2.Controllers
             return Ok(newProcess.Data);
         }
         [HttpPut]
-        public async Task<ActionResult> UpdateProcess(ProcessDTO request)
+        public async Task<ActionResult> UpdatePD(ProcessDetailDTO request)
         {
             if (request == null)
             {
@@ -74,7 +74,7 @@ namespace VinCleanDemo2.Controllers
             }
 
 
-            var updateProcess = await _service.UpdateProcess(request);
+            var updateProcess = await _service.UpdatePD(request);
 
             if (updateProcess.Success == false && updateProcess.Message == "NotFound")
             {
@@ -99,9 +99,9 @@ namespace VinCleanDemo2.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteProcess(int id)
+        public async Task<ActionResult> DeletePD(int id)
         {
-            var deleteProcess = await _service.DeleteProcess(id);
+            var deleteProcess = await _service.DeletePD(id);
 
 
             if (deleteProcess.Success == false && deleteProcess.Message == "NotFound")

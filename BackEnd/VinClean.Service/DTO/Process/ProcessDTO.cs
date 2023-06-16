@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using VinClean.Repo.Models;
 
+// Data holder
+
 namespace VinClean.Service.DTO
 {
     public class ProcessDTO

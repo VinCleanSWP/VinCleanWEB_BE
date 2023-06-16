@@ -6,6 +6,8 @@ using VinClean.Service.Service;
 
 namespace VinClean.Controllers
 {
+    // API Deploy
+
     [Route("api/[controller]")]
     [ApiController]
     public class RatingController : ControllerBase
@@ -91,7 +93,6 @@ namespace VinClean.Controllers
                 ModelState.AddModelError("", $"Some thing went wrong in service layer when updating Rating {request}");
                 return StatusCode(500, ModelState);
             }
-
 
             return Ok(updateRating);
 
