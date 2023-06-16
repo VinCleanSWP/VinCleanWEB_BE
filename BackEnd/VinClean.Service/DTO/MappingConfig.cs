@@ -25,7 +25,6 @@ namespace VinClean.Service.DTO
             CreateMap<Customer, RegisterDTO>().ReverseMap();
             CreateMap<Customer, CustomerDTO>().ReverseMap();
 
-            CreateMap<Account, AccountdDTO>().ReverseMap();
             CreateMap<VinClean.Repo.Models.Employee, EmployeeDTO>().ReverseMap();
             CreateMap<VinClean.Repo.Models.Order, OrderDTO>().ReverseMap();
             CreateMap<OrderDetail,OrderDetailDTO>().ReverseMap();
