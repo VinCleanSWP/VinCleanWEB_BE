@@ -14,9 +14,14 @@ namespace VinClean.Repo.Repository
             Task<ICollection<Account>> GetAccountList();
             Task<Account> GetAccountById(int id);
             Task<bool> AddAccount(Account account);
-            Task<bool>DeleteAccount(Account account);
-            Task<bool>UpdateAccount(Account account);
+
+            Task<bool> SoftDeleteAccount(int id);
+            Task<bool> HardDeleteAccount(Account account);
+            Task<bool> UpdateAccount(Account account);
             Task<bool> CheckEmailAccountExist(String email);
+            Task<Account> Login(string email, string password);
+
+
     }
 
         public class AccountRepository : IAccountRepository
@@ -42,12 +47,37 @@ namespace VinClean.Repo.Repository
             return await _context.SaveChangesAsync() > 0 ? true : false;
         }
 
-        async Task<bool> IAccountRepository.DeleteAccount(Account account)
+        async Task<bool> IAccountRepository.SoftDeleteAccount(int id)
         {
-            _context.Accounts.Remove(account);
-            return await _context.SaveChangesAsync() > 0 ? true : false;
-            
+            var _exisitngAccount = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountId == id);
+
+            if (_exisitngAccount != null)
+            {
+                _exisitngAccount.IsDeleted = true;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            return false;
+
         }
+
+
+        /// <summary>
+        /// Đang thử nghiệm. Đừng có làm theo chức năng này
+        /// Đang thử nghiệm. Đừng có làm theo chức năng này
+        /// Đang thử nghiệm. Đừng có làm theo chức năng này
+        /// </summary>
+        async Task<bool> IAccountRepository.HardDeleteAccount(Account account)
+        {
+            var _account = await _context.Accounts.Where(a => a.AccountId == account.AccountId).SingleOrDefaultAsync();
+            var customer = await _context.Customers.Where(c => c.AccountId == account.AccountId).FirstOrDefaultAsync();
+            _context.Customers.Remove(customer);
+            _context.Accounts.Remove(_account);
+            return await _context.SaveChangesAsync() > 0 ? true : false;
+
+        }
+
+
         async Task<bool> IAccountRepository.UpdateAccount(Account account)
         {
             _context.Accounts.Update(account);
@@ -58,6 +88,12 @@ namespace VinClean.Repo.Repository
         {
             return await _context.Accounts.AnyAsync(a => a.Email == email);
         }
+
+        async Task<Account> IAccountRepository.Login(string email, string password)
+        {
+            return await _context.Accounts.Include(e => e.Role).FirstOrDefaultAsync(u => u.Email == email&& u.Password == password);
+        }
+
     }
 
 }

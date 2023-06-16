@@ -1,8 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using VinClean.Repo.Models;
 using VinClean.Service.DTO;
+using VinClean.Service.DTO.Account;
+
 using VinClean.Service.Service;
 
 namespace VinCleanDemo2.Controllers
@@ -74,6 +78,32 @@ namespace VinCleanDemo2.Controllers
             return Ok(newAccount.Data);
         }
 
+        [HttpPost]
+        [Route("Login")]
+        public async Task<ActionResult<Account>> Login(LoginDTO request)
+        {
+          
+
+            var newAccount = await _service.Login(request.Email, request.Password);
+            if (newAccount.Success == true && newAccount.Message == "OK")
+            {
+                return Ok(newAccount);
+            }
+
+            if (newAccount.Success == false && newAccount.Message == "NotFound")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong with Email or Password");
+                return StatusCode(500, ModelState);
+            }
+
+            if (newAccount.Success == false && newAccount.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when adding Account {request}");
+                return StatusCode(500, ModelState);
+            }
+            return Ok(newAccount);
+        }
+
         [HttpPut]
         public async Task<ActionResult> UpdateAccount(AccountdDTO request)
         {
@@ -108,9 +138,9 @@ namespace VinCleanDemo2.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteAccount(int id)
+        public async Task<ActionResult> SoftDeleteAccount(int id)
         {
-            var deleteAccount = await _service.DeleteAccount(id);
+            var deleteAccount = await _service.SoftDeleteAccount(id);
 
 
             if (deleteAccount.Success == false && deleteAccount.Message == "NotFound")
@@ -131,7 +161,44 @@ namespace VinCleanDemo2.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            return NoContent();
+            return Ok(deleteAccount);
+
+        }
+
+
+
+        /// <summary>
+        /// Đang thử nghiệm. Đừng có làm theo chức năng này
+        /// Đang thử nghiệm. Đừng có làm theo chức năng này
+        /// Đang thử nghiệm. Đừng có làm theo chức năng này
+        /// </summary>
+        [HttpDelete("HardDelete/{id}")]
+        public async Task<ActionResult> HardDeleteAccount(int id)
+        {
+            var deleteAccount = await _service.HardDeleteAccount(id);
+
+
+            if (deleteAccount.Success == false && deleteAccount.Message == "NotFound")
+            {
+                ModelState.AddModelError("", "Account Not found");
+                return StatusCode(404, ModelState);
+            }
+
+            if (deleteAccount.Success == false && deleteAccount.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in Repository when deleting account");
+                return StatusCode(500, ModelState);
+            }
+
+            if (deleteAccount.Success == false && deleteAccount.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when deleting account");
+                return StatusCode(500, ModelState);
+            }
+
+
+            return Ok(deleteAccount);
+
 
         }
 

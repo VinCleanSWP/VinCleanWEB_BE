@@ -1,0 +1,111 @@
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using VinClean.Repo.Models;
+using VinClean.Repo.Repository;
+using VinClean.Service.DTO;
+using VinClean.Service.DTO.CustomerResponse;
+using VinClean.Service.Service;
+
+namespace VinClean.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class CustomerController : ControllerBase
+    {
+        private readonly ICustomerService _service;
+        public CustomerController(ICustomerService service)
+        {
+            _service = service;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<Customer>>> Get()
+        {
+            return Ok(await _service.GetCustomerList());
+        }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AccountdDTO))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<Account>> GetById(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest(id);
+            }
+            var accountFound = await _service.GetCustomerById(id);
+            if (accountFound == null)
+            {
+                return NotFound();
+            }
+            return Ok(accountFound);
+        }
+
+        [HttpPost("registration")]
+        public async Task<ActionResult<Customer>> Registration (RegisterDTO request)
+        {
+/*            if (request == null)
+            {
+                return BadRequest(ModelState);
+            }*/
+/*            if (ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }*/
+
+            var newAccount = await _service.Register(request);
+            if (newAccount.Success == false && newAccount.Message == "Exist")
+            {
+                return Ok(newAccount);
+            }
+
+            if (newAccount.Success == false && newAccount.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when adding Account {request}");
+                return StatusCode(500, ModelState);
+            }
+
+            if (newAccount.Success == false && newAccount.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when adding Account {request}");
+                return StatusCode(500, ModelState);
+            }
+            return Ok(newAccount.Data);
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> UpdateAccount(UpdateDTO request)
+        {
+            if (request == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            var updateAccount = await _service.UpdateCustomer(request);
+
+            if (updateAccount.Success == false && updateAccount.Message == "NotFound")
+            {
+                return Ok(updateAccount);
+            }
+
+            if (updateAccount.Success == false && updateAccount.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating account {request}");
+                return StatusCode(500, ModelState);
+            }
+
+            if (updateAccount.Success == false && updateAccount.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating account {request}");
+                return StatusCode(500, ModelState);
+            }
+
+
+            return Ok(updateAccount);
+
+        }
+    }
+}
