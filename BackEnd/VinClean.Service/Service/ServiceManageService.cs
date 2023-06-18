@@ -6,45 +6,44 @@ using System.Text;
 using System.Threading.Tasks;
 using VinClean.Repo.Models;
 using VinClean.Repo.Repository;
-using VinClean.Service.DTO.Category;
 using VinClean.Service.DTO;
-using VinClean.Service.DTO.Role;
-using VinClean.Service.DTO.Role;
+using VinClean.Service.DTO.Service;
 
 namespace VinClean.Service.Service
 {
-    public interface IRoleService
+    public interface IServiceManageService
     {
-        Task<ServiceResponse<List<RoleDTO>>> GetRoleList();
-        Task<ServiceResponse<RoleDTO>> GetRoleById(int id);
-        Task<ServiceResponse<RoleDTO>> AddRole(RoleDTO request);
-        Task<ServiceResponse<RoleDTO>> UpdateRole(RoleDTO request);
-        Task<ServiceResponse<RoleDTO>> DeleteRole(int id);
-
+        Task<ServiceResponse<List<ServiceManageDTO>>> GetServiceManageList();
+        Task<ServiceResponse<ServiceManageDTO>> GetServiceManageById(int id);
+        Task<ServiceResponse<ServiceManageDTO>> CreateServiceManage(ServiceManageDTO request);
+        Task<ServiceResponse<ServiceManageDTO>> UpdateServiceManage(ServiceManageDTO request);
+        Task<ServiceResponse<ServiceManageDTO>> DeleteServiceManage(int id);
     }
-    public class RoleService : IRoleService
+    public class ServiceManageService : IServiceManageService
     {
-        private readonly IRoleRepository _repository;
+        private readonly IServiceManageRepository _repository;
         private readonly IMapper _mapper;
 
-        public RoleService(IRoleRepository repository, IMapper mapper)
+        public ServiceManageService(IServiceManageRepository repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
         }
 
-        public async Task<ServiceResponse<RoleDTO>> AddRole(RoleDTO request)
+        async Task<ServiceResponse<ServiceManageDTO>> IServiceManageService.CreateServiceManage(ServiceManageDTO request)
         {
-            ServiceResponse<RoleDTO> _response = new();
+            ServiceResponse<ServiceManageDTO> _response = new();
             try
             {
-                Role _newRole = new Role()
+
+                ServiceManage _newServiceManage = new ServiceManage()
                 {
-                    Name = request.Name,
+                    StartDate = request.StartDate
+
 
                 };
 
-                if (!await _repository.AddRole(_newRole))
+                if (!await _repository.CreateServiceManage(_newServiceManage))
                 {
                     _response.Error = "RepoError";
                     _response.Success = false;
@@ -53,7 +52,7 @@ namespace VinClean.Service.Service
                 }
 
                 _response.Success = true;
-                _response.Data = _mapper.Map<RoleDTO>(_newRole);
+                _response.Data = _mapper.Map<ServiceManageDTO>(_newServiceManage);
                 _response.Message = "Created";
 
             }
@@ -68,13 +67,13 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<RoleDTO>> DeleteRole(int id)
+        async Task<ServiceResponse<ServiceManageDTO>> IServiceManageService.DeleteServiceManage(int id)
         {
-            ServiceResponse<RoleDTO> _response = new();
+            ServiceResponse<ServiceManageDTO> _response = new();
             try
             {
-                var existingRole = await _repository.GetRoleById(id);
-                if (existingRole == null)
+                var existingServiceManage = await _repository.GetServiceManageById(id);
+                if (existingServiceManage == null)
                 {
                     _response.Success = false;
                     _response.Message = "NotFound";
@@ -82,7 +81,7 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                if (!await _repository.DeleteRole(existingRole))
+                if (!await _repository.DeleteServiceManage(existingServiceManage))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";
@@ -90,9 +89,9 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                var _OrderDTO = _mapper.Map<RoleDTO>(existingRole);
+                var _ServiceManageDTO = _mapper.Map<ServiceManageDTO>(existingServiceManage);
                 _response.Success = true;
-                _response.Data = _OrderDTO;
+                _response.Data = _ServiceManageDTO;
                 _response.Message = "Deleted";
 
             }
@@ -106,22 +105,22 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<RoleDTO>> GetRoleById(int id)
+        async Task<ServiceResponse<ServiceManageDTO>> IServiceManageService.GetServiceManageById(int id)
         {
-            ServiceResponse<RoleDTO> _response = new();
+            ServiceResponse<ServiceManageDTO> _response = new();
             try
             {
-                var Role = await _repository.GetRoleById(id);
-                if (Role == null)
+                var ServiceManage = await _repository.GetServiceManageById(id);
+                if (ServiceManage == null)
                 {
                     _response.Success = false;
                     _response.Message = "NotFound";
                     return _response;
                 }
-                var Roledto = _mapper.Map<RoleDTO>(Role);
+                var ServiceManagedto = _mapper.Map<ServiceManageDTO>(ServiceManage);
                 _response.Success = true;
                 _response.Message = "OK";
-                _response.Data = Roledto;
+                _response.Data = ServiceManagedto;
 
             }
             catch (Exception ex)
@@ -134,23 +133,24 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<List<RoleDTO>>> GetRoleList()
+        async Task<ServiceResponse<List<ServiceManageDTO>>> IServiceManageService.GetServiceManageList()
         {
-            ServiceResponse<List<RoleDTO>> _response = new();
+            ServiceResponse<List<ServiceManageDTO>> _response = new();
             try
             {
-                var ListRole = await _repository.GetRoleList();
-                var ListRoleDTO = new List<RoleDTO>();
-                foreach (var Role in ListRole)
+                var ListServiceManage = await _repository.GetServiceManageList();
+                var ListServiceManageDTO = new List<ServiceManageDTO>();
+                foreach (var ServiceManage in ListServiceManage)
                 {
-                    ListRoleDTO.Add(_mapper.Map<RoleDTO>(Role));
+                    ListServiceManageDTO.Add(_mapper.Map<ServiceManageDTO>(ServiceManage));
                 }
                 _response.Success = true;
                 _response.Message = "OK";
-                _response.Data = ListRoleDTO;
+                _response.Data = ListServiceManageDTO;
             }
             catch (Exception ex)
             {
+
                 _response.Success = false;
                 _response.Message = "Error";
                 _response.Data = null;
@@ -159,23 +159,28 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<RoleDTO>> UpdateRole(RoleDTO request)
+
+
+        async Task<ServiceResponse<ServiceManageDTO>> IServiceManageService.UpdateServiceManage(ServiceManageDTO request)
         {
-            ServiceResponse<RoleDTO> _response = new();
+            ServiceResponse<ServiceManageDTO> _response = new();
             try
             {
-                var existingRole = await _repository.GetRoleById(request.RoleId);
-                if (existingRole == null)
+                var existingServiceManage = await _repository.GetServiceManageById(request.ServiceId);
+                if (existingServiceManage == null)
                 {
                     _response.Success = false;
                     _response.Message = "NotFound";
                     _response.Data = null;
                     return _response;
                 }
-                // cac gia trị cho sua
-                existingRole.Name = request.Name;               
 
-                if (!await _repository.UpdateRole(existingRole))
+                existingServiceManage.EmployeeId = request.EmployeeId;
+                existingServiceManage.ServiceId = request.ServiceId;
+                existingServiceManage.StartDate = request.StartDate;
+
+
+                if (!await _repository.UpdateServiceManage(existingServiceManage))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";
@@ -183,9 +188,9 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                var _RoleDTO = _mapper.Map<RoleDTO>(existingRole);
+                var _ServiceManageDTO = _mapper.Map<ServiceManageDTO>(existingServiceManage);
                 _response.Success = true;
-                _response.Data = _RoleDTO;
+                _response.Data = _ServiceManageDTO;
                 _response.Message = "Updated";
 
             }
