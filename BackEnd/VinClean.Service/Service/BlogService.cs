@@ -82,7 +82,7 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                if (await _repository.Deleteblog(existingBlog))
+                if (!await _repository.Deleteblog(existingBlog))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";

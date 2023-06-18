@@ -102,22 +102,22 @@ namespace VinClean.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteBlog(int id)
         {
-            var deleteAccount = await _service.DeleteBlog(id);
+            var deleteBlog = await _service.DeleteBlog(id);
 
 
-            if (deleteAccount.Success == false && deleteAccount.Message == "NotFound")
+            if (deleteBlog.Success == false && deleteBlog.Message == "NotFound")
             {
                ModelState.AddModelError("", "Blog Not found");
                 return StatusCode(404, ModelState);
             }
 
-            if (deleteAccount.Success == false && deleteAccount.Message == "RepoError")
+            if (deleteBlog.Success == false && deleteBlog.Message == "RepoError")
             {
                 ModelState.AddModelError("", $"Some thing went wrong in Repository when deleting Blog");
                 return StatusCode(500, ModelState);
             }
 
-            if (deleteAccount.Success == false && deleteAccount.Message == "Error")
+            if (deleteBlog.Success == false && deleteBlog.Message == "Error")
             {
                 ModelState.AddModelError("", $"Some thing went wrong in service layer when deleting Blog");
                 return StatusCode(500, ModelState);
