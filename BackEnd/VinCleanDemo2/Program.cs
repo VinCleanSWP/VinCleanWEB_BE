@@ -64,9 +64,9 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
-builder.Services.AddScoped<ISvcService, SvcService>();
+builder.Services.AddScoped<IServiceService, ServiceService>();
 builder.Services.AddScoped<IServiceManageRepository, ServiceManageRepository>();
-builder.Services.AddScoped<ISvcManageService, SvcManageService>();
+builder.Services.AddScoped<IServiceManageService, ServiceManageService>();
 
 builder.Services.AddScoped<IProcessRepository, ProcessRepository>();
 builder.Services.AddScoped<IProcessService, ProcessService>();

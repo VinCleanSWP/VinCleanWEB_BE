@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VinClean.Service.DTO.ServiceManage
+namespace VinClean.Service.DTO.Service
 {
-    public class SvcManageDTO
+    public class ServiceManageDTO
     {
         public int EmployeeId { get; set; }
 

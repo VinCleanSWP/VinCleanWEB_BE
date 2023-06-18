@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using VinClean.Service.DTO.Roles;
+using VinClean.Repo.Models;
+using VinClean.Service.DTO.Role;
+using VinClean.Service.DTO;
 using VinClean.Service.Service;
 
 namespace VinClean.Controllers
@@ -9,80 +11,132 @@ namespace VinClean.Controllers
     [ApiController]
     public class RoleController : ControllerBase
     {
-        private readonly IRoleService _roleService;
-
-        public RoleController(IRoleService roleService)
+        private readonly IRoleService _service;
+        public RoleController(IRoleService service)
         {
-            _roleService = roleService;
+            _service = service;
         }
-
+        
         [HttpGet]
-        public async Task<ActionResult<List<RolesDTO>>> GetRoles()
+        public async Task<ActionResult<List<RoleDTO>>> GetRoleList()
         {
-            var roles = await _roleService.GetRoleList();
-            return Ok(roles);
+            return Ok(await _service.GetRoleList());
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RolesDTO))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RoleDTO))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<RolesDTO>> GetRoleById(int id)
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<Role>> GetById(int id)
         {
-            var role = await _roleService.GetRoleById(id);
-
-            if (role == null)
+            if (id <= 0)
+            {
+                return BadRequest(id);
+            }
+            var RoleFound = await _service.GetRoleById(id);
+            if (RoleFound == null)
             {
                 return NotFound();
             }
-
-            return Ok(role);
+            return Ok(RoleFound);
         }
+
 
         [HttpPost]
-        public async Task<ActionResult<RolesDTO>> AddRole(RolesDTO roleDTO)
+        public async Task<ActionResult<Role>> CreateRole(RoleDTO request)
         {
-            var addRole = await _roleService.AddRole(roleDTO);
+            /*            if(request == null)
+                        {
+                            return BadRequest(ModelState);
+                        }
+                        if(ModelState.IsValid)
+                        {
+                            return BadRequest(ModelState);
+                        }*/
 
-            if (!addRole.Success)
+            var newRole = await _service.AddRole(request);
+            if (newRole.Success == false && newRole.Message == "Exist")
             {
-                ModelState.AddModelError("", addRole.Message);
+                return Ok(newRole);
+            }
+
+            if (newRole.Success == false && newRole.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when adding Role {request}");
                 return StatusCode(500, ModelState);
             }
 
-            return CreatedAtAction(nameof(GetRoleById), new { id = addRole.Data.RoleId }, addRole.Data);
+            if (newRole.Success == false && newRole.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when adding Role {request}");
+                return StatusCode(500, ModelState);
+            }
+            return Ok(newRole.Data);
         }
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateRole(int id, RolesDTO roleDTO)
+
+        [HttpPut]
+        public async Task<ActionResult> UpdateRole(RoleDTO request)
         {
-            if (id != roleDTO.RoleId)
+            if (request == null)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
-            var updatedRole = await _roleService.UpdateRole(roleDTO);
 
-            if (!updatedRole.Success)
+            var updateRole = await _service.UpdateRole(request);
+
+            if (updateRole.Success == false && updateRole.Message == "NotFound")
             {
-                ModelState.AddModelError("", updatedRole.Message);
+                return Ok(updateRole);
+            }
+
+            if (updateRole.Success == false && updateRole.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating Role {request}");
                 return StatusCode(500, ModelState);
             }
 
-            return NoContent();
+            if (updateRole.Success == false && updateRole.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating Role {request}");
+                return StatusCode(500, ModelState);
+            }
+
+
+            return Ok(updateRole);
+
         }
+
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteRole(int id)
         {
-            var deletedRole = await _roleService.DeleteRole(id);
+            var deleteRole = await _service.DeleteRole(id);
 
-            if (!deletedRole.Success)
+
+            if (deleteRole.Success == false && deleteRole.Message == "NotFound")
             {
-                ModelState.AddModelError("", deletedRole.Message);
+                ModelState.AddModelError("", "Role Not found");
+                return StatusCode(404, ModelState);
+            }
+
+            if (deleteRole.Success == false && deleteRole.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in Repository when deleting Role");
+                return StatusCode(500, ModelState);
+            }
+
+            if (deleteRole.Success == false && deleteRole.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when deleting Role");
                 return StatusCode(500, ModelState);
             }
 
             return NoContent();
+
+
         }
     }
 }
