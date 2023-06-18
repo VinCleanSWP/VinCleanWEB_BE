@@ -15,47 +15,48 @@ namespace VinClean.Repo.Repository
         Task<bool> AddRole(Role role);
         Task<bool> DeleteRole(Role role);
         Task<bool> UpdateRole(Role role);
+
     }
+
 
     public class RoleRepository : IRoleRepository
     {
         private readonly ServiceAppContext _context;
-
         public RoleRepository(ServiceAppContext context)
         {
             _context = context;
         }
 
-        public async Task<ICollection<Role>> GetRoleList()
+        async Task<bool> IRoleRepository.AddRole(Role role)
+        {
+            _context.Roles.Add(role);
+            return await _context.SaveChangesAsync() > 0 ? true : false;
+        }
+
+        async Task<bool> IRoleRepository.DeleteRole(Role role)
+        {
+            _context.Roles.Remove(role);
+            return await _context.SaveChangesAsync() > 0 ? true : false;
+        }
+
+        async Task<Role> IRoleRepository.GetRoleById(int id)
+        {
+            return await _context.Roles.FirstOrDefaultAsync(a => a.RoleId == id);
+        }
+
+
+
+        async Task<ICollection<Role>> IRoleRepository.GetRoleList()
         {
             return await _context.Roles.ToListAsync();
         }
 
 
-        public async Task<Role> GetRoleById(int id)
-        {
-            return await _context.Roles.FirstOrDefaultAsync(r => r.RoleId == id);
-        }
 
-
-        public async Task<bool> AddRole(Role role)
-        {
-            _context.Roles.Add(role);
-            return await _context.SaveChangesAsync() > 0;
-        }
-
-
-        public async Task<bool> DeleteRole(Role role)
-        {
-            _context.Roles.Remove(role);
-            return await _context.SaveChangesAsync() > 0;
-        }
-
-
-        public async Task<bool> UpdateRole(Role role)
+        async Task<bool> IRoleRepository.UpdateRole(Role role)
         {
             _context.Roles.Update(role);
-            return await _context.SaveChangesAsync() > 0;
+            return await _context.SaveChangesAsync() > 0 ? true : false;
         }
     }
 }

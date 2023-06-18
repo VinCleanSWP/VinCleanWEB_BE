@@ -15,43 +15,48 @@ namespace VinClean.Repo.Repository
         Task<bool> AddService(Service service);
         Task<bool> DeleteService(Service service);
         Task<bool> UpdateService(Service service);
+
     }
+
 
     public class ServiceRepository : IServiceRepository
     {
         private readonly ServiceAppContext _context;
-
         public ServiceRepository(ServiceAppContext context)
         {
             _context = context;
         }
 
-        public async Task<ICollection<Service>> GetServiceList()
+        async Task<bool> IServiceRepository.AddService(Service service)
+        {
+            _context.Services.Add(service);
+            return await _context.SaveChangesAsync() > 0 ? true : false;
+        }
+
+        async Task<bool> IServiceRepository.DeleteService(Service service)
+        {
+            _context.Services.Remove(service);
+            return await _context.SaveChangesAsync() > 0 ? true : false;
+        }
+
+        async Task<Service> IServiceRepository.GetServiceById(int id)
+        {
+            return await _context.Services.FirstOrDefaultAsync(a => a.ServiceId == id);
+        }
+
+
+
+        async Task<ICollection<Service>> IServiceRepository.GetServiceList()
         {
             return await _context.Services.ToListAsync();
         }
 
-        public async Task<Service> GetServiceById(int id)
-        {
-            return await _context.Services.FirstOrDefaultAsync(s => s.ServiceId == id);
-        }
 
-        public async Task<bool> AddService(Service service)
-        {
-            _context.Services.Add(service);
-            return await _context.SaveChangesAsync() > 0;
-        }
 
-        public async Task<bool> DeleteService(Service service)
-        {
-            _context.Services.Remove(service);
-            return await _context.SaveChangesAsync() > 0;
-        }
-
-        public async Task<bool> UpdateService(Service service)
+        async Task<bool> IServiceRepository.UpdateService(Service service)
         {
             _context.Services.Update(service);
-            return await _context.SaveChangesAsync() > 0;
+            return await _context.SaveChangesAsync() > 0 ? true : false;
         }
     }
 }

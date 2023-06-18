@@ -10,49 +10,53 @@ namespace VinClean.Repo.Repository
 {
     public interface IServiceManageRepository
     {
-        Task<List<ServiceManage>> GetServiceManages();
-        Task<ServiceManage> GetServiceManageById(int employeeId, int serviceId);
-        Task<bool> AddServiceManage(ServiceManage serviceManage);
+        Task<ICollection<ServiceManage>> GetServiceManageList();
+        Task<ServiceManage> GetServiceManageById(int ServiceId);
+        Task<bool> CreateServiceManage(ServiceManage serviceManage);
         Task<bool> DeleteServiceManage(ServiceManage serviceManage);
         Task<bool> UpdateServiceManage(ServiceManage serviceManage);
+
     }
+
 
     public class ServiceManageRepository : IServiceManageRepository
     {
         private readonly ServiceAppContext _context;
-
         public ServiceManageRepository(ServiceAppContext context)
         {
             _context = context;
         }
 
-        public async Task<List<ServiceManage>> GetServiceManages()
+        async Task<bool> IServiceManageRepository.CreateServiceManage(ServiceManage serviceManage)
+        {
+            _context.ServiceManages.Add(serviceManage);
+            return await _context.SaveChangesAsync() > 0 ? true : false;
+        }
+
+        async Task<bool> IServiceManageRepository.DeleteServiceManage(ServiceManage serviceManage)
+        {
+            _context.ServiceManages.Remove(serviceManage);
+            return await _context.SaveChangesAsync() > 0 ? true : false;
+        }
+
+        async Task<ServiceManage> IServiceManageRepository.GetServiceManageById(int ServiceId)
+        {
+            return await _context.ServiceManages.FirstOrDefaultAsync(a => a.ServiceId == ServiceId);
+        }
+
+
+
+        async Task<ICollection<ServiceManage>> IServiceManageRepository.GetServiceManageList()
         {
             return await _context.ServiceManages.ToListAsync();
         }
 
-        public async Task<ServiceManage> GetServiceManageById(int employeeId, int serviceId)
-        {
-            return await _context.ServiceManages
-                .FirstOrDefaultAsync(sm => sm.EmployeeId == employeeId && sm.ServiceId == serviceId);
-        }
 
-        public async Task<bool> AddServiceManage(ServiceManage serviceManage)
-        {
-            _context.ServiceManages.Add(serviceManage);
-            return await _context.SaveChangesAsync() > 0;
-        }
 
-        public async Task<bool> DeleteServiceManage(ServiceManage serviceManage)
-        {
-            _context.ServiceManages.Remove(serviceManage);
-            return await _context.SaveChangesAsync() > 0;
-        }
-
-        public async Task<bool> UpdateServiceManage(ServiceManage serviceManage)
+        async Task<bool> IServiceManageRepository.UpdateServiceManage(ServiceManage serviceManage)
         {
             _context.ServiceManages.Update(serviceManage);
-            return await _context.SaveChangesAsync() > 0;
+            return await _context.SaveChangesAsync() > 0 ? true : false;
         }
     }
 }
