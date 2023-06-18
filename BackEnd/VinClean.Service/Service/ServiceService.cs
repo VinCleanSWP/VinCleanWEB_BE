@@ -6,45 +6,50 @@ using System.Text;
 using System.Threading.Tasks;
 using VinClean.Repo.Models;
 using VinClean.Repo.Repository;
-using VinClean.Service.DTO.Category;
+using VinClean.Service.DTO.Service;
 using VinClean.Service.DTO;
-using VinClean.Service.DTO.Role;
-using VinClean.Service.DTO.Role;
 
 namespace VinClean.Service.Service
 {
-    public interface IRoleService
+    public interface IServiceService
     {
-        Task<ServiceResponse<List<RoleDTO>>> GetRoleList();
-        Task<ServiceResponse<RoleDTO>> GetRoleById(int id);
-        Task<ServiceResponse<RoleDTO>> AddRole(RoleDTO request);
-        Task<ServiceResponse<RoleDTO>> UpdateRole(RoleDTO request);
-        Task<ServiceResponse<RoleDTO>> DeleteRole(int id);
+        Task<ServiceResponse<List<ServiceDTO>>> GetServiceList();
+        Task<ServiceResponse<ServiceDTO>> GetServiceById(int id);
+        Task<ServiceResponse<ServiceDTO>> AddService(ServiceDTO request);
+        Task<ServiceResponse<ServiceDTO>> UpdateService(ServiceDTO request);
+        Task<ServiceResponse<ServiceDTO>> DeleteService(int id);
 
     }
-    public class RoleService : IRoleService
+    public class ServiceService : IServiceService
     {
-        private readonly IRoleRepository _repository;
+        private readonly IServiceRepository _repository;
         private readonly IMapper _mapper;
 
-        public RoleService(IRoleRepository repository, IMapper mapper)
+        public ServiceService(IServiceRepository repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
         }
 
-        public async Task<ServiceResponse<RoleDTO>> AddRole(RoleDTO request)
+        public async Task<ServiceResponse<ServiceDTO>> AddService(ServiceDTO request)
         {
-            ServiceResponse<RoleDTO> _response = new();
+            ServiceResponse<ServiceDTO> _response = new();
             try
             {
-                Role _newRole = new Role()
+                Repo.Models.Service _newService = new Repo.Models.Service()
                 {
                     Name = request.Name,
+                    CostPerSlot = request.CostPerSlot,
+                    MinimalSlot = request.MinimalSlot,
+                    Description = request.Description,
+                    Status = "Active",
+                    Avaiable = true,
+                    IsDeleted = false,
+                    CreatedDate = DateTime.Now,
 
                 };
 
-                if (!await _repository.AddRole(_newRole))
+                if (!await _repository.AddService(_newService))
                 {
                     _response.Error = "RepoError";
                     _response.Success = false;
@@ -53,7 +58,7 @@ namespace VinClean.Service.Service
                 }
 
                 _response.Success = true;
-                _response.Data = _mapper.Map<RoleDTO>(_newRole);
+                _response.Data = _mapper.Map<ServiceDTO>(_newService);
                 _response.Message = "Created";
 
             }
@@ -68,13 +73,13 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<RoleDTO>> DeleteRole(int id)
+        public async Task<ServiceResponse<ServiceDTO>> DeleteService(int id)
         {
-            ServiceResponse<RoleDTO> _response = new();
+            ServiceResponse<ServiceDTO> _response = new();
             try
             {
-                var existingRole = await _repository.GetRoleById(id);
-                if (existingRole == null)
+                var existingService = await _repository.GetServiceById(id);
+                if (existingService == null)
                 {
                     _response.Success = false;
                     _response.Message = "NotFound";
@@ -82,7 +87,7 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                if (!await _repository.DeleteRole(existingRole))
+                if (!await _repository.DeleteService(existingService))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";
@@ -90,9 +95,9 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                var _OrderDTO = _mapper.Map<RoleDTO>(existingRole);
+                var _ServiceDTO = _mapper.Map<ServiceDTO>(existingService);
                 _response.Success = true;
-                _response.Data = _OrderDTO;
+                _response.Data = _ServiceDTO;
                 _response.Message = "Deleted";
 
             }
@@ -106,22 +111,22 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<RoleDTO>> GetRoleById(int id)
+        public async Task<ServiceResponse<ServiceDTO>> GetServiceById(int id)
         {
-            ServiceResponse<RoleDTO> _response = new();
+            ServiceResponse<ServiceDTO> _response = new();
             try
             {
-                var Role = await _repository.GetRoleById(id);
-                if (Role == null)
+                var Service = await _repository.GetServiceById(id);
+                if (Service == null)
                 {
                     _response.Success = false;
                     _response.Message = "NotFound";
                     return _response;
                 }
-                var Roledto = _mapper.Map<RoleDTO>(Role);
+                var Servicedto = _mapper.Map<ServiceDTO>(Service);
                 _response.Success = true;
                 _response.Message = "OK";
-                _response.Data = Roledto;
+                _response.Data = Servicedto;
 
             }
             catch (Exception ex)
@@ -134,20 +139,20 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<List<RoleDTO>>> GetRoleList()
+        public async Task<ServiceResponse<List<ServiceDTO>>> GetServiceList()
         {
-            ServiceResponse<List<RoleDTO>> _response = new();
+            ServiceResponse<List<ServiceDTO>> _response = new();
             try
             {
-                var ListRole = await _repository.GetRoleList();
-                var ListRoleDTO = new List<RoleDTO>();
-                foreach (var Role in ListRole)
+                var ListService = await _repository.GetServiceList();
+                var ListServiceDTO = new List<ServiceDTO>();
+                foreach (var Service in ListService)
                 {
-                    ListRoleDTO.Add(_mapper.Map<RoleDTO>(Role));
+                    ListServiceDTO.Add(_mapper.Map<ServiceDTO>(Service));
                 }
                 _response.Success = true;
                 _response.Message = "OK";
-                _response.Data = ListRoleDTO;
+                _response.Data = ListServiceDTO;
             }
             catch (Exception ex)
             {
@@ -159,13 +164,13 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<RoleDTO>> UpdateRole(RoleDTO request)
+        public async Task<ServiceResponse<ServiceDTO>> UpdateService(ServiceDTO request)
         {
-            ServiceResponse<RoleDTO> _response = new();
+            ServiceResponse<ServiceDTO> _response = new();
             try
             {
-                var existingRole = await _repository.GetRoleById(request.RoleId);
-                if (existingRole == null)
+                var existingService = await _repository.GetServiceById(request.ServiceId);
+                if (existingService == null)
                 {
                     _response.Success = false;
                     _response.Message = "NotFound";
@@ -173,9 +178,22 @@ namespace VinClean.Service.Service
                     return _response;
                 }
                 // cac gia trị cho sua
-                existingRole.Name = request.Name;               
+                existingService.Name = request.Name;
+                existingService.CostPerSlot = request.CostPerSlot;
+                existingService.MinimalSlot = request.MinimalSlot;
+                existingService.Description = request.Description;
+                existingService.Status = request.Status;                
+                ///Name 
+                ///CostPerSlot 
+                ///MinimalSlot 
+                ///Description 
+                ///Status 
+                ///Avaiable 
+                ///IsDeleted 
+                ///CreatedDate 
 
-                if (!await _repository.UpdateRole(existingRole))
+
+                if (!await _repository.UpdateService(existingService))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";
@@ -183,9 +201,9 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                var _RoleDTO = _mapper.Map<RoleDTO>(existingRole);
+                var _ServiceDTO = _mapper.Map<ServiceDTO>(existingService);
                 _response.Success = true;
-                _response.Data = _RoleDTO;
+                _response.Data = _ServiceDTO;
                 _response.Message = "Updated";
 
             }

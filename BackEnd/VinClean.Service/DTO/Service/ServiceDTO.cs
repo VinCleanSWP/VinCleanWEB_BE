@@ -7,18 +7,21 @@ using System.Threading.Tasks;
 
 namespace VinClean.Service.DTO.Service
 {
-    public class ServicesDTO
+    public class ServiceDTO
     {
         public int ServiceId { get; set; }
 
-        [Required(ErrorMessage = "Name is required")]
         public string Name { get; set; }
 
-        [Required(ErrorMessage = "CostPerSlot is required")]
+        [Required(ErrorMessage = "Name is required")]
+
         public decimal CostPerSlot { get; set; }
 
-        [Required(ErrorMessage = "MinimalSlot is required")]
+        [Required(ErrorMessage = "CostPerSlot is required")]
+
         public byte MinimalSlot { get; set; }
+
+        [Required(ErrorMessage = "MinimalSlot is required")]
 
         public string Description { get; set; }
 
