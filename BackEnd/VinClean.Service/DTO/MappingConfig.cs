@@ -18,6 +18,11 @@ using VinClean.Service.DTO.Role;
 using VinClean.Service.DTO.Service;
 using VinClean.Service.DTO.Type;
 
+using VinClean.Service.DTO.Process;
+using VinClean.Service.DTO.Rating;
+using VinClean.Service.DTO.Roles;
+using VinClean.Service.DTO.Service;
+
 namespace VinClean.Service.DTO
 {
     public class MappingConfig: Profile
@@ -34,6 +39,20 @@ namespace VinClean.Service.DTO
             CreateMap<VinClean.Repo.Models.Order, OrderDTO>().ReverseMap();
             CreateMap<OrderDetail,OrderDetailDTO>().ReverseMap();
             CreateMap<VinClean.Repo.Models.FinshedBy, FinishedByDTO>().ReverseMap();
+
+            CreateMap<Repo.Models.Blog, BlogDTO>().ReverseMap();
+            CreateMap<Repo.Models.Comment, CommentDTO>().ReverseMap();
+            CreateMap<Repo.Models.Category, CategoryDTO>().ReverseMap();
+
+            CreateMap<Role, RolesDTO>().ReverseMap();
+            CreateMap<Repo.Models.Service, ServicesDTO>().ReverseMap();
+            CreateMap<Repo.Models.ServiceManage, SvcManageDTO>().ReverseMap();
+
+            CreateMap<Repo.Models.Process, ProcessDTO>().ReverseMap();
+            CreateMap<Repo.Models.Rating, RatingDTO>().ReverseMap();
+            CreateMap<ProcessDetail, ProcessDetailDTO>().ReverseMap();
+            CreateMap<ProcessSlot, ProcessSlotDTO>().ReverseMap();
+
 
             CreateMap<Repo.Models.Blog, BlogDTO>().ReverseMap();
             CreateMap<Repo.Models.Comment, CommentDTO>().ReverseMap();
