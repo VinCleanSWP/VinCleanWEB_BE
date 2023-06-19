@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace VinClean.Service.DTO
 {
-    public class AccountdDTO
+    public class AccountDTO
     {
         public int AccountId { get; set; }
         [Required]
