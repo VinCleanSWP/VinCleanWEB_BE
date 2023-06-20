@@ -44,7 +44,7 @@ namespace VinClean.Service.Service
                     StartDate = request.StartDate,
                     EndDate = request.EndDate,
                     Phone = request.Phone,
-                    Status = "Active",
+                    Status = request.Status,
                     
                 };
 
