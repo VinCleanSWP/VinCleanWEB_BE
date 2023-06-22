@@ -20,7 +20,7 @@ namespace VinClean.Service.DTO.Employee
         [MaxLength(20, ErrorMessage = "LastName too long")]
         public string LastName { get; set; }
         [Required]
-        [MinLength(5, ErrorMessage = "Phone number can not less than 10")]
+        [MinLength(10, ErrorMessage = "Phone number can not less than 10")]
         [MaxLength(20, ErrorMessage = "Phone number too long")]
         public string Phone { get; set; }
 
