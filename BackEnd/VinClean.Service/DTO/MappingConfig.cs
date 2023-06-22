@@ -14,11 +14,15 @@ using VinClean.Service.DTO.CustomerResponse;
 
 using VinClean.Service.DTO.Employee;
 using VinClean.Service.DTO.Order;
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 using VinClean.Service.DTO.Process;
 using VinClean.Service.DTO.Rating;
 using VinClean.Service.DTO.Roles;
 using VinClean.Service.DTO.Service;
+using VinClean.Service.DTO.ServiceManage;
 
 namespace VinClean.Service.DTO
 {
@@ -49,7 +53,10 @@ namespace VinClean.Service.DTO
             CreateMap<Repo.Models.Rating, RatingDTO>().ReverseMap();
             CreateMap<ProcessDetail, ProcessDetailDTO>().ReverseMap();
             CreateMap<ProcessSlot, ProcessSlotDTO>().ReverseMap();
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
         }
     }
 }

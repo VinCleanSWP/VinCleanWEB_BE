@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using VinClean.Repo.Models;
-using VinClean.Service.DTO.Role;
-using VinClean.Service.DTO;
+using VinClean.Service.DTO.Roles;
 using VinClean.Service.Service;
 
 namespace VinClean.Controllers
@@ -11,132 +9,80 @@ namespace VinClean.Controllers
     [ApiController]
     public class RoleController : ControllerBase
     {
-        private readonly IRoleService _service;
-        public RoleController(IRoleService service)
+        private readonly IRoleService _roleService;
+
+        public RoleController(IRoleService roleService)
         {
-            _service = service;
+            _roleService = roleService;
         }
-        
+
         [HttpGet]
-        public async Task<ActionResult<List<RoleDTO>>> GetRoleList()
+        public async Task<ActionResult<List<RolesDTO>>> GetRoles()
         {
-            return Ok(await _service.GetRoleList());
+            var roles = await _roleService.GetRoleList();
+            return Ok(roles);
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RoleDTO))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RolesDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesDefaultResponseType]
-        public async Task<ActionResult<Role>> GetById(int id)
+        public async Task<ActionResult<RolesDTO>> GetRoleById(int id)
         {
-            if (id <= 0)
-            {
-                return BadRequest(id);
-            }
-            var RoleFound = await _service.GetRoleById(id);
-            if (RoleFound == null)
+            var role = await _roleService.GetRoleById(id);
+
+            if (role == null)
             {
                 return NotFound();
             }
-            return Ok(RoleFound);
-        }
 
+            return Ok(role);
+        }
 
         [HttpPost]
-        public async Task<ActionResult<Role>> CreateRole(RoleDTO request)
+        public async Task<ActionResult<RolesDTO>> AddRole(RolesDTO roleDTO)
         {
-            /*            if(request == null)
-                        {
-                            return BadRequest(ModelState);
-                        }
-                        if(ModelState.IsValid)
-                        {
-                            return BadRequest(ModelState);
-                        }*/
+            var addRole = await _roleService.AddRole(roleDTO);
 
-            var newRole = await _service.AddRole(request);
-            if (newRole.Success == false && newRole.Message == "Exist")
+            if (!addRole.Success)
             {
-                return Ok(newRole);
-            }
-
-            if (newRole.Success == false && newRole.Message == "RepoError")
-            {
-                ModelState.AddModelError("", $"Some thing went wrong in respository layer when adding Role {request}");
+                ModelState.AddModelError("", addRole.Message);
                 return StatusCode(500, ModelState);
             }
 
-            if (newRole.Success == false && newRole.Message == "Error")
-            {
-                ModelState.AddModelError("", $"Some thing went wrong in service layer when adding Role {request}");
-                return StatusCode(500, ModelState);
-            }
-            return Ok(newRole.Data);
+            return CreatedAtAction(nameof(GetRoleById), new { id = addRole.Data.RoleId }, addRole.Data);
         }
 
-
-        [HttpPut]
-        public async Task<ActionResult> UpdateRole(RoleDTO request)
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateRole(int id, RolesDTO roleDTO)
         {
-            if (request == null)
+            if (id != roleDTO.RoleId)
             {
-                return BadRequest(ModelState);
+                return BadRequest();
             }
 
+            var updatedRole = await _roleService.UpdateRole(roleDTO);
 
-            var updateRole = await _service.UpdateRole(request);
-
-            if (updateRole.Success == false && updateRole.Message == "NotFound")
+            if (!updatedRole.Success)
             {
-                return Ok(updateRole);
-            }
-
-            if (updateRole.Success == false && updateRole.Message == "RepoError")
-            {
-                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating Role {request}");
-                return StatusCode(500, ModelState);
-            }
-
-            if (updateRole.Success == false && updateRole.Message == "Error")
-            {
-                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating Role {request}");
-                return StatusCode(500, ModelState);
-            }
-
-
-            return Ok(updateRole);
-
-        }
-
-
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteRole(int id)
-        {
-            var deleteRole = await _service.DeleteRole(id);
-
-
-            if (deleteRole.Success == false && deleteRole.Message == "NotFound")
-            {
-                ModelState.AddModelError("", "Role Not found");
-                return StatusCode(404, ModelState);
-            }
-
-            if (deleteRole.Success == false && deleteRole.Message == "RepoError")
-            {
-                ModelState.AddModelError("", $"Some thing went wrong in Repository when deleting Role");
-                return StatusCode(500, ModelState);
-            }
-
-            if (deleteRole.Success == false && deleteRole.Message == "Error")
-            {
-                ModelState.AddModelError("", $"Some thing went wrong in service layer when deleting Role");
+                ModelState.AddModelError("", updatedRole.Message);
                 return StatusCode(500, ModelState);
             }
 
             return NoContent();
+        }
 
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteRole(int id)
+        {
+            var deletedRole = await _roleService.DeleteRole(id);
 
+            if (!deletedRole.Success)
+            {
+                ModelState.AddModelError("", deletedRole.Message);
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
         }
     }
 }

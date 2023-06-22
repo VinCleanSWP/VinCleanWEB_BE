@@ -1,6 +1,5 @@
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using VinClean.Repo.Models;
 using VinClean.Service.DTO.Service;
 using VinClean.Service.Service;
 
@@ -10,121 +9,81 @@ namespace VinClean.Controllers
     [ApiController]
     public class ServiceController : ControllerBase
     {
+        private readonly ISvcService _svcService;
 
-        private readonly IServiceService _service;
-        public ServiceController(IServiceService service)
+        public ServiceController(ISvcService svcService)
         {
-            _service = service;
+            _svcService = svcService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<ServiceDTO>>> GetServiceList()
+        public async Task<ActionResult<List<ServicesDTO>>> GetServices()
         {
-            return Ok(await _service.GetServiceList());
+            var services = await _svcService.GetServiceList();
+            return Ok(services);
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ServiceDTO))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ServicesDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesDefaultResponseType]
-        public async Task<ActionResult<Repo.Models.Service>> GetServerById(int id)
+        public async Task<ActionResult<ServicesDTO>> GetServiceById(int id)
         {
-            if (id <= 0)
-            {
-                return BadRequest(id);
-            }
-            var ServiceFound = await _service.GetServiceById(id);
-            if (ServiceFound == null)
+            var service = await _svcService.GetServiceById(id);
+
+            if (service == null)
             {
                 return NotFound();
             }
-            return Ok(ServiceFound);
+
+            return Ok(service);
         }
+
         [HttpPost]
-        public async Task<ActionResult<Repo.Models.Service>> AddService(ServiceDTO request)
+        public async Task<ActionResult<ServicesDTO>> AddService(ServicesDTO serviceDTO)
         {
+            var addService = await _svcService.AddService(serviceDTO);
 
-
-            var newService = await _service.AddService(request);
-            if (newService.Success == false && newService.Message == "Exist")
+            if (!addService.Success)
             {
-                return Ok(newService);
-            }
-
-            if (newService.Success == false && newService.Message == "RepoError")
-            {
-                ModelState.AddModelError("", $"Some thing went wrong in respository layer when adding Account {request}");
+                ModelState.AddModelError("", addService.Message);
                 return StatusCode(500, ModelState);
             }
 
-            if (newService.Success == false && newService.Message == "Error")
-            {
-                ModelState.AddModelError("", $"Some thing went wrong in service layer when adding service {request}");
-                return StatusCode(500, ModelState);
-            }
-            return Ok(newService.Data);
+            return CreatedAtAction(nameof(GetServiceById), new { id = addService.Data.ServiceId }, addService.Data);
         }
-        [HttpPut]
-        public async Task<ActionResult> UpdateService(ServiceDTO request)
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateService(int id, ServicesDTO serviceDTO)
         {
-            if (request == null)
+            if (id != serviceDTO.ServiceId)
             {
-                return BadRequest(ModelState);
+                return BadRequest();
             }
 
+            var updatedService = await _svcService.UpdateService(serviceDTO);
 
-            var updateService = await _service.UpdateService(request);
-
-            if (updateService.Success == false && updateService.Message == "NotFound")
+            if (!updatedService.Success)
             {
-                return Ok(updateService);
-            }
-
-            if (updateService.Success == false && updateService.Message == "RepoError")
-            {
-                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating account {request}");
+                ModelState.AddModelError("", updatedService.Message);
                 return StatusCode(500, ModelState);
             }
 
-            if (updateService.Success == false && updateService.Message == "Error")
-            {
-                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating account {request}");
-                return StatusCode(500, ModelState);
-            }
-
-
-            return Ok(updateService);
-
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteService(int id)
         {
-            var deleteService = await _service.DeleteService(id);
+            var deletedService = await _svcService.DeleteService(id);
 
-
-            if (deleteService.Success == false && deleteService.Message == "NotFound")
+            if (!deletedService.Success)
             {
-                ModelState.AddModelError("", "Service Not found");
-                return StatusCode(404, ModelState);
-            }
-
-            if (deleteService.Success == false && deleteService.Message == "RepoError")
-            {
-                ModelState.AddModelError("", $"Some thing went wrong in Repository when deleting Service");
-                return StatusCode(500, ModelState);
-            }
-
-            if (deleteService.Success == false && deleteService.Message == "Error")
-            {
-                ModelState.AddModelError("", $"Some thing went wrong in service layer when deleting Service");
+                ModelState.AddModelError("", deletedService.Message);
                 return StatusCode(500, ModelState);
             }
 
             return NoContent();
-
         }
-
     }
 }
+

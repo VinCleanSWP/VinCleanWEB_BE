@@ -1,131 +1,63 @@
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using VinClean.Service.DTO;
 using VinClean.Service.DTO.Service;
+using VinClean.Service.DTO.ServiceManage;
 using VinClean.Service.Service;
 
 namespace VinClean.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class ServiceManageController : ControllerBase
     {
+        private readonly ISvcManageService _service;
 
-        private readonly IServiceManageService _ServiceManage;
-        public ServiceManageController(IServiceManageService ServiceManage)
+        public ServiceManageController(ISvcManageService service)
         {
-            _ServiceManage = ServiceManage;
+            _service = service;
         }
+
 
         [HttpGet]
-        public async Task<ActionResult<List<ServiceManageDTO>>> GetServiceManageList()
+        public async Task<ActionResult<List<SvcManageDTO>>> GetServiceManages()
         {
-            return Ok(await _ServiceManage.GetServiceManageList());
+            var serviceManages = await _service.GetServiceManages();
+            return Ok(serviceManages);
         }
 
-        [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ServiceManageDTO))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesDefaultResponseType]
-        public async Task<ActionResult<Repo.Models.ServiceManage>> GetServerById(int id)
+        [HttpGet("{employeeId}/{serviceId}")]
+        public async Task<ActionResult<SvcManageDTO>> GetServiceManageById(int employeeId, int serviceId)
         {
-            if (id <= 0)
-            {
-                return BadRequest(id);
-            }
-            var ServiceManageFound = await _ServiceManage.GetServiceManageById(id);
-            if (ServiceManageFound == null)
+            var serviceManage = await _service.GetServiceManageById(employeeId, serviceId);
+
+            if (serviceManage == null)
             {
                 return NotFound();
             }
-            return Ok(ServiceManageFound);
+
+            return Ok(serviceManage);
         }
-        
-        
+
         [HttpPost]
-        public async Task<ActionResult<Repo.Models.ServiceManage>> CreateServiceManage(ServiceManageDTO request)
+        public async Task<ActionResult<ServiceResponse<SvcManageDTO>>> AddServiceManage(SvcManageDTO serviceManageDTO)
         {
-
-
-            var newServiceManage = await _ServiceManage.CreateServiceManage(request);
-            if (newServiceManage.Success == false && newServiceManage.Message == "Exist")
-            {
-                return Ok(newServiceManage);
-            }
-
-            if (newServiceManage.Success == false && newServiceManage.Message == "RepoError")
-            {
-                ModelState.AddModelError("", $"Some thing went wrong in respository layer when adding Account {request}");
-                return StatusCode(500, ModelState);
-            }
-
-            if (newServiceManage.Success == false && newServiceManage.Message == "Error")
-            {
-                ModelState.AddModelError("", $"Some thing went wrong in ServiceManage layer when adding Account {request}");
-                return StatusCode(500, ModelState);
-            }
-            return Ok(newServiceManage.Data);
+            var response = await _service.AddServiceManage(serviceManageDTO);
+            return Ok(response);
         }
+
         [HttpPut]
-        public async Task<ActionResult> UpdateServiceManage(ServiceManageDTO request)
+        public async Task<ActionResult<ServiceResponse<SvcManageDTO>>> UpdateServiceManage(SvcManageDTO serviceManageDTO)
         {
-            if (request == null)
-            {
-                return BadRequest(ModelState);
-            }
-
-
-            var updateServiceManage = await _ServiceManage.UpdateServiceManage(request);
-
-            if (updateServiceManage.Success == false && updateServiceManage.Message == "NotFound")
-            {
-                return Ok(updateServiceManage);
-            }
-
-            if (updateServiceManage.Success == false && updateServiceManage.Message == "RepoError")
-            {
-                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating account {request}");
-                return StatusCode(500, ModelState);
-            }
-
-            if (updateServiceManage.Success == false && updateServiceManage.Message == "Error")
-            {
-                ModelState.AddModelError("", $"Some thing went wrong in ServiceManage layer when updating account {request}");
-                return StatusCode(500, ModelState);
-            }
-
-
-            return Ok(updateServiceManage);
-
+            var response = await _service.UpdateServiceManage(serviceManageDTO);
+            return Ok(response);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteServiceManage(int id)
+        [HttpDelete("{employeeId}/{serviceId}")]
+        public async Task<ActionResult<ServiceResponse<SvcManageDTO>>> DeleteServiceManage(int employeeId, int serviceId)
         {
-            var deleteAccount = await _ServiceManage.DeleteServiceManage(id);
-
-
-            if (deleteAccount.Success == false && deleteAccount.Message == "NotFound")
-            {
-                ModelState.AddModelError("", "ServiceManage Not found");
-                return StatusCode(404, ModelState);
-            }
-
-            if (deleteAccount.Success == false && deleteAccount.Message == "RepoError")
-            {
-                ModelState.AddModelError("", $"Some thing went wrong in Repository when deleting ServiceManage");
-                return StatusCode(500, ModelState);
-            }
-
-            if (deleteAccount.Success == false && deleteAccount.Message == "Error")
-            {
-                ModelState.AddModelError("", $"Some thing went wrong in ServiceManage layer when deleting ServiceManage");
-                return StatusCode(500, ModelState);
-            }
-
-            return NoContent();
-
+            var response = await _service.DeleteServiceManage(employeeId, serviceId);
+            return Ok(response);
         }
-
     }
 }
