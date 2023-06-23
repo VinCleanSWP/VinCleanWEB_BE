@@ -13,6 +13,7 @@ namespace VinClean.Controllers
     {
        
             private readonly IBlogService _service;
+
             public BlogController(IBlogService service)
             {
                 _service = service;
@@ -31,6 +32,7 @@ namespace VinClean.Controllers
         [ProducesDefaultResponseType]
         public async Task<ActionResult<Blog>> GetById(int id)
         {
+
             if (id <= 0)
             {
                 return BadRequest(id);
@@ -41,6 +43,20 @@ namespace VinClean.Controllers
                 return NotFound();
             }
             return Ok(blogFound);
+        }
+        [HttpGet("{blogId}/comments")]
+        public async Task<IActionResult> GetCommentsByBlogId(int blogId)
+        {
+            try
+            {
+                var comments = await _service.GetCommentsByBlogId(blogId);
+                return Ok(comments);
+            }
+            catch (Exception ex)
+            {
+                // Xử lý lỗi
+                return StatusCode(500, "Internal server error");
+            }
         }
         [HttpPost]
         public async Task<ActionResult<Blog>> CreateBlog(BlogDTO request)
@@ -67,6 +83,37 @@ namespace VinClean.Controllers
             return Ok(newBlog.Data);
         }
         [HttpPut]
+        //public async Task<ActionResult> UpdateBlog(BlogDTO request)
+        //{
+        //    if (request == null)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+
+
+        //    var updateBlog = await _service.UpdateBlog(request);
+
+        //    if (updateBlog.Success == false && updateBlog.Message == "NotFound")
+        //    {
+        //        return Ok(updateBlog);
+        //    }
+
+        //    if (updateBlog.Success == false && updateBlog.Message == "RepoError")
+        //    {
+        //        ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating account {request}");
+        //        return StatusCode(500, ModelState);
+        //    }
+
+        //    if (updateBlog.Success == false && updateBlog.Message == "Error")
+        //    {
+        //        ModelState.AddModelError("", $"Some thing went wrong in service layer when updating account {request}");
+        //        return StatusCode(500, ModelState);
+        //    }
+
+
+        //    return Ok(updateBlog);
+
+        //}
         public async Task<ActionResult> UpdateBlog(BlogDTO request)
         {
             if (request == null)
@@ -84,13 +131,13 @@ namespace VinClean.Controllers
 
             if (updateBlog.Success == false && updateBlog.Message == "RepoError")
             {
-                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating account {request}");
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating blog {request}");
                 return StatusCode(500, ModelState);
             }
 
             if (updateBlog.Success == false && updateBlog.Message == "Error")
             {
-                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating account {request}");
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating blog {request}");
                 return StatusCode(500, ModelState);
             }
 
@@ -99,31 +146,32 @@ namespace VinClean.Controllers
 
         }
 
+
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteBlog(int id)
         {
-            var deleteAccount = await _service.DeleteBlog(id);
+            var deleteBlog = await _service.DeleteBlog(id);
 
 
-            if (deleteAccount.Success == false && deleteAccount.Message == "NotFound")
+            if (deleteBlog.Success == false && deleteBlog.Message == "NotFound")
             {
                ModelState.AddModelError("", "Blog Not found");
                 return StatusCode(404, ModelState);
             }
 
-            if (deleteAccount.Success == false && deleteAccount.Message == "RepoError")
+            if (deleteBlog.Success == false && deleteBlog.Message == "RepoError")
             {
                 ModelState.AddModelError("", $"Some thing went wrong in Repository when deleting Blog");
                 return StatusCode(500, ModelState);
             }
 
-            if (deleteAccount.Success == false && deleteAccount.Message == "Error")
+            if (deleteBlog.Success == false && deleteBlog.Message == "Error")
             {
                 ModelState.AddModelError("", $"Some thing went wrong in service layer when deleting Blog");
                 return StatusCode(500, ModelState);
             }
 
-            return NoContent();
+            return Ok(deleteBlog);
 
         }
 
