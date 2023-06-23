@@ -26,7 +26,7 @@ namespace VinClean.Repo.Repository
         }
         async public Task<ICollection<Employee>> GetEmployeeList()
         {
-            return await _context.Employees.ToListAsync();
+            return await _context.Employees.Include(e=>e.Account).ToListAsync();
         }
 
         async public Task<Employee> GetEmployeeById(int id)

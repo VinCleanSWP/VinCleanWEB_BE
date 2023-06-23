@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using VinClean.Repo.Models;
 using VinClean.Service.DTO;
+using VinClean.Service.DTO.Process;
 using VinClean.Service.Service;
 
 namespace VinCleanDemo2.Controllers
@@ -41,8 +42,27 @@ namespace VinCleanDemo2.Controllers
             }
             return Ok(processFound);
         }
+
+        [HttpGet("GetALL/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ProcessModeDTO))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<ProcessModeDTO>> GetAllInfo(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest(id);
+            }
+            var processFound = await _service.GetAllInfoById(id);
+            if (processFound == null)
+            {
+                return NotFound();
+            }
+            return Ok(processFound);
+        }
         [HttpPost]
-        public async Task<ActionResult<Process>> CreateProcess(ProcessDTO request)
+        public async Task<ActionResult<Process>> CreateProcess(NewBooking request)
         {
 
 
@@ -75,6 +95,105 @@ namespace VinCleanDemo2.Controllers
 
 
             var updateProcess = await _service.UpdateProcess(request);
+
+            if (updateProcess.Success == false && updateProcess.Message == "NotFound")
+            {
+                return Ok(updateProcess);
+            }
+
+            if (updateProcess.Success == false && updateProcess.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating Process {request}");
+                return StatusCode(500, ModelState);
+            }
+
+            if (updateProcess.Success == false && updateProcess.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating Process {request}");
+                return StatusCode(500, ModelState);
+            }
+
+
+            return Ok(updateProcess);
+
+        }
+
+        [HttpPut("StartWorking")]
+        public async Task<ActionResult> UpdateStartWorking(ProcessDTO request)
+        {
+            if (request == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            var updateProcess = await _service.UpdateStartWorking(request);
+
+            if (updateProcess.Success == false && updateProcess.Message == "NotFound")
+            {
+                return Ok(updateProcess);
+            }
+
+            if (updateProcess.Success == false && updateProcess.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating Process {request}");
+                return StatusCode(500, ModelState);
+            }
+
+            if (updateProcess.Success == false && updateProcess.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating Process {request}");
+                return StatusCode(500, ModelState);
+            }
+
+
+            return Ok(updateProcess);
+
+        }
+
+        [HttpPut("EndWorking")]
+        public async Task<ActionResult> UpdateEndWorking(ProcessDTO request)
+        {
+            if (request == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            var updateProcess = await _service.UpdateEndWorking(request);
+
+            if (updateProcess.Success == false && updateProcess.Message == "NotFound")
+            {
+                return Ok(updateProcess);
+            }
+
+            if (updateProcess.Success == false && updateProcess.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating Process {request}");
+                return StatusCode(500, ModelState);
+            }
+
+            if (updateProcess.Success == false && updateProcess.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating Process {request}");
+                return StatusCode(500, ModelState);
+            }
+
+
+            return Ok(updateProcess);
+
+        }
+
+        [HttpPut("Status")]
+        public async Task<ActionResult> UpdateStatus(ProcessDTO request)
+        {
+            if (request == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            var updateProcess = await _service.UpdateStatus(request);
 
             if (updateProcess.Success == false && updateProcess.Message == "NotFound")
             {

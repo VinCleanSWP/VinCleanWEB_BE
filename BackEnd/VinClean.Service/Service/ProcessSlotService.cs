@@ -8,6 +8,7 @@ using VinClean.Repo.Models;
 using VinClean.Repo.Repository;
 using VinClean.Service.DTO;
 using VinClean.Service.DTO.Process;
+using VinClean.Service.DTO.Slot;
 
 namespace VinClean.Service.Service
 {
@@ -35,15 +36,20 @@ namespace VinClean.Service.Service
             ServiceResponse<List<ProcessSlotDTO>> _response = new();
             try
             {
-                var listPS = await _repository.GetPSList();
-                var listPSDTO = new List<ProcessSlotDTO>();
-                foreach (var processSlot in listPS)
+                var processSlots = await _repository.GetPSList();
+                var processSlotDTOs = new List<ProcessSlotDTO>();
+
+                foreach (var processSlot in processSlots)
                 {
-                    listPSDTO.Add(_mapper.Map<ProcessSlotDTO>(processSlot));
+                    var processSlotDTO = _mapper.Map<ProcessSlotDTO>(processSlot);
+                    processSlotDTO.Process = _mapper.Map<ProcessDTO>(processSlot.Process);
+                    processSlotDTO.Slot = _mapper.Map<SlotDTO>(processSlot.Slot);
+
+                    processSlotDTOs.Add(processSlotDTO);
                 }
                 _response.Success = true;
                 _response.Message = "OK";
-                _response.Data = listPSDTO;
+                _response.Data = processSlotDTOs;
             }
             catch (Exception ex)
             {

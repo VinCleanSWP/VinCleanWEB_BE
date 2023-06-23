@@ -37,6 +37,7 @@ namespace VinClean.Service.Service
             ServiceResponse<EmployeeDTO> _response = new();
             try
             {
+
                 Employee _newEmployee = new Employee()
                 {
                     FirstName = request.FirstName,

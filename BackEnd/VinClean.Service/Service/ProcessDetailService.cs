@@ -14,9 +14,9 @@ namespace VinClean.Service.Service
 {
     public interface IProcessDetailService
     {
-        Task<ServiceResponse<List<ProcessDetailDTO>>> GetPD();
+        Task<ServiceResponse<List<ProcessDetailDTO>>> GetPDList();
         Task<ServiceResponse<ProcessDetailDTO>> GetPDById(int id);
-        Task<ServiceResponse<ProcessDetailDTO>> CreatePD(ProcessDetailDTO processDetailDTO);
+        Task<ServiceResponse<ProcessDetailDTO>> CreatePD(AddProcessDetail processDetailDTO);
         Task<ServiceResponse<ProcessDetailDTO>> UpdatePD(ProcessDetailDTO processDetailDTO);
         Task<ServiceResponse<ProcessDetailDTO>> DeletePD(int id);
     }
@@ -91,11 +91,11 @@ namespace VinClean.Service.Service
 
         }
 
-        public async Task<ServiceResponse<ProcessDetailDTO>> CreatePD(ProcessDetailDTO request)
+        public async Task<ServiceResponse<ProcessDetailDTO>> CreatePD(AddProcessDetail request)
         {
             ServiceResponse<ProcessDetailDTO> _response = new();
-            try
-            {
+       /*     try
+            {*/
                 ProcessDetail _newProcessDetail = new ProcessDetail()
                 {
                     ProcessId = request.ProcessId,
@@ -115,14 +115,14 @@ namespace VinClean.Service.Service
                 _response.Data = _mapper.Map<ProcessDetailDTO>(_newProcessDetail);
                 _response.Message = "Created";
 
-            }
+/*            }
             catch (Exception ex)
             {
                 _response.Success = false;
                 _response.Data = null;
                 _response.Message = "Error";
                 _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
-            }
+            }*/
 
             return _response;
         }
