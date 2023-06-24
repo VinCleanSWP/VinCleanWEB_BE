@@ -41,6 +41,11 @@ namespace VinClean.Service.DTO
             CreateMap<Repo.Models.Role, RoleDTO>().ReverseMap();
             CreateMap<Repo.Models.Service, ServiceDTO>().ReverseMap();
             CreateMap<ServiceManage, ServiceManageDTO>().ReverseMap();
+
+            CreateMap<VinClean.Repo.Models.Employee, EmployeeProfileDTO>().ReverseMap();
+            CreateMap<VinClean.Repo.Models.Employee, ModifyEmployeeProfileDTO>().ReverseMap();
+            CreateMap<Customer, CustomerProfileDTO>().ReverseMap();
+            CreateMap<Customer, ModifyCustomerProfileDTO>().ReverseMap();
         }
     }
 }

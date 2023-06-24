@@ -66,6 +66,7 @@ namespace VinClean.Controllers
             }
             return Ok(newServiceManage.Data);
         }
+        
         [HttpPut]
         public async Task<ActionResult> UpdateServiceManage(ServiceManageDTO request)
         {
