@@ -40,7 +40,12 @@ namespace VinClean.Service.DTO
             CreateMap<Repo.Models.Blog, BlogDTO>().ReverseMap();
             CreateMap<Repo.Models.Comment, CommentDTO>().ReverseMap();
             CreateMap<Repo.Models.Category, CategoryDTO>().ReverseMap();
-
+           
+           CreateMap<VinClean.Repo.Models.Employee, EmployeeProfileDTO>().ReverseMap();
+            CreateMap<VinClean.Repo.Models.Employee, ModifyEmployeeProfileDTO>().ReverseMap();
+            CreateMap<Customer, CustomerProfileDTO>().ReverseMap();
+            CreateMap<Customer, ModifyCustomerProfileDTO>().ReverseMap();
+            
             CreateMap<Role, RolesDTO>().ReverseMap();
             CreateMap<Repo.Models.Service, ServicesDTO>().ReverseMap();
             CreateMap<Repo.Models.ServiceManage, SvcManageDTO>().ReverseMap();
