@@ -15,6 +15,7 @@ namespace VinClean.Service.Service
     {
         Task<ServiceResponse<List<CustomerDTO>>> GetCustomerList();
         Task<ServiceResponse<CustomerDTO>> GetCustomerById(int id);
+        Task<ServiceResponse<CustomerDTO>> GetCustomerAcById(int id);
         Task<ServiceResponse<CustomerDTO>> Register(RegisterDTO request);
         Task<ServiceResponse<CustomerDTO>> UpdateCustomer(UpdateDTO request);
 
@@ -68,6 +69,35 @@ namespace VinClean.Service.Service
             try
             {
                 var customer = await _customerRepository.GetCustomerById(id);
+                if (customer == null)
+                {
+                    _response.Success = false;
+                    _response.Message = "NotFound";
+                    return _response;
+                }
+                _response.Success = true;
+                _response.Message = "OK";
+                _response.Data = _mapper.Map<CustomerDTO>(customer);
+
+
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Message = "Error";
+                _response.Data = null;
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            }
+            return _response;
+
+        }
+
+        public async Task<ServiceResponse<CustomerDTO>> GetCustomerAcById(int id)
+        {
+            ServiceResponse<CustomerDTO> _response = new();
+            try
+            {
+                var customer = await _customerRepository.GetCustomerAcById(id);
                 if (customer == null)
                 {
                     _response.Success = false;

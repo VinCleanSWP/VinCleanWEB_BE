@@ -42,6 +42,24 @@ namespace VinClean.Controllers
             }
             return Ok(accountFound);
         }
+        [HttpGet("Account/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AccountdDTO))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<Account>> GetCustomerAcById(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest(id);
+            }
+            var accountFound = await _service.GetCustomerAcById(id);
+            if (accountFound == null)
+            {
+                return NotFound();
+            }
+            return Ok(accountFound);
+        }
 
         [HttpPost("registration")]
         public async Task<ActionResult<Customer>> Registration (RegisterDTO request)

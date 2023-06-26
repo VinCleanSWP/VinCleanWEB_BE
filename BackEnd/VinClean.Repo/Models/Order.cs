@@ -17,5 +17,12 @@ public partial class Order
 
     public DateTime? FinishedDate { get; set; }
 
+    public TimeSpan? StartTime { get; set; }
+
+    public TimeSpan? EndTime { get; set; }
+
+    public DateTime? DateWork { get; set; }
+
     public virtual Customer? Customer { get; set; }
+
 }
