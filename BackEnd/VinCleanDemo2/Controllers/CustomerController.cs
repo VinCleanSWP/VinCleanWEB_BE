@@ -23,6 +23,12 @@ namespace VinClean.Controllers
         {
             return Ok(await _service.GetCustomerList());
         }
+        [HttpGet("Search")]
+        public async Task<ActionResult<List<Customer>>> SearchNameorId(string search)
+        {
+            return Ok(await _service.SearchNameorId(search));
+        }
+
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AccountdDTO))]

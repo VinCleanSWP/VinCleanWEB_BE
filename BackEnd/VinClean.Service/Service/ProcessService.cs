@@ -139,7 +139,7 @@ namespace VinClean.Service.Service
                 Note = request.Note,
                 Status = "Incoming",
                 StarTime = request.StarTime,
-                EndTime = request.StarTime + TimeSpan.FromHours(service.MinimalSlot), 
+                EndTime = request.StarTime + TimeSpan.FromHours((int)service.MinimalSlot), 
                 CreatedDate = DateTime.Now,
                 Date = request.Date,
                 IsDeleted = false,

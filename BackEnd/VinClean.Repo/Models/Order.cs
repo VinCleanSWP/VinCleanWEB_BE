@@ -24,5 +24,4 @@ public partial class Order
     public DateTime? DateWork { get; set; }
 
     public virtual Customer? Customer { get; set; }
-
 }

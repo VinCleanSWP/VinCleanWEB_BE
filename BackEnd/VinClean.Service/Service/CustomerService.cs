@@ -14,6 +14,7 @@ namespace VinClean.Service.Service
     public interface ICustomerService
     {
         Task<ServiceResponse<List<CustomerDTO>>> GetCustomerList();
+        Task<ServiceResponse<List<CustomerDTO>>> SearchNameorId(string search);
         Task<ServiceResponse<CustomerDTO>> GetCustomerById(int id);
         Task<ServiceResponse<CustomerDTO>> GetCustomerAcById(int id);
         Task<ServiceResponse<CustomerDTO>> Register(RegisterDTO request);
@@ -63,6 +64,36 @@ namespace VinClean.Service.Service
 
         }
 
+
+        public async Task<ServiceResponse<List<CustomerDTO>>> SearchNameorId(string search)
+        {
+            ServiceResponse<List<CustomerDTO>> _response = new();
+            /*try
+            {*/
+                var ListCustomer = await _customerRepository.SearchNameorId(search);
+                var ListCustomerDTO = new List<CustomerDTO>();
+                foreach (var customer in ListCustomer)
+                {
+                    /*                    var account = await _accountRepository.GetAccountById((int)customer.AccountId);*/ // Get the account for the customer
+                    var customerDTO = _mapper.Map<CustomerDTO>(customer);
+                    /*                    customerDTO.Account = _mapper.Map<AccountdDTO>(account);*/ // Map the account information to the DTO
+                    ListCustomerDTO.Add(customerDTO);
+
+                }
+                _response.Success = true;
+                _response.Message = "OK";
+                _response.Data = ListCustomerDTO;
+            /*}
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Message = "Error";
+                _response.Data = null;
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            }*/
+            return _response;
+
+        }
         public async Task<ServiceResponse<CustomerDTO>> GetCustomerById(int id)
         {
             ServiceResponse<CustomerDTO> _response = new();

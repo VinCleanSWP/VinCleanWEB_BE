@@ -14,7 +14,7 @@ namespace VinClean.Repo.Models
         public string Address { get; set; }
         public string Phone { get; set; }
         public string CustomerEmail { get; set; }
-        public byte[] CustomerImage { get; set; }
+        public string CustomerImage { get; set; }
         public int ServiceId { get; set; }
         public string ServiceName { get; set; }
         public DateTime? DateWork { get; set; }

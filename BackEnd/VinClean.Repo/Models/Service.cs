@@ -11,7 +11,7 @@ public partial class Service
 
     public decimal? Cost { get; set; }
 
-    public int MinimalSlot { get; set; }
+    public int? MinimalSlot { get; set; }
 
     public string? Description { get; set; }
 

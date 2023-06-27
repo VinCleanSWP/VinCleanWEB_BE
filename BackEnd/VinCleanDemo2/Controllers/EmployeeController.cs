@@ -24,6 +24,12 @@ namespace VinClean.Controllers
             return Ok(await _service.GetEmployeeList());
         }
 
+        [HttpGet("Search")]
+        public async Task<ActionResult<List<EmployeeDTO>>> SearchEmployee(string search)
+        {
+            return Ok(await _service.SearchEmployee(search));
+        }
+
         // GET api/<EmployeeController>/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Employee>> GetEmployeeById(int id)

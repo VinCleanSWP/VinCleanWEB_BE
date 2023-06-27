@@ -73,13 +73,18 @@ public partial class ServiceAppContext : DbContext
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("date");
+            entity.Property(e => e.Dob).HasColumnType("date");
             entity.Property(e => e.Email)
                 .HasMaxLength(100)
                 .IsUnicode(false)
                 .HasColumnName("email");
-            entity.Property(e => e.Image)
-                .HasColumnType("image")
-                .HasColumnName("image");
+            entity.Property(e => e.Gender)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.Img)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("img");
             entity.Property(e => e.IsDeleted)
                 .HasDefaultValueSql("((0))")
                 .HasColumnName("isDeleted");
@@ -114,6 +119,10 @@ public partial class ServiceAppContext : DbContext
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("date");
+            entity.Property(e => e.Img)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("img");
             entity.Property(e => e.IsDeleted)
                 .HasDefaultValueSql("((0))")
                 .HasColumnName("isDeleted");
@@ -555,6 +564,14 @@ public partial class ServiceAppContext : DbContext
             entity.Property(e => e.Avaiable)
                 .HasDefaultValueSql("((1))")
                 .HasColumnName("avaiable");
+            entity.Property(e => e.Icon)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("icon");
+            entity.Property(e => e.Img)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("img");
             entity.Property(e => e.Type1)
                 .HasMaxLength(100)
                 .HasColumnName("type");
