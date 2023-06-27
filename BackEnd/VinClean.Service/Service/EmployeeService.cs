@@ -17,7 +17,6 @@ namespace VinClean.Service.Service
     {
         Task<ServiceResponse<List<EmployeeDTO>>> GetEmployeeList();
         Task<ServiceResponse<EmployeeDTO>> GetEmployeeById(int id);
-
         Task<ServiceResponse<List<EmployeeDTO>>> SelectEmployeeList(String startTime, String endTime, String date);
         Task<ServiceResponse<EmployeeDTO>> AddEmployee(RegisterEmployeeDTO request);
         Task<ServiceResponse<EmployeeDTO>> UpdateEmployee(UpdateEmployeeDTO request);
@@ -51,7 +50,7 @@ namespace VinClean.Service.Service
                     Status = "Active", // set the status to active by default
                     IsDeleted = false, // set the isDeleted flag to false by default
                     CreatedDate = DateTime.Now, // set the created date to the current date/time
-                    Image = null,
+                    Img = null,
 
                 };
                 await _accountRepository.AddAccount(_newAccount);
