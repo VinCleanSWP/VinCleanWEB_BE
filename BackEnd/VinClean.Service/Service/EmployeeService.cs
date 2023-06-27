@@ -20,17 +20,22 @@ namespace VinClean.Service.Service
         Task<ServiceResponse<EmployeeDTO>> AddEmployee(EmployeeDTO request);
         Task<ServiceResponse<EmployeeDTO>> UpdateEmployee(EmployeeDTO request);
         Task<ServiceResponse<EmployeeDTO>> DeleteEmployee(int id);
+        Task<ServiceResponse<List<EmployeeProfileDTO>>> GetEProfileList();
+        Task<ServiceResponse<EmployeeProfileDTO>> GetEProfileById(int id);
+        Task<ServiceResponse<EmployeeProfileDTO>> ModifyEProfile(ModifyEmployeeProfileDTO request);
 
     }
     public class EmployeeService : IEmployeeService
     {
         private readonly IEmployeeRepository _repository;
         private readonly IMapper _mapper;
+        private readonly IAccountRepository _accountRepository;
 
-        public EmployeeService(IEmployeeRepository repository, IMapper mapper)
+        public EmployeeService(IEmployeeRepository repository, IMapper mapper, IAccountRepository accountRepository)
         {
             _repository = repository;
             _mapper = mapper;
+            _accountRepository = accountRepository;
         }
 
         public async Task<ServiceResponse<EmployeeDTO>> AddEmployee(EmployeeDTO request)
@@ -47,7 +52,7 @@ namespace VinClean.Service.Service
                     EndDate = request.EndDate,
                     Phone = request.Phone,
                     Status = "Active",
-                    
+
                 };
 
                 if (!await _repository.AddEmployee(_newEmployee))
@@ -233,6 +238,112 @@ namespace VinClean.Service.Service
             }
             return _response;
         }
-    }
 
+        //VIEW PROFILE LIST
+        public async Task<ServiceResponse<List<EmployeeProfileDTO>>> GetEProfileList()
+        {
+            ServiceResponse<List<EmployeeProfileDTO>> _response = new();
+            try
+            {
+                var eprofileList = await _repository.GetEProfileList();
+                var eprofileListDTO = new List<EmployeeProfileDTO>();
+                foreach (var employee in eprofileList)
+                {
+                    eprofileListDTO.Add(_mapper.Map<EmployeeProfileDTO>(employee));
+                }
+                _response.Success = true;
+                _response.Message = "OK";
+                _response.Data = eprofileListDTO;
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Message = "Error";
+                _response.Data = null;
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            }
+            return _response;
+        }
+
+        //GET PROFILE BY ID
+        public async Task<ServiceResponse<EmployeeProfileDTO>> GetEProfileById(int id)
+        {
+            ServiceResponse<EmployeeProfileDTO> _response = new();
+            try
+            {
+                var eprofile = await _repository.GetEProfileById(id);
+                if (eprofile == null)
+                {
+                    _response.Success = false;
+                    _response.Message = "NotFound";
+                    return _response;
+                }
+
+                var eprofileDTO = _mapper.Map<EmployeeProfileDTO>(eprofile);
+                _response.Success = true;
+                _response.Message = "OK";
+                _response.Data = eprofileDTO;
+
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Message = "Error";
+                _response.Data = null;
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            }
+            return _response;
+        }
+
+        //MODIFY PROFILE
+        public async Task<ServiceResponse<EmployeeProfileDTO>> ModifyEProfile(ModifyEmployeeProfileDTO request)
+        {
+            ServiceResponse<EmployeeProfileDTO> _response = new();
+            try
+            {
+                var modifypEmployee = await _repository.GetEProfileById(request.EmployeeId);
+
+                if (modifypEmployee == null)
+                {
+                    _response.Success = false;
+                    _response.Message = "NotFound";
+                    _response.Data = null;
+                    return _response;
+                }
+
+                var _editAccount = await _accountRepository.GetAccountById(modifypEmployee.Account.AccountId);
+                _editAccount.Email = request.Email;
+                _editAccount.Password = request.Password;
+                await _accountRepository.UpdateAccount(_editAccount);
+
+                // cac gia trị cho sua
+                modifypEmployee.FirstName = request.FirstName;
+                modifypEmployee.LastName = request.LastName;
+                modifypEmployee.Phone = request.Phone;
+
+
+                if (!await _repository.ModifyEProfile(modifypEmployee))
+                {
+                    _response.Success = false;
+                    _response.Message = "RepoError";
+                    _response.Data = null;
+                    return _response;
+                }
+
+                var eprofileDTO = _mapper.Map<EmployeeProfileDTO>(modifypEmployee);
+                _response.Success = true;
+                _response.Data = eprofileDTO;
+                _response.Message = "Updated";
+
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Data = null;
+                _response.Message = "Error";
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            }
+            return _response;
+        }
+    }
 }

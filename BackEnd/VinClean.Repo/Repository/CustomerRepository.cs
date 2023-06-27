@@ -17,6 +17,10 @@ namespace VinClean.Repo.Repository
         Task<bool> AddCustomer(Customer customer);
         Task<bool> UpdateCustomer(Customer customer);
         Task<bool> CheckEmailCustomerExist(String email);
+
+        Task<ICollection<Customer>> GetViewProfileList();
+        Task<Customer> GetProfileByID(int id);
+        Task<bool> ModifyProfile(Customer customer);
     }
     public class CustomerRepository : ICustomerRepository
     {
@@ -60,6 +64,25 @@ namespace VinClean.Repo.Repository
         async Task<bool> ICustomerRepository.CheckEmailCustomerExist(string email)
         {
             return await _context.Customers.AnyAsync(a => a.Account.Email == email);
+        }
+
+        //VIEW PROFILE LIST
+        async Task<ICollection<Customer>> ICustomerRepository.GetViewProfileList()
+        {
+            return await _context.Customers.Include(e => e.Account).ToListAsync();
+        }
+
+        //GET PROFILE BY ID
+        async Task<Customer> ICustomerRepository.GetProfileByID(int id)
+        {
+            return await _context.Customers.Include(e => e.Account).FirstOrDefaultAsync(a => a.CustomerId == id);
+        }
+
+        //MODIFY PROFILE
+        async Task<bool> ICustomerRepository.ModifyProfile(Customer customer)
+        {
+            _context.Customers.Update(customer);
+            return await _context.SaveChangesAsync() > 0 ? true : false;
         }
     }
 }

@@ -20,7 +20,11 @@ namespace VinClean.Service.Service
         Task<ServiceResponse<CustomerDTO>> Register(RegisterDTO request);
         Task<ServiceResponse<CustomerDTO>> UpdateCustomer(UpdateDTO request);
 
-/*        Task<ServiceResponse<RegisterDTO>> DeleteCustomer(int id);*/
+        /*        Task<ServiceResponse<RegisterDTO>> DeleteCustomer(int id);*/
+
+        Task<ServiceResponse<List<CustomerProfileDTO>>> GetViewProfileList();
+        Task<ServiceResponse<CustomerProfileDTO>> GetProfileByID(int id);
+        Task<ServiceResponse<CustomerProfileDTO>> ModifyProfile(ModifyCustomerProfileDTO request);
     }
     public class CustomerService : ICustomerService
     {
@@ -255,6 +259,120 @@ namespace VinClean.Service.Service
 
             return _response;
         }
-       
+
+        //VIEW PROFILE LIST
+        public async Task<ServiceResponse<List<CustomerProfileDTO>>> GetViewProfileList()
+        {
+            ServiceResponse<List<CustomerProfileDTO>> response = new();
+            try
+            {
+                var profileList = await _customerRepository.GetViewProfileList();
+                var viewProfileList = new List<CustomerProfileDTO>();
+
+                foreach (var profile in profileList)
+                {
+                    var viewProfileDTO = _mapper.Map<CustomerProfileDTO>(profile);
+                    // Additional mapping or processing specific to view profiles
+
+                    viewProfileList.Add(viewProfileDTO);
+                }
+
+                response.Success = true;
+                response.Message = "OK";
+                response.Data = viewProfileList;
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = "Error";
+                response.Data = null;
+                response.ErrorMessages = new List<string> { ex.Message };
+            }
+
+            return response;
+        }
+
+        //GET PROFILE BY ID
+        public async Task<ServiceResponse<CustomerProfileDTO>> GetProfileByID(int id)
+        {
+            ServiceResponse<CustomerProfileDTO> _response = new();
+            try
+            {
+                var profile = await _customerRepository.GetProfileByID(id);
+                if (profile == null)
+                {
+                    _response.Success = false;
+                    _response.Message = "NotFound";
+                    return _response;
+                }
+                _response.Success = true;
+                _response.Message = "OK";
+                _response.Data = _mapper.Map<CustomerProfileDTO>(profile);
+
+
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Message = "Error";
+                _response.Data = null;
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            }
+            return _response;
+
+        }
+
+
+        //MODIFY PROFILE
+        public async Task<ServiceResponse<CustomerProfileDTO>> ModifyProfile(ModifyCustomerProfileDTO request)
+        {
+            ServiceResponse<CustomerProfileDTO> _response = new();
+            try
+            {
+                var modifypCustomer = await _customerRepository.GetProfileByID(request.CustomerId);
+
+                if (modifypCustomer == null)
+                {
+                    _response.Message = "NotFound";
+                    _response.Success = false;
+                    _response.Data = null;
+                    return _response;
+                }
+
+                var _editAccount = await _accountRepository.GetAccountById(modifypCustomer.Account.AccountId);
+                _editAccount.Email = request.Email;
+                _editAccount.Password = request.Password;
+                await _accountRepository.UpdateAccount(_editAccount);
+
+                modifypCustomer.FirstName = request.FirstName;
+                modifypCustomer.LastName = request.LastName;
+                modifypCustomer.Phone = request.Phone;
+                modifypCustomer.Address = request.Address;
+                modifypCustomer.TotalPoint = request.TotalPoint;
+
+
+                if (!await _customerRepository.ModifyProfile(modifypCustomer))
+                {
+                    _response.Error = "RepoError";
+                    _response.Success = false;
+                    _response.Data = null;
+                    return _response;
+                }
+                _response.Success = true;
+                _response.Data = _mapper.Map<CustomerProfileDTO>(await _customerRepository.GetProfileByID(modifypCustomer.CustomerId));
+                _response.Message = "Created";
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Data = null;
+                _response.Message = "Error";
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            }
+            return _response;
+        }
+
+
+
     }
 }

@@ -131,5 +131,66 @@ namespace VinClean.Controllers
             return Ok(updateAccount);
 
         }
+
+        [HttpGet("ListViewProfile")]
+        public async Task<ActionResult<List<Customer>>> GetProfileList()
+        {
+            return Ok(await _service.GetViewProfileList());
+        }
+
+        [HttpGet("GetProfileBy {id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AccountdDTO))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<Account>> GetPId(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest(id);
+            }
+            var profileFound = await _service.GetProfileByID(id);
+            if (profileFound == null)
+            {
+                return NotFound();
+            }
+            return Ok(profileFound);
+        }
+
+        [HttpPut("ModifyProfile")]
+        public async Task<ActionResult> ModifyProfile(ModifyCustomerProfileDTO request)
+        {
+            if (request == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            var editProfile = await _service.ModifyProfile(request);
+
+            if (editProfile.Success == false && editProfile.Message == "NotFound")
+            {
+                return Ok(editProfile);
+            }
+
+            if (editProfile.Success == false && editProfile.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating account {request}");
+                return StatusCode(500, ModelState);
+            }
+
+            if (editProfile.Success == false && editProfile.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating account {request}");
+                return StatusCode(500, ModelState);
+            }
+
+
+            return Ok(editProfile);
+
+        }
+
+
+
     }
 }
