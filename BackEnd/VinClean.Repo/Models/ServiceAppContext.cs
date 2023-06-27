@@ -388,12 +388,40 @@ public partial class ServiceAppContext : DbContext
 
         modelBuilder.Entity<ProcessSlot>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("Process_Slot");
+            //entity
+            //    .HasNoKey()
+            //    .ToTable("Process_Slot");
+            entity.HasKey(e => e.ProcessId);
+            entity.ToTable("Process_Slot");
 
+            entity.Property(e => e.CreateAt)
+                .HasColumnType("datetime")
+                .HasColumnName("create_at");
+            entity.Property(e => e.CreateBy).HasColumnName("create_by");
+            entity.Property(e => e.NewEmployeeId).HasColumnName("newEmployee_id");
+            entity.Property(e => e.Note)
+                .HasMaxLength(1)
+                .IsUnicode(false)
+                .HasColumnName("note");
+            entity.Property(e => e.OldEmployeeId).HasColumnName("oldEmployee_id");
             entity.Property(e => e.ProcessId).HasColumnName("process_id");
+            entity.Property(e => e.Satus)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasColumnName("satus");
             entity.Property(e => e.SlotId).HasColumnName("slot_id");
+
+            entity.HasOne(d => d.CreateByNavigation).WithMany()
+                .HasForeignKey(d => d.CreateBy)
+                .HasConstraintName("fkcreateBy_Process_Slot_Employee");
+
+            entity.HasOne(d => d.NewEmployee).WithMany()
+                .HasForeignKey(d => d.NewEmployeeId)
+                .HasConstraintName("fknewEmp_Process_Slot_Employee");
+
+            entity.HasOne(d => d.OldEmployee).WithMany()
+                .HasForeignKey(d => d.OldEmployeeId)
+                .HasConstraintName("fk_Process_Slot_Employee");
 
             entity.HasOne(d => d.Process).WithMany()
                 .HasForeignKey(d => d.ProcessId)

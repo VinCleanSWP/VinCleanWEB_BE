@@ -14,7 +14,7 @@ namespace VinClean.Service.Service
 {
     public interface IProcessSlotService
     {
-        Task<ServiceResponse<List<ProcessSlotDTO>>> GetPS();
+        Task<ServiceResponse<List<ProcessSlot>>> GetPS();
         Task<ServiceResponse<ProcessSlotDTO>> GetPSById(int id);
         Task<ServiceResponse<ProcessSlotDTO>> CreatePS(ProcessSlotDTO processSlotDTO);
         Task<ServiceResponse<ProcessSlotDTO>> UpdatePS(ProcessSlotDTO processSlotDTO);
@@ -31,19 +31,19 @@ namespace VinClean.Service.Service
             _mapper = mapper;
         }
 
-        public async Task<ServiceResponse<List<ProcessSlotDTO>>> GetPS()
+        public async Task<ServiceResponse<List<ProcessSlot>>> GetPS()
         {
-            ServiceResponse<List<ProcessSlotDTO>> _response = new();
+            ServiceResponse<List<ProcessSlot>> _response = new();
             try
             {
                 var processSlots = await _repository.GetPSList();
-                var processSlotDTOs = new List<ProcessSlotDTO>();
+                var processSlotDTOs = new List<ProcessSlot>();
 
                 foreach (var processSlot in processSlots)
                 {
-                    var processSlotDTO = _mapper.Map<ProcessSlotDTO>(processSlot);
-                    processSlotDTO.Process = _mapper.Map<ProcessDTO>(processSlot.Process);
-                    processSlotDTO.Slot = _mapper.Map<SlotDTO>(processSlot.Slot);
+                    var processSlotDTO = _mapper.Map<ProcessSlot>(processSlot);
+                    /*processSlotDTO.Process = _mapper.Map<ProcessDTO>(processSlot.Process);*/
+                    /*processSlotDTO.Slot = _mapper.Map<SlotDTO>(processSlot.Slot);*/
 
                     processSlotDTOs.Add(processSlotDTO);
                 }
