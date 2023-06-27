@@ -18,7 +18,7 @@ namespace VinClean.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<ProcessSlotDTO>>> ProcessSlot()
+        public async Task<ActionResult<List<ProcessSlot>>> ProcessSlot()
         {
             return Ok(await _service.GetPS());
         }

@@ -4,6 +4,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VinClean.Repo.Models;
+using VinClean.Service.DTO.Account;
 
 namespace VinClean.Service.DTO.Employee
 {
@@ -31,5 +33,6 @@ namespace VinClean.Service.DTO.Employee
         public DateTime StartDate { get; set; }
 
         public DateTime EndDate { get; set; }
+        public virtual Account_EmpDTO account { get; set; }
     }
 }

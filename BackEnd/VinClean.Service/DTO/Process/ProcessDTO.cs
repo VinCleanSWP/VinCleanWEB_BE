@@ -19,5 +19,10 @@ namespace VinClean.Service.DTO
         public DateTime CreatedDate { get; set; }
         public DateTime ModifiedDate { get; set; }
         public int ModifiedBy { get; set; }
+        public TimeSpan? StartWorking { get; set; }
+        public TimeSpan? EndWorking { get; set; }
+        public DateTime? Date { get; set; }
+        public TimeSpan? StarTime { get; set; }
+        public TimeSpan? EndTime { get; set; }
     }
 }

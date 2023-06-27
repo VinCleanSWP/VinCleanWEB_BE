@@ -23,6 +23,12 @@ namespace VinClean.Controllers
         {
             return Ok(await _service.GetCustomerList());
         }
+        [HttpGet("Search")]
+        public async Task<ActionResult<List<Customer>>> SearchNameorId(string search)
+        {
+            return Ok(await _service.SearchNameorId(search));
+        }
+
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AccountdDTO))]
@@ -36,6 +42,24 @@ namespace VinClean.Controllers
                 return BadRequest(id);
             }
             var accountFound = await _service.GetCustomerById(id);
+            if (accountFound == null)
+            {
+                return NotFound();
+            }
+            return Ok(accountFound);
+        }
+        [HttpGet("Account/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AccountdDTO))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<Account>> GetCustomerAcById(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest(id);
+            }
+            var accountFound = await _service.GetCustomerAcById(id);
             if (accountFound == null)
             {
                 return NotFound();

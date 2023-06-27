@@ -25,6 +25,8 @@ public partial class Blog
 
     public int? ModifiedBy { get; set; }
 
+    public string? Img { get; set; }
+
     public virtual Category? Category { get; set; }
 
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();

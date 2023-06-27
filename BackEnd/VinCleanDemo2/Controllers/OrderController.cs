@@ -19,21 +19,21 @@ namespace VinClean.Controllers
         }
         // GET: api/<OrderController>
         [HttpGet]
-        public async Task<ActionResult<List<OrderDTO>>> GetAllOrder()
+        public async Task<ActionResult<List<OrderModelDTO>>> GetAllOrder()
         {
             return Ok(await _service.GetOrderList());
         }
 
         // GET api/<OrderController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Order>> GetOrderById(int id)
+        public async Task<ActionResult<OrderModelDTO>> GetOrderById(int id)
         {
             return Ok(await _service.GetOrderById(id));
         }
 
         // POST api/<OrderController>
         [HttpPost]
-        public async Task<ActionResult<Order>> AddOrder(OrderDTO request)
+        public async Task<ActionResult<Order>> AddOrder(NewOderDTO request)
         {
             var newOrder = await _service.AddOrder(request);
             if (newOrder.Success == false && newOrder.Message == "Exist")

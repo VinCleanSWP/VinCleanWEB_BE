@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VinClean.Repo.Models;
+using VinClean.Service.DTO.Slot;
 
 // Data holder
 
@@ -17,6 +18,6 @@ namespace VinClean.Service.DTO.Process
 
         public virtual ProcessDTO Process { get; set; }
 
-        public virtual Slot Slot { get; set; }
+        public virtual SlotDTO Slot { get; set; }
     }
 }
