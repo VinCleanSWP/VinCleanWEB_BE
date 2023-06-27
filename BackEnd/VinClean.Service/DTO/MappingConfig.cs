@@ -17,10 +17,11 @@ using VinClean.Service.DTO.Type;
 
 using VinClean.Service.DTO.Process;
 using VinClean.Service.DTO.Rating;
-using VinClean.Service.DTO.Role;
-using VinClean.Service.DTO.Service;
 using VinClean.Service.DTO.WorkingSlot;
 using VinClean.Service.DTO.Slot;
+using VinClean.Service.DTO.Blog;
+using VinClean.Service.DTO.Comment;
+using VinClean.Service.DTO.Category;
 
 namespace VinClean.Service.DTO
 {
@@ -37,6 +38,9 @@ namespace VinClean.Service.DTO
             CreateMap<Customer, CustomerDTO>().ReverseMap();
 
             CreateMap<VinClean.Repo.Models.Employee, EmployeeDTO>().ReverseMap();
+            CreateMap<VinClean.Repo.Models.Employee, RegisterEmployeeDTO>().ReverseMap();
+            CreateMap<VinClean.Repo.Models.Employee, UpdateEmployeeDTO>().ReverseMap();
+
             CreateMap<VinClean.Repo.Models.Order, OrderDTO>().ReverseMap();
             CreateMap<OrderDetail,OrderDetailDTO>().ReverseMap();
             CreateMap<VinClean.Repo.Models.FinshedBy, FinishedByDTO>().ReverseMap();

@@ -132,14 +132,14 @@ namespace VinClean.Service.Service
             /*            try
                         {*/
             var service = await _serviceRepo.GetServiceById(request.ServiceId);
-
+            
             Process _newProcess = new Process()
             {
                 CustomerId = request.CustomerId,
                 Note = request.Note,
                 Status = "Incoming",
                 StarTime = request.StarTime,
-                EndTime = request.StarTime + TimeSpan.FromHours(service.MinimalSlot), 
+                EndTime = request.StarTime + TimeSpan.FromHours((int)service.MinimalSlot), 
                 CreatedDate = DateTime.Now,
                 Date = request.Date,
                 IsDeleted = false,

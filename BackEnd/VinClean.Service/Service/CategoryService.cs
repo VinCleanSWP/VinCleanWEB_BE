@@ -1,43 +1,49 @@
 ﻿using AutoMapper;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using VinClean.Repo.Models;
 using VinClean.Repo.Repository;
 using VinClean.Service.DTO;
-using VinClean.Service.DTO.Role;
+using VinClean.Service.DTO.Category;
 
 namespace VinClean.Service.Service
 {
-    public interface IRoleService
+    public interface ICategoryService
     {
-        Task<ServiceResponse<List<RoleDTO>>> GetRoleList();
-        Task<ServiceResponse<RoleDTO>> GetRoleById(int id);
-        Task<ServiceResponse<RoleDTO>> AddRole(RoleDTO request);
-        Task<ServiceResponse<RoleDTO>> UpdateRole(RoleDTO request);
-        Task<ServiceResponse<RoleDTO>> DeleteRole(int id);
-
+        Task<ServiceResponse<List<CategoryDTO>>> GetCategoryList();
+        Task<ServiceResponse<CategoryDTO>> GetCategoryById(int id);
+        Task<ServiceResponse<CategoryDTO>> CreateCategory(CategoryDTO request);
+        Task<ServiceResponse<CategoryDTO>> UpdateCategory(CategoryDTO request);
+        Task<ServiceResponse<CategoryDTO>> DeleteCategory(int id);
     }
-    public class RoleService : IRoleService
+    public class CategoryService : ICategoryService
     {
-        private readonly IRoleRepository _repository;
+        private readonly ICategoryRepository _repository;
         private readonly IMapper _mapper;
 
-        public RoleService(IRoleRepository repository, IMapper mapper)
+        public CategoryService(ICategoryRepository repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
         }
 
-        public async Task<ServiceResponse<RoleDTO>> AddRole(RoleDTO request)
+        async Task<ServiceResponse<CategoryDTO>> ICategoryService.CreateCategory(CategoryDTO request)
         {
-            ServiceResponse<RoleDTO> _response = new();
+            ServiceResponse<CategoryDTO> _response = new();
             try
             {
-                Role _newRole = new Role()
+
+                Category _newCategory = new Category()
                 {
-                    Name = request.Name,
+                    Category1 = request.Category1
+                   
 
                 };
 
-                if (!await _repository.AddRole(_newRole))
+                if (!await _repository.CreateCategory(_newCategory))
                 {
                     _response.Error = "RepoError";
                     _response.Success = false;
@@ -46,7 +52,7 @@ namespace VinClean.Service.Service
                 }
 
                 _response.Success = true;
-                _response.Data = _mapper.Map<RoleDTO>(_newRole);
+                _response.Data = _mapper.Map<CategoryDTO>(_newCategory);
                 _response.Message = "Created";
 
             }
@@ -61,13 +67,13 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<RoleDTO>> DeleteRole(int id)
+        async Task<ServiceResponse<CategoryDTO>> ICategoryService.DeleteCategory(int id)
         {
-            ServiceResponse<RoleDTO> _response = new();
+            ServiceResponse<CategoryDTO> _response = new();
             try
             {
-                var existingRole = await _repository.GetRoleById(id);
-                if (existingRole == null)
+                var existingCategory = await _repository.GetCategoryById(id);
+                if (existingCategory == null)
                 {
                     _response.Success = false;
                     _response.Message = "NotFound";
@@ -75,7 +81,7 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                if (!await _repository.DeleteRole(existingRole))
+                if (!await _repository.DeleteCategory(existingCategory))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";
@@ -83,9 +89,9 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                var _OrderDTO = _mapper.Map<RoleDTO>(existingRole);
+                var _categoryDTO = _mapper.Map<CategoryDTO>(existingCategory);
                 _response.Success = true;
-                _response.Data = _OrderDTO;
+                _response.Data = _categoryDTO;
                 _response.Message = "Deleted";
 
             }
@@ -99,22 +105,22 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<RoleDTO>> GetRoleById(int id)
+        async Task<ServiceResponse<CategoryDTO>> ICategoryService.GetCategoryById(int id)
         {
-            ServiceResponse<RoleDTO> _response = new();
+            ServiceResponse<CategoryDTO> _response = new();
             try
             {
-                var Role = await _repository.GetRoleById(id);
-                if (Role == null)
+                var category = await _repository.GetCategoryById(id);
+                if (category == null)
                 {
                     _response.Success = false;
                     _response.Message = "NotFound";
                     return _response;
                 }
-                var Roledto = _mapper.Map<RoleDTO>(Role);
+                var categorydto = _mapper.Map<CategoryDTO>(category);
                 _response.Success = true;
                 _response.Message = "OK";
-                _response.Data = Roledto;
+                _response.Data = categorydto;
 
             }
             catch (Exception ex)
@@ -127,23 +133,24 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<List<RoleDTO>>> GetRoleList()
+        async Task<ServiceResponse<List<CategoryDTO>>> ICategoryService.GetCategoryList()
         {
-            ServiceResponse<List<RoleDTO>> _response = new();
+            ServiceResponse<List<CategoryDTO>> _response = new();
             try
             {
-                var ListRole = await _repository.GetRoleList();
-                var ListRoleDTO = new List<RoleDTO>();
-                foreach (var Role in ListRole)
+                var ListCategory = await _repository.GetCategoryList();
+                var ListCategoryDTO = new List<CategoryDTO>();
+                foreach (var category in ListCategory)
                 {
-                    ListRoleDTO.Add(_mapper.Map<RoleDTO>(Role));
+                   ListCategoryDTO.Add(_mapper.Map<CategoryDTO>(category));
                 }
                 _response.Success = true;
                 _response.Message = "OK";
-                _response.Data = ListRoleDTO;
+                _response.Data = ListCategoryDTO;
             }
             catch (Exception ex)
             {
+
                 _response.Success = false;
                 _response.Message = "Error";
                 _response.Data = null;
@@ -152,23 +159,27 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<RoleDTO>> UpdateRole(RoleDTO request)
+       
+
+        async Task<ServiceResponse<CategoryDTO>> ICategoryService.UpdateCategory(CategoryDTO request)
         {
-            ServiceResponse<RoleDTO> _response = new();
+            ServiceResponse<CategoryDTO> _response = new();
             try
             {
-                var existingRole = await _repository.GetRoleById(request.RoleId);
-                if (existingRole == null)
+                var existingCategory = await _repository.GetCategoryById(request.CategoryId);
+                if (existingCategory == null)
                 {
                     _response.Success = false;
                     _response.Message = "NotFound";
                     _response.Data = null;
                     return _response;
                 }
-                // cac gia trị cho sua
-                existingRole.Name = request.Name;               
 
-                if (!await _repository.UpdateRole(existingRole))
+                existingCategory.CategoryId = request.CategoryId;
+                existingCategory.Category1 = request.Category1;
+
+
+                if (!await _repository.UpdateCategory(existingCategory))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";
@@ -176,9 +187,9 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                var _RoleDTO = _mapper.Map<RoleDTO>(existingRole);
+                var _categoryDTO = _mapper.Map<CategoryDTO>(existingCategory);
                 _response.Success = true;
-                _response.Data = _RoleDTO;
+                _response.Data = _categoryDTO;
                 _response.Message = "Updated";
 
             }

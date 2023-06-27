@@ -278,6 +278,9 @@ public partial class ServiceAppContext : DbContext
 
             entity.Property(e => e.OrderId).HasColumnName("order_id");
             entity.Property(e => e.CustomerId).HasColumnName("customer_id");
+            entity.Property(e => e.DateWork)
+                .HasColumnType("date")
+                .HasColumnName("date_work");
             entity.Property(e => e.FinishedDate).HasColumnType("date");
             entity.Property(e => e.Note)
                 .HasColumnType("ntext")
@@ -352,12 +355,9 @@ public partial class ServiceAppContext : DbContext
 
         modelBuilder.Entity<ProcessDetail>(entity =>
         {
-            //entity
-            //    .HasNoKey()
-            //    .ToTable("Process_Detail");
-            entity.HasKey(e => e.ProcessId);
-            entity.ToTable("Process_Detail");
-
+            entity
+                .HasNoKey()
+                .ToTable("Process_Detail");
 
             entity.Property(e => e.ProcessId).HasColumnName("process_id");
             entity.Property(e => e.ServiceId).HasColumnName("service_id");
@@ -556,11 +556,9 @@ public partial class ServiceAppContext : DbContext
 
         modelBuilder.Entity<WorkingBy>(entity =>
         {
-            /*entity
+            entity
                 .HasNoKey()
-                .ToTable("WorkingBy");*/
-            entity.HasKey(e => e.ProcessId);
-            entity.ToTable("WorkingBy");
+                .ToTable("WorkingBy");
 
             entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
             entity.Property(e => e.ProcessId).HasColumnName("process_id");
