@@ -12,6 +12,7 @@ namespace VinClean.Repo.Repository
     public interface IEmployeeRepository
     {
         Task<ICollection<Employee>> GetEmployeeList();
+        Task<ICollection<Employee>> SearchEmployee(string search);
         Task<Employee> GetEmployeeById(int id);
 
         Task<ICollection<Employee>> SelectEmployeeList(String startTime, String endTime, String date);
@@ -30,6 +31,13 @@ namespace VinClean.Repo.Repository
         async public Task<ICollection<Employee>> GetEmployeeList()
         {
             return await _context.Employees.Include(e=>e.Account).ToListAsync();
+        }
+
+        async public Task<ICollection<Employee>> SearchEmployee(string search)
+        {
+            return await _context.Employees.Include(e => e.Account)
+                .Where(e => e.Account.Name.Contains(search) || e.EmployeeId.ToString() == search
+                    || e.Account.Email.Contains(search) || e.Phone.Contains(search)).ToListAsync();
         }
 
         async public Task<Employee> GetEmployeeById(int id)
