@@ -5,21 +5,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VinClean.Repo.Models;
+using VinClean.Repo.Models.ProcessModel;
 
 namespace VinClean.Repo.Repository
 {
     public interface IEmployeeRepository
     {
         Task<ICollection<Employee>> GetEmployeeList();
-        Task<ICollection<Employee>> SearchEmployee(string search);
         Task<Employee> GetEmployeeById(int id);
+
+        Task<ICollection<Employee>> SelectEmployeeList(String startTime, String endTime, String date);
         Task<bool> AddEmployee(Employee employee);
         Task<bool> DeleteEmployee(Employee employee);
         Task<bool> UpdateEmployee(Employee employee);
-        Task<ICollection<Employee>> GetEProfileList();
-        Task<Employee> GetEProfileById(int id);
-        Task<bool> ModifyEProfile(Employee employee);
-
+        
     }
     public class EmployeeRepository : IEmployeeRepository
     {
@@ -33,17 +32,11 @@ namespace VinClean.Repo.Repository
             return await _context.Employees.Include(e=>e.Account).ToListAsync();
         }
 
-        async public Task<ICollection<Employee>> SearchEmployee(string search)
-        {
-            return await _context.Employees.Include(e => e.Account)
-                .Where(e => e.Account.Name.Contains(search) || e.EmployeeId.ToString() == search
-                    || e.Account.Email.Contains(search) || e.Phone.Contains(search)).ToListAsync();
-        }
-
         async public Task<Employee> GetEmployeeById(int id)
         {
             return await _context.Employees.FirstOrDefaultAsync(a => a.EmployeeId == id);
         }
+
 
         async public Task<bool> AddEmployee(Employee employee)
         {
@@ -63,24 +56,34 @@ namespace VinClean.Repo.Repository
             return await _context.SaveChangesAsync() > 0 ? true : false;
         }
 
-        //VIEW PROFILE LIST
-        async Task<ICollection<Employee>> IEmployeeRepository.GetEProfileList()
+        public async Task<ICollection<Employee>> SelectEmployeeList(String startTime, String endTime, String date)
         {
-            return await _context.Employees.Include(e => e.Account).ToListAsync();
-        }
+            TimeSpan startTimeSpan = TimeSpan.Parse(startTime);
+            TimeSpan endTimeSpan = TimeSpan.Parse(endTime);
+            DateTime dateValue = DateTime.Parse(date);
 
-        //GET PROFILE BY ID
-        async Task<Employee> IEmployeeRepository.GetEProfileById(int id)
-        {
-            return await _context.Employees.Include(e => e.Account).FirstOrDefaultAsync(a => a.EmployeeId == id);
-        }
+            var query = from e in _context.Employees
+                        join wb in _context.WorkingBies on e.EmployeeId equals wb.EmployeeId into workingByJoin
+                        from wb in workingByJoin.DefaultIfEmpty()
+                        join p in _context.Processes on wb.ProcessId equals p.ProcessId into processJoin
+                        from p in processJoin.DefaultIfEmpty()
 
-        //MODIFY PROFILE 
-        async Task<bool> IEmployeeRepository.ModifyEProfile(Employee employee)
-        {
-            _context.Employees.Update(employee);
-            return await _context.SaveChangesAsync() > 0 ? true : false;
+                        where (wb.EmployeeId == null && e.Status == "Available") 
+                        || (p.Date >= dateValue && (p.StarTime > endTimeSpan && p.EndTime < startTimeSpan)) 
+                        && e.Status == "Available"
+                        select new Employee
+                        {
+                            EmployeeId = e.EmployeeId,
+                            FirstName = e.FirstName,
+                            LastName = e.LastName,
+                            Phone = e.Phone,
+                            AccountId = e.AccountId,
+                            Status = e.Status,
+                            EndDate = e.EndDate,
+                            StartDate = e.StartDate
+                            
+                        };
+            return await query.ToListAsync();
         }
-
     }
 }
