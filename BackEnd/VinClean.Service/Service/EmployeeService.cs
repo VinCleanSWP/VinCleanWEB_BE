@@ -16,6 +16,7 @@ namespace VinClean.Service.Service
     public interface IEmployeeService
     {
         Task<ServiceResponse<List<EmployeeDTO>>> GetEmployeeList();
+        Task<ServiceResponse<List<EmployeeDTO>>> SearchEmployee(string search);
         Task<ServiceResponse<EmployeeDTO>> GetEmployeeById(int id);
         Task<ServiceResponse<List<EmployeeDTO>>> SelectEmployeeList(String startTime, String endTime, String date);
         Task<ServiceResponse<EmployeeDTO>> AddEmployee(RegisterEmployeeDTO request);
@@ -204,6 +205,31 @@ namespace VinClean.Service.Service
             //    _response.Data = null;
             //    _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
             //}
+            return _response;
+        }
+
+        public async Task<ServiceResponse<List<EmployeeDTO>>> SearchEmployee(string search)
+        {
+            ServiceResponse<List<EmployeeDTO>> _response = new();
+            try
+            {
+                var ListEmployee = await _repository.SearchEmployee(search);
+                var ListEmployeeDTO = new List<EmployeeDTO>();
+                foreach (var employee in ListEmployee)
+                {
+                    ListEmployeeDTO.Add(_mapper.Map<EmployeeDTO>(employee));
+                }
+                _response.Success = true;
+                _response.Message = "OK";
+                _response.Data = ListEmployeeDTO;
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Message = "Error";
+                _response.Data = null;
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            }
             return _response;
         }
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,9 @@ namespace VinClean.Repo.Repository
         Task<ICollection<Blog>> GetBlogs();
         Task<bool> Deleteblog(Blog blog);
         Task<bool> UpdateBlog(Blog blog);
+      
+
+
     }
     public class BlogRepository:IBlogRepository
     {
@@ -52,5 +56,7 @@ namespace VinClean.Repo.Repository
             _context.Blogs.Update(blog);
             return await _context.SaveChangesAsync() > 0 ? true : false;
         }
+
+        
     }
 }

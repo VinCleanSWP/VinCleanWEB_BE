@@ -20,15 +20,19 @@ namespace VinClean.Service.Service
         Task<ServiceResponse<CommentDTO>> CreateComment(CommentDTO request);
         Task<ServiceResponse<CommentDTO>> UpdateComment(CommentDTO request);
         Task<ServiceResponse<CommentDTO>> DeleteComment(int id);
+      
     }
     public class CommentService: ICommentService
     {
         private readonly ICommentRepository _repository;
+        
+
         private readonly IMapper _mapper;
         public CommentService(ICommentRepository repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
+            
         }
 
         async Task<ServiceResponse<CommentDTO>> ICommentService.DeleteComment(int id)
@@ -119,8 +123,10 @@ namespace VinClean.Service.Service
                
                 Comment _newComment = new Comment()
                 {
-                     Content= request.Content
-                  
+                     Content= request.Content,
+                     BlogId = request.BlogId,
+                     CreatedDate = DateTime.Now
+
 
                 };
 
@@ -201,7 +207,7 @@ namespace VinClean.Service.Service
             }
             return _response;
         }
+       
 
-        
     }
 }

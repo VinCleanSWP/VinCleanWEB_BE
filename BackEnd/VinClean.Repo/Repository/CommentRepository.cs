@@ -15,6 +15,8 @@ namespace VinClean.Repo.Repository
         Task<bool> CreateComment(Comment comment);
         Task<bool> UpdateComment(Comment comment);
         Task<bool> DeleteComment(Comment comment);
+        Task<ICollection<Comment>> GetCommentsByBlogId(int blogId);
+
     }
     public class CommentRepository: ICommentRepository
     {
@@ -52,6 +54,13 @@ namespace VinClean.Repo.Repository
         {
             _context.Comments.Remove(comment);
             return await _context.SaveChangesAsync() > 0 ? true : false;
+        }
+
+        async Task<ICollection<Comment>> ICommentRepository.GetCommentsByBlogId(int blogId)
+        {
+          
+                return await _context.Comments.Where(c => c.BlogId == blogId).ToListAsync();
+            
         }
     }
 }
