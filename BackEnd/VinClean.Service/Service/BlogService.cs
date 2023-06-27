@@ -7,49 +7,44 @@ using System.Threading.Tasks;
 using VinClean.Repo.Models;
 using VinClean.Repo.Repository;
 using VinClean.Service.DTO;
-using VinClean.Service.DTO.Employee;
-using VinClean.Service.DTO.Order;
+using VinClean.Service.DTO.Blog;
 
 namespace VinClean.Service.Service
 {
-    public interface IEmployeeService
+    public interface IBlogService
     {
-        Task<ServiceResponse<List<EmployeeDTO>>> GetEmployeeList();
-        Task<ServiceResponse<EmployeeDTO>> GetEmployeeById(int id);
-        Task<ServiceResponse<EmployeeDTO>> AddEmployee(EmployeeDTO request);
-        Task<ServiceResponse<EmployeeDTO>> UpdateEmployee(EmployeeDTO request);
-        Task<ServiceResponse<EmployeeDTO>> DeleteEmployee(int id);
-
+        Task<ServiceResponse<List<BlogDTO>>> GetBlog();
+        Task<ServiceResponse<BlogDTO>> CreateBlog(BlogDTO request);
+        Task<ServiceResponse<BlogDTO>> UpdateBlog(BlogDTO request);
+        Task<ServiceResponse<BlogDTO>> DeleteBlog(int id);
+        Task<ServiceResponse<BlogDTO>> GetBlogByID(int id);
     }
-    public class EmployeeService : IEmployeeService
+    public class BlogService: IBlogService
     {
-        private readonly IEmployeeRepository _repository;
+        private readonly IBlogRepository _repository;
         private readonly IMapper _mapper;
-
-        public EmployeeService(IEmployeeRepository repository, IMapper mapper)
+        public BlogService(IBlogRepository repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
         }
 
-        public async Task<ServiceResponse<EmployeeDTO>> AddEmployee(EmployeeDTO request)
+        async Task<ServiceResponse<BlogDTO>> IBlogService.CreateBlog(BlogDTO request)
         {
-            ServiceResponse<EmployeeDTO> _response = new();
+            ServiceResponse<BlogDTO> _response = new();
             try
             {
-
-                Employee _newEmployee = new Employee()
+                Blog _newBlog = new Blog()
                 {
-                    FirstName = request.FirstName,
-                    LastName = request.LastName,
-                    StartDate = request.StartDate,
-                    EndDate = request.EndDate,
-                    Phone = request.Phone,
-                    Status = "Active",
-                    
+                    Title = request.Title,
+                    Sumarry = request.Sumarry,
+                    Content = request.Content,
+                    IsDeleted = false,
+                    CreatedDate = DateTime.Now,
+
                 };
 
-                if (!await _repository.AddEmployee(_newEmployee))
+                if (!await _repository.CreateBlog(_newBlog))
                 {
                     _response.Error = "RepoError";
                     _response.Success = false;
@@ -58,7 +53,7 @@ namespace VinClean.Service.Service
                 }
 
                 _response.Success = true;
-                _response.Data = _mapper.Map<EmployeeDTO>(_newEmployee);
+                _response.Data = _mapper.Map<BlogDTO>(_newBlog);
                 _response.Message = "Created";
 
             }
@@ -73,13 +68,13 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<EmployeeDTO>> DeleteEmployee(int id)
+        async Task<ServiceResponse<BlogDTO>> IBlogService.DeleteBlog(int id)
         {
-            ServiceResponse<EmployeeDTO> _response = new();
+            ServiceResponse<BlogDTO> _response = new();
             try
             {
-                var existingEmployee = await _repository.GetEmployeeById(id);
-                if (existingEmployee == null)
+                var existingBlog = await _repository.GetBlogById(id);
+                if (existingBlog == null)
                 {
                     _response.Success = false;
                     _response.Message = "NotFound";
@@ -87,7 +82,7 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                if (await _repository.DeleteEmployee(existingEmployee))
+                if (!await _repository.Deleteblog(existingBlog))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";
@@ -95,9 +90,9 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                var _OrderDTO = _mapper.Map<EmployeeDTO>(existingEmployee);
+                var _blogDTO = _mapper.Map<BlogDTO>(existingBlog);
                 _response.Success = true;
-                _response.Data = _OrderDTO;
+                _response.Data = _blogDTO;
                 _response.Message = "Deleted";
 
             }
@@ -111,22 +106,49 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<EmployeeDTO>> GetEmployeeById(int id)
+        async Task<ServiceResponse<List<BlogDTO>>> IBlogService.GetBlog()
         {
-            ServiceResponse<EmployeeDTO> _response = new();
+            ServiceResponse<List<BlogDTO>> _response = new();
             try
             {
-                var employee = await _repository.GetEmployeeById(id);
-                if (employee == null)
+                var ListBlog = await _repository.GetBlogs();
+                var ListBlogDTO = new List<BlogDTO>();
+                foreach (var blog in ListBlog)
+                {
+                    ListBlogDTO.Add(_mapper.Map<BlogDTO>(blog));
+                }
+                _response.Success = true;
+                _response.Message = "OK";
+                _response.Data = ListBlogDTO;
+            }
+            catch (Exception ex)
+            {
+
+                _response.Success = false;
+                _response.Message = "Error";
+                _response.Data = null;
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            }
+            return _response;
+        }
+
+        async Task<ServiceResponse<BlogDTO>> IBlogService
+            .GetBlogByID(int id)
+        {
+            ServiceResponse<BlogDTO> _response = new();
+            try
+            {
+                var blog = await _repository.GetBlogById(id);
+                if (blog == null)
                 {
                     _response.Success = false;
                     _response.Message = "NotFound";
                     return _response;
                 }
-                var employeedto = _mapper.Map<EmployeeDTO>(employee);
+                var blogdto = _mapper.Map<BlogDTO>(blog);
                 _response.Success = true;
                 _response.Message = "OK";
-                _response.Data = employeedto;
+                _response.Data = blogdto;
 
             }
             catch (Exception ex)
@@ -139,52 +161,27 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<List<EmployeeDTO>>> GetEmployeeList()
+        async Task<ServiceResponse<BlogDTO>> IBlogService.UpdateBlog(BlogDTO request)
         {
-            ServiceResponse<List<EmployeeDTO>> _response = new();
+            ServiceResponse<BlogDTO> _response = new();
             try
             {
-                var ListEmployee = await _repository.GetEmployeeList();
-                var ListEmployeeDTO = new List<EmployeeDTO>();
-                foreach (var employee in ListEmployee)
-                {
-                    ListEmployeeDTO.Add(_mapper.Map<EmployeeDTO>(employee));
-                }
-                _response.Success = true;
-                _response.Message = "OK";
-                _response.Data = ListEmployeeDTO;
-            }
-            catch (Exception ex)
-            {
-                _response.Success = false;
-                _response.Message = "Error";
-                _response.Data = null;
-                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
-            }
-            return _response;
-        }
-
-        public async Task<ServiceResponse<EmployeeDTO>> UpdateEmployee(EmployeeDTO request)
-        {
-            ServiceResponse<EmployeeDTO> _response = new();
-            try
-            {
-                var existingEmployee = await _repository.GetEmployeeById(request.EmployeeId);
-                if (existingEmployee == null)
+                var existingBlog = await _repository.GetBlogById(request.BlogId);
+                if (existingBlog == null)
                 {
                     _response.Success = false;
                     _response.Message = "NotFound";
                     _response.Data = null;
                     return _response;
                 }
-                // cac gia trị cho sua
-                existingEmployee.FirstName = request.FirstName;
-                existingEmployee.LastName = request.LastName;
-                existingEmployee.Phone = request.Phone;
-                existingEmployee.Status = request.Status;
 
+                existingBlog.Title = request.Title;
+                existingBlog.Sumarry = request.Sumarry;
+                existingBlog.Content = request.Content;
+                existingBlog.CreatedBy = request.CreatedBy;
+              
 
-                if (!await _repository.UpdateEmployee(existingEmployee))
+                if (!await _repository.UpdateBlog(existingBlog))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";
@@ -192,9 +189,9 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                var _EmployeeDTO = _mapper.Map<EmployeeDTO>(existingEmployee);
+                var _blogDTO = _mapper.Map<BlogDTO>(existingBlog);
                 _response.Success = true;
-                _response.Data = _EmployeeDTO;
+                _response.Data = _blogDTO;
                 _response.Message = "Updated";
 
             }
@@ -207,6 +204,10 @@ namespace VinClean.Service.Service
             }
             return _response;
         }
-    }
 
+       
+    }
 }
+    
+
+

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace VinClean.Repo.Models;
 
@@ -21,6 +20,9 @@ public partial class Account
     public bool? IsDeleted { get; set; }
 
     public DateTime? CreatedDate { get; set; }
+
+    public byte[]? Image { get; set; }
+
     public virtual ICollection<Blog> BlogCreatedByNavigations { get; set; } = new List<Blog>();
 
     public virtual ICollection<Blog> BlogModifiedByNavigations { get; set; } = new List<Blog>();

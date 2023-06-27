@@ -21,6 +21,16 @@ public partial class Process
 
     public int? ModifiedBy { get; set; }
 
+    public TimeSpan? StartWorking { get; set; }
+
+    public TimeSpan? EndWorking { get; set; }
+
+    public DateTime? Date { get; set; }
+
+    public TimeSpan? StarTime { get; set; }
+
+    public TimeSpan? EndTime { get; set; }
+
     public virtual Customer? Customer { get; set; }
 
     public virtual Account? ModifiedByNavigation { get; set; }

@@ -7,49 +7,43 @@ using System.Threading.Tasks;
 using VinClean.Repo.Models;
 using VinClean.Repo.Repository;
 using VinClean.Service.DTO;
-using VinClean.Service.DTO.Employee;
-using VinClean.Service.DTO.Order;
+using VinClean.Service.DTO.Service;
 
 namespace VinClean.Service.Service
 {
-    public interface IEmployeeService
+    public interface IServiceManageService
     {
-        Task<ServiceResponse<List<EmployeeDTO>>> GetEmployeeList();
-        Task<ServiceResponse<EmployeeDTO>> GetEmployeeById(int id);
-        Task<ServiceResponse<EmployeeDTO>> AddEmployee(EmployeeDTO request);
-        Task<ServiceResponse<EmployeeDTO>> UpdateEmployee(EmployeeDTO request);
-        Task<ServiceResponse<EmployeeDTO>> DeleteEmployee(int id);
-
+        Task<ServiceResponse<List<ServiceManageDTO>>> GetServiceManageList();
+        Task<ServiceResponse<ServiceManageDTO>> GetServiceManageById(int id);
+        Task<ServiceResponse<ServiceManageDTO>> CreateServiceManage(ServiceManageDTO request);
+        Task<ServiceResponse<ServiceManageDTO>> UpdateServiceManage(ServiceManageDTO request);
+        Task<ServiceResponse<ServiceManageDTO>> DeleteServiceManage(int id);
     }
-    public class EmployeeService : IEmployeeService
+    public class ServiceManageService : IServiceManageService
     {
-        private readonly IEmployeeRepository _repository;
+        private readonly IServiceManageRepository _repository;
         private readonly IMapper _mapper;
 
-        public EmployeeService(IEmployeeRepository repository, IMapper mapper)
+        public ServiceManageService(IServiceManageRepository repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
         }
 
-        public async Task<ServiceResponse<EmployeeDTO>> AddEmployee(EmployeeDTO request)
+        async Task<ServiceResponse<ServiceManageDTO>> IServiceManageService.CreateServiceManage(ServiceManageDTO request)
         {
-            ServiceResponse<EmployeeDTO> _response = new();
+            ServiceResponse<ServiceManageDTO> _response = new();
             try
             {
 
-                Employee _newEmployee = new Employee()
+                ServiceManage _newServiceManage = new ServiceManage()
                 {
-                    FirstName = request.FirstName,
-                    LastName = request.LastName,
-                    StartDate = request.StartDate,
-                    EndDate = request.EndDate,
-                    Phone = request.Phone,
-                    Status = "Active",
-                    
+                    StartDate = request.StartDate
+
+
                 };
 
-                if (!await _repository.AddEmployee(_newEmployee))
+                if (!await _repository.CreateServiceManage(_newServiceManage))
                 {
                     _response.Error = "RepoError";
                     _response.Success = false;
@@ -58,7 +52,7 @@ namespace VinClean.Service.Service
                 }
 
                 _response.Success = true;
-                _response.Data = _mapper.Map<EmployeeDTO>(_newEmployee);
+                _response.Data = _mapper.Map<ServiceManageDTO>(_newServiceManage);
                 _response.Message = "Created";
 
             }
@@ -73,13 +67,13 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<EmployeeDTO>> DeleteEmployee(int id)
+        async Task<ServiceResponse<ServiceManageDTO>> IServiceManageService.DeleteServiceManage(int id)
         {
-            ServiceResponse<EmployeeDTO> _response = new();
+            ServiceResponse<ServiceManageDTO> _response = new();
             try
             {
-                var existingEmployee = await _repository.GetEmployeeById(id);
-                if (existingEmployee == null)
+                var existingServiceManage = await _repository.GetServiceManageById(id);
+                if (existingServiceManage == null)
                 {
                     _response.Success = false;
                     _response.Message = "NotFound";
@@ -87,7 +81,7 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                if (await _repository.DeleteEmployee(existingEmployee))
+                if (!await _repository.DeleteServiceManage(existingServiceManage))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";
@@ -95,9 +89,9 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                var _OrderDTO = _mapper.Map<EmployeeDTO>(existingEmployee);
+                var _ServiceManageDTO = _mapper.Map<ServiceManageDTO>(existingServiceManage);
                 _response.Success = true;
-                _response.Data = _OrderDTO;
+                _response.Data = _ServiceManageDTO;
                 _response.Message = "Deleted";
 
             }
@@ -111,22 +105,22 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<EmployeeDTO>> GetEmployeeById(int id)
+        async Task<ServiceResponse<ServiceManageDTO>> IServiceManageService.GetServiceManageById(int id)
         {
-            ServiceResponse<EmployeeDTO> _response = new();
+            ServiceResponse<ServiceManageDTO> _response = new();
             try
             {
-                var employee = await _repository.GetEmployeeById(id);
-                if (employee == null)
+                var ServiceManage = await _repository.GetServiceManageById(id);
+                if (ServiceManage == null)
                 {
                     _response.Success = false;
                     _response.Message = "NotFound";
                     return _response;
                 }
-                var employeedto = _mapper.Map<EmployeeDTO>(employee);
+                var ServiceManagedto = _mapper.Map<ServiceManageDTO>(ServiceManage);
                 _response.Success = true;
                 _response.Message = "OK";
-                _response.Data = employeedto;
+                _response.Data = ServiceManagedto;
 
             }
             catch (Exception ex)
@@ -139,23 +133,24 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<List<EmployeeDTO>>> GetEmployeeList()
+        async Task<ServiceResponse<List<ServiceManageDTO>>> IServiceManageService.GetServiceManageList()
         {
-            ServiceResponse<List<EmployeeDTO>> _response = new();
+            ServiceResponse<List<ServiceManageDTO>> _response = new();
             try
             {
-                var ListEmployee = await _repository.GetEmployeeList();
-                var ListEmployeeDTO = new List<EmployeeDTO>();
-                foreach (var employee in ListEmployee)
+                var ListServiceManage = await _repository.GetServiceManageList();
+                var ListServiceManageDTO = new List<ServiceManageDTO>();
+                foreach (var ServiceManage in ListServiceManage)
                 {
-                    ListEmployeeDTO.Add(_mapper.Map<EmployeeDTO>(employee));
+                    ListServiceManageDTO.Add(_mapper.Map<ServiceManageDTO>(ServiceManage));
                 }
                 _response.Success = true;
                 _response.Message = "OK";
-                _response.Data = ListEmployeeDTO;
+                _response.Data = ListServiceManageDTO;
             }
             catch (Exception ex)
             {
+
                 _response.Success = false;
                 _response.Message = "Error";
                 _response.Data = null;
@@ -164,27 +159,28 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<EmployeeDTO>> UpdateEmployee(EmployeeDTO request)
+
+
+        async Task<ServiceResponse<ServiceManageDTO>> IServiceManageService.UpdateServiceManage(ServiceManageDTO request)
         {
-            ServiceResponse<EmployeeDTO> _response = new();
+            ServiceResponse<ServiceManageDTO> _response = new();
             try
             {
-                var existingEmployee = await _repository.GetEmployeeById(request.EmployeeId);
-                if (existingEmployee == null)
+                var existingServiceManage = await _repository.GetServiceManageById(request.ServiceId);
+                if (existingServiceManage == null)
                 {
                     _response.Success = false;
                     _response.Message = "NotFound";
                     _response.Data = null;
                     return _response;
                 }
-                // cac gia trị cho sua
-                existingEmployee.FirstName = request.FirstName;
-                existingEmployee.LastName = request.LastName;
-                existingEmployee.Phone = request.Phone;
-                existingEmployee.Status = request.Status;
+
+                existingServiceManage.EmployeeId = request.EmployeeId;
+                existingServiceManage.ServiceId = request.ServiceId;
+                existingServiceManage.StartDate = request.StartDate;
 
 
-                if (!await _repository.UpdateEmployee(existingEmployee))
+                if (!await _repository.UpdateServiceManage(existingServiceManage))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";
@@ -192,9 +188,9 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                var _EmployeeDTO = _mapper.Map<EmployeeDTO>(existingEmployee);
+                var _ServiceManageDTO = _mapper.Map<ServiceManageDTO>(existingServiceManage);
                 _response.Success = true;
-                _response.Data = _EmployeeDTO;
+                _response.Data = _ServiceManageDTO;
                 _response.Message = "Updated";
 
             }
@@ -208,5 +204,4 @@ namespace VinClean.Service.Service
             return _response;
         }
     }
-
 }
