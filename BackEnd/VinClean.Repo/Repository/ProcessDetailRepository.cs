@@ -29,17 +29,17 @@ namespace VinClean.Repo.Repository
 
         async Task<ICollection<ProcessDetail>> IProcessDetailRepository.GetPDList()
         {
-            return await _context.ProcessDetails.Include(s => s.ServiceId).ToListAsync();
+            return await _context.ProcessDetails.Include(e=>e.Process).Include(e=>e.Service).ToListAsync();
         }
 
         async Task<ProcessDetail> IProcessDetailRepository.GetPDById(int id)
         {
-            return await _context.ProcessDetails.Include(s => s.ServiceId).FirstOrDefaultAsync(pd => pd.ProcessId == id);
+            return await _context.ProcessDetails.Include(e => e.Process).Include(e => e.Service).FirstOrDefaultAsync(pd => pd.ProcessId == id);
         }
 
         async Task<bool> IProcessDetailRepository.AddPD(ProcessDetail processDetail)
         {
-            _context.Add(processDetail);
+            _context.Entry(processDetail).State = EntityState.Added;
             return await _context.SaveChangesAsync() > 0 ? true : false;
         }
 

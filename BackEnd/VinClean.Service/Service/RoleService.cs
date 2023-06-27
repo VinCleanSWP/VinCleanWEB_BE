@@ -1,14 +1,7 @@
 ﻿using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VinClean.Repo.Models;
 using VinClean.Repo.Repository;
-using VinClean.Service.DTO.Category;
 using VinClean.Service.DTO;
-using VinClean.Service.DTO.Role;
 using VinClean.Service.DTO.Role;
 
 namespace VinClean.Service.Service

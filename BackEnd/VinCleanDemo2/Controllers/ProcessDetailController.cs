@@ -20,7 +20,7 @@ namespace VinClean.Controllers
         [HttpGet]
         public async Task<ActionResult<List<ProcessDetailDTO>>> ProcessDetail()
         {
-            return Ok(await _service.GetPD());
+            return Ok(await _service.GetPDList());
         }
 
         [HttpGet("{id}")]
@@ -42,7 +42,7 @@ namespace VinClean.Controllers
             return Ok(processFound);
         }
         [HttpPost]
-        public async Task<ActionResult<ProcessDetail>> CreateProcess(ProcessDetailDTO request)
+        public async Task<ActionResult<ProcessDetail>> CreateProcess(AddProcessDetail request)
         {
 
 

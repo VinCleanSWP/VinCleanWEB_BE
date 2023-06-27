@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using VinClean.Repo.Models;
+using VinClean.Repo.Models.ProcessModel;
 using VinClean.Service.DTO;
 using VinClean.Service.DTO.Employee;
 using VinClean.Service.Service;
@@ -24,6 +25,12 @@ namespace VinClean.Controllers
             return Ok(await _service.GetEmployeeList());
         }
 
+        [HttpGet("Search")]
+        public async Task<ActionResult<List<EmployeeDTO>>> SearchEmployee(string search)
+        {
+            return Ok(await _service.SearchEmployee(search));
+        }
+
         // GET api/<EmployeeController>/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Employee>> GetEmployeeById(int id)
@@ -39,10 +46,23 @@ namespace VinClean.Controllers
             }
             return Ok(EmployeeFound);
         }
+        // POST api/<EmployeeController>/
+        [HttpPost("selectemployee")]
+        public async Task<ActionResult<List<Employee>>> SelectEmployee(String StarTime, String EndTime,String Date)
+        {
 
-        // POST api/<EmployeeController>
+            var response = await _service.SelectEmployeeList(StarTime, EndTime, Date);
+
+            if (!response.Success)
+            {
+                return NotFound(response.Message);
+            }
+
+            return Ok(response.Data);
+        }
+            // POST api/<EmployeeController>
         [HttpPost]
-        public async Task<ActionResult<Employee>> AddEmployee(EmployeeDTO request)
+        public async Task<ActionResult<Employee>> AddEmployee(RegisterEmployeeDTO request)
         {
             var newEmployee = await _service.AddEmployee(request);
             if (newEmployee.Success == false && newEmployee.Message == "Exist")
@@ -66,7 +86,7 @@ namespace VinClean.Controllers
 
         // PUT api/<EmployeeController>/5
         [HttpPut]
-        public async Task<ActionResult> UpdateEmployee(EmployeeDTO request)
+        public async Task<ActionResult> UpdateEmployee(UpdateEmployeeDTO request)
         {
             if (request == null)
             {
