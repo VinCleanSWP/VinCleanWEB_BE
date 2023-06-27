@@ -51,7 +51,7 @@ namespace VinClean.Service.Service
                     Status = "Active", // set the status to active by default
                     IsDeleted = false, // set the isDeleted flag to false by default
                     CreatedDate = DateTime.Now, // set the created date to the current date/time
-                    Image = null,
+                    Img = null,
 
                 };
                 await _accountRepository.AddAccount(_newAccount);
