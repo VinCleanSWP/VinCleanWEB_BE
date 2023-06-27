@@ -13,6 +13,10 @@ public partial class OrderDetail
 
     public decimal? Total { get; set; }
 
+    public TimeSpan? StartWorking { get; set; }
+
+    public TimeSpan? EndWorking { get; set; }
+
     public virtual Order? Order { get; set; }
 
     public virtual Service? Service { get; set; }

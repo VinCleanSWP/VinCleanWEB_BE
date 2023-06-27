@@ -49,7 +49,7 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                if (await _repository.DeleteComment(existingComment))
+                if (!await _repository.DeleteComment(existingComment))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";

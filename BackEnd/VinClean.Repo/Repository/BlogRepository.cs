@@ -39,7 +39,7 @@ namespace VinClean.Repo.Repository
         {
             return await _context.Blogs.FirstOrDefaultAsync(a => a.BlogId == id);
         }
-        async Task<bool> IBlogRepository.CreateBlog(VinClean.Repo.Models.Blog blog)
+        async Task<bool> IBlogRepository.CreateBlog(Blog blog)
         {
             _context.Blogs.Add(blog);
             return await _context.SaveChangesAsync() > 0 ? true : false;

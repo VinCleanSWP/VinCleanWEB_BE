@@ -9,6 +9,7 @@ using VinClean.Repo.Repository;
 using VinClean.Service.DTO;
 using VinClean.Service.DTO.Employee;
 using VinClean.Service.DTO.Order;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace VinClean.Service.Service
 {
@@ -16,8 +17,10 @@ namespace VinClean.Service.Service
     {
         Task<ServiceResponse<List<EmployeeDTO>>> GetEmployeeList();
         Task<ServiceResponse<EmployeeDTO>> GetEmployeeById(int id);
-        Task<ServiceResponse<EmployeeDTO>> AddEmployee(EmployeeDTO request);
-        Task<ServiceResponse<EmployeeDTO>> UpdateEmployee(EmployeeDTO request);
+
+        Task<ServiceResponse<List<EmployeeDTO>>> SelectEmployeeList(String startTime, String endTime, String date);
+        Task<ServiceResponse<EmployeeDTO>> AddEmployee(RegisterEmployeeDTO request);
+        Task<ServiceResponse<EmployeeDTO>> UpdateEmployee(UpdateEmployeeDTO request);
         Task<ServiceResponse<EmployeeDTO>> DeleteEmployee(int id);
 
     }
@@ -25,24 +28,41 @@ namespace VinClean.Service.Service
     {
         private readonly IEmployeeRepository _repository;
         private readonly IMapper _mapper;
+        private readonly IAccountRepository _accountRepository;
 
-        public EmployeeService(IEmployeeRepository repository, IMapper mapper)
+        public EmployeeService(IEmployeeRepository repository, IAccountRepository accountRepository, IMapper mapper)
         {
             _repository = repository;
+            _accountRepository = accountRepository;
             _mapper = mapper;
         }
 
-        public async Task<ServiceResponse<EmployeeDTO>> AddEmployee(EmployeeDTO request)
+        public async Task<ServiceResponse<EmployeeDTO>> AddEmployee(RegisterEmployeeDTO request)
         {
             ServiceResponse<EmployeeDTO> _response = new();
-            try
-            {
+            //try
+            //{
+                var _newAccount = new Account()
+                {
+                    Name = request.Name,
+                    Password = request.Password,
+                    Email = request.Email,
+                    RoleId = 2, // assign a default role for new accounts
+                    Status = "Active", // set the status to active by default
+                    IsDeleted = false, // set the isDeleted flag to false by default
+                    CreatedDate = DateTime.Now, // set the created date to the current date/time
+                    Image = null,
+
+                };
+                await _accountRepository.AddAccount(_newAccount);
+
                 Employee _newEmployee = new Employee()
                 {
                     FirstName = request.FirstName,
                     LastName = request.LastName,
-                    StartDate = request.StartDate,
-                    EndDate = request.EndDate,
+                    StartDate = null,
+                    EndDate = null,
+                    AccountId = _newAccount.AccountId,
                     Phone = request.Phone,
                     Status = "Active",
                     
@@ -57,17 +77,17 @@ namespace VinClean.Service.Service
                 }
 
                 _response.Success = true;
-                _response.Data = _mapper.Map<EmployeeDTO>(_newEmployee);
+                _response.Data = _mapper.Map<EmployeeDTO>(await _repository.GetEmployeeById(_newEmployee.EmployeeId));
                 _response.Message = "Created";
 
-            }
-            catch (Exception ex)
-            {
-                _response.Success = false;
-                _response.Data = null;
-                _response.Message = "Error";
-                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    _response.Success = false;
+            //    _response.Data = null;
+            //    _response.Message = "Error";
+            //    _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            //}
 
             return _response;
         }
@@ -163,7 +183,32 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<EmployeeDTO>> UpdateEmployee(EmployeeDTO request)
+        public async Task<ServiceResponse<List<EmployeeDTO>>> SelectEmployeeList(String startTime, String endTime, String date)
+        {
+            ServiceResponse<List<EmployeeDTO>> _response = new();
+            //try
+            //{
+                var ListEmployee = await _repository.SelectEmployeeList(startTime,endTime,date);
+                var ListEmployeeDTO = new List<EmployeeDTO>();
+                foreach (var employee in ListEmployee)
+                {
+                    ListEmployeeDTO.Add(_mapper.Map<EmployeeDTO>(employee));
+                }
+                _response.Success = true;
+                _response.Message = "OK";
+                _response.Data = ListEmployeeDTO;
+            //}
+            //catch (Exception ex)
+            //{
+            //    _response.Success = false;
+            //    _response.Message = "serive";
+            //    _response.Data = null;
+            //    _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            //}
+            return _response;
+        }
+
+        public async Task<ServiceResponse<EmployeeDTO>> UpdateEmployee(UpdateEmployeeDTO request)
         {
             ServiceResponse<EmployeeDTO> _response = new();
             try
@@ -176,14 +221,20 @@ namespace VinClean.Service.Service
                     _response.Data = null;
                     return _response;
                 }
-                // cac gia trị cho sua
+                var _newAccount = await _accountRepository.GetAccountById(existingEmployee.Account.AccountId);
+                _newAccount.Name = request.Name;
+                _newAccount.Password = request.Password;
+                _newAccount.Email = request.Email;
+
+                await _accountRepository.UpdateAccount(_newAccount);
+                
                 existingEmployee.FirstName = request.FirstName;
                 existingEmployee.LastName = request.LastName;
                 existingEmployee.Phone = request.Phone;
                 existingEmployee.Status = request.Status;
 
-
-                if (!await _repository.UpdateEmployee(existingEmployee))
+               
+            if (!await _repository.UpdateEmployee(existingEmployee))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";

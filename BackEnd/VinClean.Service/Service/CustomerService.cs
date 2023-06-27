@@ -14,11 +14,17 @@ namespace VinClean.Service.Service
     public interface ICustomerService
     {
         Task<ServiceResponse<List<CustomerDTO>>> GetCustomerList();
+        Task<ServiceResponse<List<CustomerDTO>>> SearchNameorId(string search);
         Task<ServiceResponse<CustomerDTO>> GetCustomerById(int id);
+        Task<ServiceResponse<CustomerDTO>> GetCustomerAcById(int id);
         Task<ServiceResponse<CustomerDTO>> Register(RegisterDTO request);
         Task<ServiceResponse<CustomerDTO>> UpdateCustomer(UpdateDTO request);
 
-/*        Task<ServiceResponse<RegisterDTO>> DeleteCustomer(int id);*/
+        /*        Task<ServiceResponse<RegisterDTO>> DeleteCustomer(int id);*/
+
+        Task<ServiceResponse<List<CustomerProfileDTO>>> GetViewProfileList();
+        Task<ServiceResponse<CustomerProfileDTO>> GetProfileByID(int id);
+        Task<ServiceResponse<CustomerProfileDTO>> ModifyProfile(ModifyCustomerProfileDTO request);
     }
     public class CustomerService : ICustomerService
     {
@@ -62,12 +68,71 @@ namespace VinClean.Service.Service
 
         }
 
+
+        public async Task<ServiceResponse<List<CustomerDTO>>> SearchNameorId(string search)
+        {
+            ServiceResponse<List<CustomerDTO>> _response = new();
+            /*try
+            {*/
+                var ListCustomer = await _customerRepository.SearchNameorId(search);
+                var ListCustomerDTO = new List<CustomerDTO>();
+                foreach (var customer in ListCustomer)
+                {
+                    /*                    var account = await _accountRepository.GetAccountById((int)customer.AccountId);*/ // Get the account for the customer
+                    var customerDTO = _mapper.Map<CustomerDTO>(customer);
+                    /*                    customerDTO.Account = _mapper.Map<AccountdDTO>(account);*/ // Map the account information to the DTO
+                    ListCustomerDTO.Add(customerDTO);
+
+                }
+                _response.Success = true;
+                _response.Message = "OK";
+                _response.Data = ListCustomerDTO;
+            /*}
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Message = "Error";
+                _response.Data = null;
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            }*/
+            return _response;
+
+        }
         public async Task<ServiceResponse<CustomerDTO>> GetCustomerById(int id)
         {
             ServiceResponse<CustomerDTO> _response = new();
             try
             {
                 var customer = await _customerRepository.GetCustomerById(id);
+                if (customer == null)
+                {
+                    _response.Success = false;
+                    _response.Message = "NotFound";
+                    return _response;
+                }
+                _response.Success = true;
+                _response.Message = "OK";
+                _response.Data = _mapper.Map<CustomerDTO>(customer);
+
+
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Message = "Error";
+                _response.Data = null;
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            }
+            return _response;
+
+        }
+
+        public async Task<ServiceResponse<CustomerDTO>> GetCustomerAcById(int id)
+        {
+            ServiceResponse<CustomerDTO> _response = new();
+            try
+            {
+                var customer = await _customerRepository.GetCustomerAcById(id);
                 if (customer == null)
                 {
                     _response.Success = false;
@@ -194,6 +259,120 @@ namespace VinClean.Service.Service
 
             return _response;
         }
-       
+
+        //VIEW PROFILE LIST
+        public async Task<ServiceResponse<List<CustomerProfileDTO>>> GetViewProfileList()
+        {
+            ServiceResponse<List<CustomerProfileDTO>> response = new();
+            try
+            {
+                var profileList = await _customerRepository.GetViewProfileList();
+                var viewProfileList = new List<CustomerProfileDTO>();
+
+                foreach (var profile in profileList)
+                {
+                    var viewProfileDTO = _mapper.Map<CustomerProfileDTO>(profile);
+                    // Additional mapping or processing specific to view profiles
+
+                    viewProfileList.Add(viewProfileDTO);
+                }
+
+                response.Success = true;
+                response.Message = "OK";
+                response.Data = viewProfileList;
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = "Error";
+                response.Data = null;
+                response.ErrorMessages = new List<string> { ex.Message };
+            }
+
+            return response;
+        }
+
+        //GET PROFILE BY ID
+        public async Task<ServiceResponse<CustomerProfileDTO>> GetProfileByID(int id)
+        {
+            ServiceResponse<CustomerProfileDTO> _response = new();
+            try
+            {
+                var profile = await _customerRepository.GetProfileByID(id);
+                if (profile == null)
+                {
+                    _response.Success = false;
+                    _response.Message = "NotFound";
+                    return _response;
+                }
+                _response.Success = true;
+                _response.Message = "OK";
+                _response.Data = _mapper.Map<CustomerProfileDTO>(profile);
+
+
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Message = "Error";
+                _response.Data = null;
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            }
+            return _response;
+
+        }
+
+
+        //MODIFY PROFILE
+        public async Task<ServiceResponse<CustomerProfileDTO>> ModifyProfile(ModifyCustomerProfileDTO request)
+        {
+            ServiceResponse<CustomerProfileDTO> _response = new();
+            try
+            {
+                var modifypCustomer = await _customerRepository.GetProfileByID(request.CustomerId);
+
+                if (modifypCustomer == null)
+                {
+                    _response.Message = "NotFound";
+                    _response.Success = false;
+                    _response.Data = null;
+                    return _response;
+                }
+
+                var _editAccount = await _accountRepository.GetAccountById(modifypCustomer.Account.AccountId);
+                _editAccount.Email = request.Email;
+                _editAccount.Password = request.Password;
+                await _accountRepository.UpdateAccount(_editAccount);
+
+                modifypCustomer.FirstName = request.FirstName;
+                modifypCustomer.LastName = request.LastName;
+                modifypCustomer.Phone = request.Phone;
+                modifypCustomer.Address = request.Address;
+                modifypCustomer.TotalPoint = request.TotalPoint;
+
+
+                if (!await _customerRepository.ModifyProfile(modifypCustomer))
+                {
+                    _response.Error = "RepoError";
+                    _response.Success = false;
+                    _response.Data = null;
+                    return _response;
+                }
+                _response.Success = true;
+                _response.Data = _mapper.Map<CustomerProfileDTO>(await _customerRepository.GetProfileByID(modifypCustomer.CustomerId));
+                _response.Message = "Created";
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Data = null;
+                _response.Message = "Error";
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            }
+            return _response;
+        }
+
+
+
     }
 }
