@@ -11,6 +11,7 @@ namespace VinClean.Repo.Repository
     public interface IServiceRepository
     {
         Task<ICollection<Service>> GetServiceList();
+        Task<ICollection<Service>> GetServiceListById(int id);
         Task<Service> GetServiceById(int id);
         Task<bool> AddService(Service service);
         Task<bool> DeleteService(Service service);
@@ -49,6 +50,11 @@ namespace VinClean.Repo.Repository
         async Task<ICollection<Service>> IServiceRepository.GetServiceList()
         {
             return await _context.Services.ToListAsync();
+        }
+
+        async Task<ICollection<Service>> IServiceRepository.GetServiceListById(int id)
+        {
+            return await _context.Services.Where(e => e.TypeId == id).ToListAsync();
         }
 
 

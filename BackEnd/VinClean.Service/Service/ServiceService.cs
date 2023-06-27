@@ -14,6 +14,7 @@ namespace VinClean.Service.Service
     public interface IServiceService
     {
         Task<ServiceResponse<List<ServiceDTO>>> GetServiceList();
+        Task<ServiceResponse<List<ServiceDTO>>> GetServiceListById(int id);
         Task<ServiceResponse<ServiceDTO>> GetServiceById(int id);
         Task<ServiceResponse<ServiceDTO>> AddService(ServiceDTO request);
         Task<ServiceResponse<ServiceDTO>> UpdateService(ServiceDTO request);
@@ -164,6 +165,31 @@ namespace VinClean.Service.Service
             return _response;
         }
 
+
+        public async Task<ServiceResponse<List<ServiceDTO>>> GetServiceListById(int id)
+        {
+            ServiceResponse<List<ServiceDTO>> _response = new();
+            try
+            {
+                var ListService = await _repository.GetServiceListById(id);
+                var ListServiceDTO = new List<ServiceDTO>();
+                foreach (var Service in ListService)
+                {
+                    ListServiceDTO.Add(_mapper.Map<ServiceDTO>(Service));
+                }
+                _response.Success = true;
+                _response.Message = "OK";
+                _response.Data = ListServiceDTO;
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Message = "Error";
+                _response.Data = null;
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            }
+            return _response;
+        }
         public async Task<ServiceResponse<ServiceDTO>> UpdateService(ServiceDTO request)
         {
             ServiceResponse<ServiceDTO> _response = new();

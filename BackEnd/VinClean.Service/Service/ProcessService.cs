@@ -239,6 +239,7 @@ namespace VinClean.Service.Service
                 }
 
                 existingProcess.StartWorking = request.StartWorking;
+                existingProcess.Status = "Processing";
 
                 if (!await _repository.UpdateProcess(existingProcess))
                 {

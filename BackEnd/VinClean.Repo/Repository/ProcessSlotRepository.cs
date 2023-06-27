@@ -29,7 +29,8 @@ namespace VinClean.Repo.Repository
 
         async Task<ICollection<ProcessSlot>> IProcessSlotRepository.GetPSList()
         {
-            return await _context.ProcessSlots.Include(e => e.Process).Include(e => e.Slot).ToListAsync();
+            return await _context.ProcessSlots.Include(e => e.Process).Include(e => e.CreateByNavigation)
+                .Include(e => e.OldEmployee).Include(e => e.NewEmployee).ToListAsync();
         }
 
         async Task<ProcessSlot> IProcessSlotRepository.GetPSById(int id)

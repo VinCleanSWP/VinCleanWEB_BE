@@ -73,13 +73,18 @@ public partial class ServiceAppContext : DbContext
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("date");
+            entity.Property(e => e.Dob).HasColumnType("date");
             entity.Property(e => e.Email)
                 .HasMaxLength(100)
                 .IsUnicode(false)
                 .HasColumnName("email");
-            entity.Property(e => e.Image)
-                .HasColumnType("image")
-                .HasColumnName("image");
+            entity.Property(e => e.Gender)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.Img)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("img");
             entity.Property(e => e.IsDeleted)
                 .HasDefaultValueSql("((0))")
                 .HasColumnName("isDeleted");
@@ -114,6 +119,10 @@ public partial class ServiceAppContext : DbContext
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("date");
+            entity.Property(e => e.Img)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("img");
             entity.Property(e => e.IsDeleted)
                 .HasDefaultValueSql("((0))")
                 .HasColumnName("isDeleted");
@@ -254,9 +263,11 @@ public partial class ServiceAppContext : DbContext
 
         modelBuilder.Entity<FinshedBy>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("FinshedBy");
+            //entity
+            //    .HasNoKey()
+            //    .ToTable("FinshedBy");
+            entity.HasKey(e => e.OrderId);
+            entity.ToTable("FinshedBy");
 
             entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
             entity.Property(e => e.OrderId).HasColumnName("order_id");
@@ -299,9 +310,11 @@ public partial class ServiceAppContext : DbContext
 
         modelBuilder.Entity<OrderDetail>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("Order_Detail");
+            //entity
+            //    .HasNoKey()
+            //    .ToTable("Order_Detail");
+            entity.HasKey(e => e.OrderId);
+            entity.ToTable("Order_Detail");
 
             entity.Property(e => e.OrderId).HasColumnName("order_id");
             entity.Property(e => e.ServiceId).HasColumnName("service_id");
@@ -355,9 +368,11 @@ public partial class ServiceAppContext : DbContext
 
         modelBuilder.Entity<ProcessDetail>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("Process_Detail");
+            //entity
+            //    .HasNoKey()
+            //    .ToTable("Process_Detail");
+            entity.HasKey(e => e.ProcessId);
+            entity.ToTable("Process_Detail");
 
             entity.Property(e => e.ProcessId).HasColumnName("process_id");
             entity.Property(e => e.ServiceId).HasColumnName("service_id");
@@ -373,12 +388,40 @@ public partial class ServiceAppContext : DbContext
 
         modelBuilder.Entity<ProcessSlot>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("Process_Slot");
+            //entity
+            //    .HasNoKey()
+            //    .ToTable("Process_Slot");
+            entity.HasKey(e => e.ProcessId);
+            entity.ToTable("Process_Slot");
 
+            entity.Property(e => e.CreateAt)
+                .HasColumnType("datetime")
+                .HasColumnName("create_at");
+            entity.Property(e => e.CreateBy).HasColumnName("create_by");
+            entity.Property(e => e.NewEmployeeId).HasColumnName("newEmployee_id");
+            entity.Property(e => e.Note)
+                .HasMaxLength(1)
+                .IsUnicode(false)
+                .HasColumnName("note");
+            entity.Property(e => e.OldEmployeeId).HasColumnName("oldEmployee_id");
             entity.Property(e => e.ProcessId).HasColumnName("process_id");
+            entity.Property(e => e.Satus)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasColumnName("satus");
             entity.Property(e => e.SlotId).HasColumnName("slot_id");
+
+            entity.HasOne(d => d.CreateByNavigation).WithMany()
+                .HasForeignKey(d => d.CreateBy)
+                .HasConstraintName("fkcreateBy_Process_Slot_Employee");
+
+            entity.HasOne(d => d.NewEmployee).WithMany()
+                .HasForeignKey(d => d.NewEmployeeId)
+                .HasConstraintName("fknewEmp_Process_Slot_Employee");
+
+            entity.HasOne(d => d.OldEmployee).WithMany()
+                .HasForeignKey(d => d.OldEmployeeId)
+                .HasConstraintName("fk_Process_Slot_Employee");
 
             entity.HasOne(d => d.Process).WithMany()
                 .HasForeignKey(d => d.ProcessId)
@@ -549,6 +592,14 @@ public partial class ServiceAppContext : DbContext
             entity.Property(e => e.Avaiable)
                 .HasDefaultValueSql("((1))")
                 .HasColumnName("avaiable");
+            entity.Property(e => e.Icon)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("icon");
+            entity.Property(e => e.Img)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("img");
             entity.Property(e => e.Type1)
                 .HasMaxLength(100)
                 .HasColumnName("type");
@@ -556,9 +607,11 @@ public partial class ServiceAppContext : DbContext
 
         modelBuilder.Entity<WorkingBy>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("WorkingBy");
+            //entity
+            //    .HasNoKey()
+            //    .ToTable("WorkingBy");
+            entity.HasKey(e => e.ProcessId);
+            entity.ToTable("WorkingBy");
 
             entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
             entity.Property(e => e.ProcessId).HasColumnName("process_id");

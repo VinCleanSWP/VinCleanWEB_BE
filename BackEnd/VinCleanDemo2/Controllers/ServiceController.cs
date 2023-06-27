@@ -23,6 +23,25 @@ namespace VinClean.Controllers
             return Ok(await _service.GetServiceList());
         }
 
+        [HttpGet("Type/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ServiceDTO))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<Repo.Models.Service>> GetListServerByTypeId(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest(id);
+            }
+            var ServiceFound = await _service.GetServiceListById(id);
+            if (ServiceFound == null)
+            {
+                return NotFound();
+            }
+            return Ok(ServiceFound);
+        }
+
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ServiceDTO))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

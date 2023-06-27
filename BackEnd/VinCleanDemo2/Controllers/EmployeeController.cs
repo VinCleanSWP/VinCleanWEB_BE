@@ -25,6 +25,12 @@ namespace VinClean.Controllers
             return Ok(await _service.GetEmployeeList());
         }
 
+        [HttpGet("Search")]
+        public async Task<ActionResult<List<EmployeeDTO>>> SearchEmployee(string search)
+        {
+            return Ok(await _service.SearchEmployee(search));
+        }
+
         // GET api/<EmployeeController>/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Employee>> GetEmployeeById(int id)
@@ -138,6 +144,60 @@ namespace VinClean.Controllers
 
             return NoContent();
 
+        }
+
+        [HttpGet("ListViewProfile")]
+        public async Task<ActionResult<List<Employee>>> GetEProfileList()
+        {
+            return Ok(await _service.GetEProfileList());
+        }
+
+
+        [HttpGet("GetProfileBy {id}")]
+        public async Task<ActionResult<Employee>> GetEProfileById(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest(id);
+            }
+            var eprofile = await _service.GetEProfileById(id);
+            if (eprofile == null)
+            {
+                return NotFound();
+            }
+            return Ok(eprofile);
+        }
+
+        [HttpPut("ModifyProfile")]
+        public async Task<ActionResult> ModifyEProfile(ModifyEmployeeProfileDTO request)
+        {
+            if (request == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            var modifypEmployee = await _service.ModifyEProfile(request);
+
+            if (modifypEmployee.Success == false && modifypEmployee.Message == "NotFound")
+            {
+                return Ok(modifypEmployee);
+            }
+
+            if (modifypEmployee.Success == false && modifypEmployee.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating Employee {request}");
+                return StatusCode(500, ModelState);
+            }
+
+            if (modifypEmployee.Success == false && modifypEmployee.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating Employee {request}");
+                return StatusCode(500, ModelState);
+            }
+
+
+            return Ok(modifypEmployee);
         }
     }
 }

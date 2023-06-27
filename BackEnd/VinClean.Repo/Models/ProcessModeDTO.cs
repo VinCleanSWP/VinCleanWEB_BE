@@ -31,8 +31,8 @@ namespace VinClean.Repo.Models
         public TimeSpan? EndTime { get; set; }
         public decimal? TotalMoney { get; set; }
         public int? TotalPoint { get; set; }
-        public byte[] AccountImage { get; set; }
-        public byte[] EmployeeImage { get; set; }
+        public string AccountImage { get; set; }
+        public string EmployeeImage { get; set; }
         public int? EmployeeId { get; set; }
         public int? EmployeeAccountId { get; set; }
         public string EmployeeName { get; set; }

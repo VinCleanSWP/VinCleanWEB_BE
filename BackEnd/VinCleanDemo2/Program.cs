@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 
 using System.Text.Json.Serialization;
@@ -26,13 +27,23 @@ builder.Services.AddCors(p => p.AddPolicy("VinClean", build =>
     build.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
 }));
 
+
+builder.Services.AddAuthentication()
+    .AddGoogle(options =>
+    {
+        options.ClientId = builder.Configuration["Google:AppId"];
+        options.ClientSecret = builder.Configuration["Google:AppSecret"];
+        options.ClaimActions.MapJsonKey("Picture", "picture", "url");
+        options.SaveTokens = true;
+        options.CallbackPath = builder.Configuration["Google:CallbackPath"];
+    });
+
+
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddAutoMapper(typeof(MappingConfig));
-
-
 
 //builder.Services.AddControllers().AddJsonOptions(options =>
 //{
@@ -111,7 +122,7 @@ app.UseHttpsRedirection();
 app.UseCors("VinClean");
 
 
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
