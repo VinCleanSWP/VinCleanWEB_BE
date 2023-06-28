@@ -69,27 +69,36 @@ namespace VinClean.Repo.Repository
             TimeSpan endTimeSpan = TimeSpan.Parse(endTime);
             DateTime dateValue = DateTime.Parse(date);
 
-            var query = from e in _context.Employees
-                        join wb in _context.WorkingBies on e.EmployeeId equals wb.EmployeeId into workingByJoin
+            var query = (from e in _context.Employees
+                         join a in _context.Accounts on e.AccountId equals a.AccountId
+                         join wb in _context.WorkingBies on e.EmployeeId equals wb.EmployeeId into workingByJoin
                         from wb in workingByJoin.DefaultIfEmpty()
                         join p in _context.Processes on wb.ProcessId equals p.ProcessId into processJoin
                         from p in processJoin.DefaultIfEmpty()
 
-                        where (wb.EmployeeId == null && e.Status == "Available") 
-                        || (p.Date >= dateValue && (p.StarTime > endTimeSpan && p.EndTime < startTimeSpan)) 
-                        && e.Status == "Available"
+                        where wb == null || !(((p.StarTime >= startTimeSpan && p.StarTime <= endTimeSpan) 
+                        || (p.EndTime >= startTimeSpan && p.EndTime <= endTimeSpan))
+                        && p.Date == dateValue) && e.Status == "Available"
                         select new Employee
                         {
                             EmployeeId = e.EmployeeId,
                             FirstName = e.FirstName,
                             LastName = e.LastName,
                             Phone = e.Phone,
-                            AccountId = e.AccountId,
+                            
                             Status = e.Status,
                             EndDate = e.EndDate,
-                            StartDate = e.StartDate
-                            
-                        };
+                            StartDate = e.StartDate,
+                            Account = new Account
+                            {
+                                AccountId = e.AccountId.Value,
+                                Gender = a.Gender,
+                                Email = a.Email,
+                                Img = a.Img
+                            }
+
+                        }).GroupBy(e => e.EmployeeId)
+                .Select(g => g.First());
             return await query.ToListAsync();
         }
     }
