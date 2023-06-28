@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using VinClean.Repo.Models;
 using VinClean.Service.DTO.Rating;
+using VinClean.Service.DTO.Service;
 using VinClean.Service.Service;
 
 namespace VinClean.Controllers
@@ -19,9 +20,28 @@ namespace VinClean.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<RatingDTO>>> GetRating()
+        public async Task<ActionResult<List<RatingModelDTO>>> GetRating()
         {
             return Ok(await _service.GetRatingList());
+        }
+
+        [HttpGet("Service/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ServiceDTO))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<List<ServiceDTO>>> GetByServiceId(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest(id);
+            }
+            var ratingFound = await _service.GetRatingByService(id);
+            if (ratingFound == null)
+            {
+                return NotFound();
+            }
+            return Ok(ratingFound);
         }
 
         [HttpGet("{id}")]
