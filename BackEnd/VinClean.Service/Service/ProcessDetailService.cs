@@ -34,7 +34,7 @@ namespace VinClean.Service.Service
             _mapper = mapper;
         }
 
-        public async Task<ServiceResponse<List<ProcessDetailDTO>>> GetPDList()
+        public async Task<ServiceResponse<List<ProcessDetailDTO>>> GetPD()
         {
             ServiceResponse<List<ProcessDetailDTO>> _response = new();
             try

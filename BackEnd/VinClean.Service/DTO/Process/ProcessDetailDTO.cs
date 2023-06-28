@@ -17,6 +17,6 @@ namespace VinClean.Service.DTO.Process
 
         public virtual ProcessDTO Process { get; set; }
 
-        public virtual ServicesDTO Service { get; set; }
+        public virtual ServiceDTO Service { get; set; }
     }
 }

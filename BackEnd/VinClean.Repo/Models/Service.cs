@@ -9,9 +9,9 @@ public partial class Service
 
     public string? Name { get; set; }
 
-    public decimal? CostPerSlot { get; set; }
+    public decimal? Cost { get; set; }
 
-    public byte? MinimalSlot { get; set; }
+    public int? MinimalSlot { get; set; }
 
     public string? Description { get; set; }
 
