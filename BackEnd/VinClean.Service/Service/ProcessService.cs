@@ -40,7 +40,7 @@ namespace VinClean.Service.Service
         {
             _repository = repository;
             _mapper = mapper;
-            _PDrepository = pDrepository;  
+            _PDrepository = pDrepository;
             _serviceRepo = serviceRepo;
         }
 
@@ -103,7 +103,7 @@ namespace VinClean.Service.Service
             try
             {
                 var process = await _repository.GetAllInfoById(id);
-               /* var process_dto = _mapper.Map<ProcessInfo>(process);*/
+                /* var process_dto = _mapper.Map<ProcessInfo>(process);*/
                 if (process == null)
                 {
                     _response.Success = false;
@@ -132,49 +132,49 @@ namespace VinClean.Service.Service
             /*            try
                         {*/
             var service = await _serviceRepo.GetServiceById(request.ServiceId);
-            
+
             Process _newProcess = new Process()
             {
                 CustomerId = request.CustomerId,
                 Note = request.Note,
                 Status = "Incoming",
                 StarTime = request.StarTime,
-                EndTime = request.StarTime + TimeSpan.FromHours((int)service.MinimalSlot), 
+                EndTime = request.StarTime + TimeSpan.FromHours((int)service.MinimalSlot),
                 CreatedDate = DateTime.Now,
                 Date = request.Date,
                 IsDeleted = false,
-                };
-                var check1 = await _repository.AddProcess(_newProcess);
+            };
+            var check1 = await _repository.AddProcess(_newProcess);
 
-                ProcessDetail _processDetail = new ProcessDetail()
-                {
-                    ProcessId = _newProcess.ProcessId,
-                    ServiceId = request.ServiceId,
-                    
-                };
-                var check2 = await _PDrepository.AddPD(_processDetail);
-
-
-                if (!check1&&!check2)
-                {
-                    _response.Error = "RepoError";
-                    _response.Success = false;
-                    _response.Data = null;
-                    return _response;
-                }
-
-                _response.Success = true;
-                _response.Data = _mapper.Map<ProcessDTO>(_newProcess);
-                _response.Message = "Created";
-
-/*            }
-            catch (Exception ex)
+            ProcessDetail _processDetail = new ProcessDetail()
             {
+                ProcessId = _newProcess.ProcessId,
+                ServiceId = request.ServiceId,
+
+            };
+            var check2 = await _PDrepository.AddPD(_processDetail);
+
+
+            if (!check1 && !check2)
+            {
+                _response.Error = "RepoError";
                 _response.Success = false;
                 _response.Data = null;
-                _response.Message = "Error";
-                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
-            }*/
+                return _response;
+            }
+
+            _response.Success = true;
+            _response.Data = _mapper.Map<ProcessDTO>(_newProcess);
+            _response.Message = "Created";
+
+            /*            }
+                        catch (Exception ex)
+                        {
+                            _response.Success = false;
+                            _response.Data = null;
+                            _response.Message = "Error";
+                            _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+                        }*/
 
             return _response;
         }
