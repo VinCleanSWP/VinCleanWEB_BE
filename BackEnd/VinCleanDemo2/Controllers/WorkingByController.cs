@@ -104,6 +104,38 @@ namespace VinClean.Controllers
             return Ok(updateAccount);
 
         }
+        [HttpPut("AcceptedRequest")]
+        public async Task<ActionResult> AcceptedRequest(WorkingByDTO request)
+        {
+            if (request == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            var updateAccount = await _service.AcceptRequest(request);
+
+            if (updateAccount.Success == false && updateAccount.Message == "NotFound")
+            {
+                return Ok(updateAccount);
+            }
+
+            if (updateAccount.Success == false && updateAccount.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating account {request}");
+                return StatusCode(500, ModelState);
+            }
+
+            if (updateAccount.Success == false && updateAccount.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating account {request}");
+                return StatusCode(500, ModelState);
+            }
+
+
+            return Ok(updateAccount);
+
+        }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteWB(int id)

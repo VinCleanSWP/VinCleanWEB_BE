@@ -341,6 +341,10 @@ public partial class ServiceAppContext : DbContext
             entity.ToTable("Process");
 
             entity.Property(e => e.ProcessId).HasColumnName("process_id");
+            entity.Property(e => e.Address)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .HasColumnName("address");
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("date");
@@ -353,6 +357,10 @@ public partial class ServiceAppContext : DbContext
             entity.Property(e => e.Note)
                 .HasColumnType("ntext")
                 .HasColumnName("note");
+            entity.Property(e => e.Phone)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasColumnName("phone");
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
                 .HasColumnName("status");
@@ -400,7 +408,6 @@ public partial class ServiceAppContext : DbContext
             entity.Property(e => e.CreateBy).HasColumnName("create_by");
             entity.Property(e => e.NewEmployeeId).HasColumnName("newEmployee_id");
             entity.Property(e => e.Note)
-                .HasMaxLength(1)
                 .IsUnicode(false)
                 .HasColumnName("note");
             entity.Property(e => e.OldEmployeeId).HasColumnName("oldEmployee_id");
@@ -413,7 +420,7 @@ public partial class ServiceAppContext : DbContext
 
             entity.HasOne(d => d.CreateByNavigation).WithMany()
                 .HasForeignKey(d => d.CreateBy)
-                .HasConstraintName("fkcreateBy_Process_Slot_Employee");
+                .HasConstraintName("fkcreateBy_Process_Slot_Account");
 
             entity.HasOne(d => d.NewEmployee).WithMany()
                 .HasForeignKey(d => d.NewEmployeeId)
