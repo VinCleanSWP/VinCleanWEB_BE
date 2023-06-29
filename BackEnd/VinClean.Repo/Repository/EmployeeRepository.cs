@@ -28,6 +28,12 @@ namespace VinClean.Repo.Repository
         {
             _context = context;
         }
+        async public Task<ICollection<Employee>> SearchEmployee(string search)
+        {
+            return await _context.Employees.Include(e => e.Account)
+                .Where(e => e.Account.Name.Contains(search) || e.EmployeeId.ToString() == search
+                    || e.Account.Email.Contains(search) || e.Phone.Contains(search)).ToListAsync();
+        }
         async public Task<ICollection<Employee>> GetEmployeeList()
         {
             return await _context.Employees.Include(e=>e.Account).ToListAsync();

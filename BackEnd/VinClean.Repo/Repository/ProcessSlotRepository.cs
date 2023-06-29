@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using VinClean.Repo.Models;
 
@@ -29,8 +30,11 @@ namespace VinClean.Repo.Repository
 
         async Task<ICollection<ProcessSlot>> IProcessSlotRepository.GetPSList()
         {
-            return await _context.ProcessSlots.Include(e => e.Process).Include(e => e.CreateByNavigation)
-                .Include(e => e.OldEmployee).Include(e => e.NewEmployee).ToListAsync();
+            return await _context.ProcessSlots.Include(e=>e.OldEmployee)
+                .Include(e=>e.Process).ThenInclude(p=>p.Customer)
+                .Include(e=>e.NewEmployee)
+                .Include(e=>e.CreateByNavigation)
+                .ToListAsync();
         }
 
         async Task<ProcessSlot> IProcessSlotRepository.GetPSById(int id)

@@ -18,7 +18,7 @@ namespace VinClean.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<ProcessSlot>>> ProcessSlot()
+        public async Task<ActionResult<List<ProcessSlotDTO>>> ProcessSlot()
         {
             return Ok(await _service.GetPS());
         }
@@ -42,7 +42,7 @@ namespace VinClean.Controllers
             return Ok(processFound);
         }
         [HttpPost]
-        public async Task<ActionResult<Process>> CreatePS(ProcessSlotDTO request)
+        public async Task<ActionResult<ProcessSlotDTO>> CreatePS(AddProcessSlot request)
         {
 
 
@@ -75,6 +75,38 @@ namespace VinClean.Controllers
 
 
             var updateProcess = await _service.UpdatePS(request);
+
+            if (updateProcess.Success == false && updateProcess.Message == "NotFound")
+            {
+                return Ok(updateProcess);
+            }
+
+            if (updateProcess.Success == false && updateProcess.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating Process {request}");
+                return StatusCode(500, ModelState);
+            }
+
+            if (updateProcess.Success == false && updateProcess.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating Process {request}");
+                return StatusCode(500, ModelState);
+            }
+
+
+            return Ok(updateProcess);
+
+        }
+        [HttpPut("Denied")]
+        public async Task<ActionResult> Denied(ProcessSlotDTO request)
+        {
+            if (request == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            var updateProcess = await _service.CancelRequest(request);
 
             if (updateProcess.Success == false && updateProcess.Message == "NotFound")
             {
