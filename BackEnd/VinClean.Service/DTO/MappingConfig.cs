@@ -59,16 +59,17 @@ namespace VinClean.Service.DTO
             CreateMap<Customer, CustomerProfileDTO>().ReverseMap();
             CreateMap<Customer, ModifyCustomerProfileDTO>().ReverseMap();
             
-            CreateMap<Role, RolesDTO>().ReverseMap();
-            CreateMap<Repo.Models.Service, ServicesDTO>().ReverseMap();
-            CreateMap<Repo.Models.ServiceManage, SvcManageDTO>().ReverseMap();
+            CreateMap< Repo.Models.Role, RoleDTO >().ReverseMap();
+            CreateMap<Repo.Models.Service, ServiceDTO>().ReverseMap();
 
             CreateMap<Repo.Models.Process, ProcessDTO>().ReverseMap();
+
             CreateMap<Repo.Models.Process, ProcessInfo>().ReverseMap();
 
             CreateMap<Repo.Models.Rating, RatingDTO>().ReverseMap();
 
             CreateMap<ProcessDetail, ProcessDetailDTO>().ReverseMap();
+
             CreateMap<ProcessSlot, ProcessSlotDTO>().ReverseMap();
 
             CreateMap<Repo.Models.Slot, SlotDTO>().ReverseMap();
