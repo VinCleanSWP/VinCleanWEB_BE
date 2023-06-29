@@ -19,7 +19,7 @@ namespace VinClean.Service.Service
 {
     public interface IProcessService
     {
-        Task<ServiceResponse<List<ProcessDTO>>> GetProcessList();
+        Task<ServiceResponse<List<ProcessModeDTO>>> GetProcessList();
         Task<ServiceResponse<ProcessDTO>> GetProcessById(int id);
         Task<ServiceResponse<ProcessModeDTO>> GetAllInfoById(int id);
         Task<ServiceResponse<ProcessDTO>> AddProcess(NewBooking process);
@@ -44,16 +44,16 @@ namespace VinClean.Service.Service
             _serviceRepo = serviceRepo;
         }
 
-        public async Task<ServiceResponse<List<ProcessDTO>>> GetProcessList()
+        public async Task<ServiceResponse<List<ProcessModeDTO>>> GetProcessList()
         {
-            ServiceResponse<List<ProcessDTO>> _response = new();
+            ServiceResponse<List<ProcessModeDTO>> _response = new();
             try
             {
                 var listProcess = await _repository.GetProcesslist();
-                var listProcessDTO = new List<ProcessDTO>();
+                var listProcessDTO = new List<ProcessModeDTO>();
                 foreach (var process in listProcess)
                 {
-                    listProcessDTO.Add(_mapper.Map<ProcessDTO>(process));
+                    listProcessDTO.Add(_mapper.Map<ProcessModeDTO>(process));
                 }
                 _response.Success = true;
                 _response.Message = "OK";
@@ -142,6 +142,8 @@ namespace VinClean.Service.Service
                 EndTime = request.StarTime + TimeSpan.FromHours((int)service.MinimalSlot),
                 CreatedDate = DateTime.Now,
                 Date = request.Date,
+                Phone = request.Phone,
+                Address = request.Address,
                 IsDeleted = false,
             };
             var check1 = await _repository.AddProcess(_newProcess);

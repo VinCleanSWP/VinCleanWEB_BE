@@ -12,7 +12,7 @@ namespace VinClean.Repo.Repository
 {
     public interface IProcessRepository
     {
-        Task<ICollection<Process>> GetProcesslist();
+        Task<ICollection<ProcessModeDTO>> GetProcesslist();
         Task<Process> GetProcessById(int id);
         Task<ProcessModeDTO> GetAllInfoById(int id);
         Task<bool> AddProcess(Process process);
@@ -28,9 +28,61 @@ namespace VinClean.Repo.Repository
             _context = context;
         }
 
-        async Task<ICollection<Process>> IProcessRepository.GetProcesslist()
+        async Task<ICollection<ProcessModeDTO>> IProcessRepository.GetProcesslist()
         {
-            return await _context.Processes.ToListAsync();
+            var query = from p in _context.Processes
+                        join m in _context.ProcessDetails on p.ProcessId equals m.ProcessId into mGroup
+                        from m in mGroup.DefaultIfEmpty()
+                        join s in _context.Services on m.ServiceId equals s.ServiceId into sGroup
+                        from s in sGroup.DefaultIfEmpty()
+                        join ps in _context.ProcessSlots on p.ProcessId equals ps.ProcessId into psGroup
+                        from ps in psGroup.DefaultIfEmpty()
+                        join c in _context.Customers on p.CustomerId equals c.CustomerId into cGroup
+                        from c in cGroup.DefaultIfEmpty()
+                        join ac in _context.Accounts on c.AccountId equals ac.AccountId into acGroup
+                        from ac in acGroup.DefaultIfEmpty()
+                        join wb in _context.WorkingBies on p.ProcessId equals wb.ProcessId into wbGroup
+                        from wb in wbGroup.DefaultIfEmpty()
+                        join e in _context.Employees on wb.EmployeeId equals e.EmployeeId into eGroup
+                        from e in eGroup.DefaultIfEmpty()
+                        join ac1 in _context.Accounts on e.AccountId equals ac1.AccountId into ac1Group
+                        from ac1 in ac1Group.DefaultIfEmpty()
+                        join t in _context.Types on s.TypeId equals t.TypeId into tGroup
+                        from t in tGroup.DefaultIfEmpty()
+                        select new ProcessModeDTO
+                        {
+                            ProcessId = p.ProcessId,
+                            CustomerId = c.CustomerId,
+                            AccountId = c.AccountId,
+                            Name = ac.Name,
+                            Phone = p.Phone,
+                            Address = p.Address,
+                            Status = p.Status,
+                            Note = p.Note,
+                            IsDeleted = p.IsDeleted,
+                            StartWorking = p.StartWorking,
+                            EndWorking = p.EndWorking,
+                            CreatedDate = p.CreatedDate,
+                            ModifiedBy = p.ModifiedBy,
+                            ServiceId = s.ServiceId,
+                            ServiceName = s.Name,
+                            CostPerSlot = s.Cost,
+                            MinimalSlot = s.MinimalSlot,
+                            TypeId = t.TypeId,
+                            TypeName = t.Type1,
+                            StartTime = p.StarTime,
+                            EndTime = p.EndTime,
+                            TotalMoney = c.TotalMoney,
+                            TotalPoint = c.TotalPoint,
+                            AccountImage = ac.Img,
+                            EmployeeImage = ac1.Img,
+                            EmployeeId = e.EmployeeId,
+                            EmployeeAccountId = e.AccountId,
+                            EmployeeName = ac1.Name,
+                            EmployeePhone = e.Phone,
+                            EmployeeEmail = ac1.Email
+                        };
+            return await query.ToListAsync();
         }
         async Task<Process> IProcessRepository.GetProcessById(int id)
         {
@@ -69,7 +121,6 @@ namespace VinClean.Repo.Repository
                             ProcessId = p.ProcessId,
                             CustomerId = c.CustomerId,
                             AccountId = c.AccountId,
-                            
                             Name = ac.Name,
                             Phone = c.Phone,
                             Address = c.Address,
