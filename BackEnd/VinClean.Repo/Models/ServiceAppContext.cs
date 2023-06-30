@@ -95,10 +95,14 @@ public partial class ServiceAppContext : DbContext
                 .HasMaxLength(100)
                 .IsUnicode(false)
                 .HasColumnName("password");
+            entity.Property(e => e.PasswordResetToken).IsUnicode(false);
+            entity.Property(e => e.ResetTokenExpires).HasColumnType("datetime");
             entity.Property(e => e.RoleId).HasColumnName("role_id");
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
                 .HasColumnName("status");
+            entity.Property(e => e.VerificationToken).IsUnicode(false);
+            entity.Property(e => e.VerifiedAt).HasColumnType("datetime");
 
             entity.HasOne(d => d.Role).WithMany(p => p.Accounts)
                 .HasForeignKey(d => d.RoleId)
@@ -618,7 +622,7 @@ public partial class ServiceAppContext : DbContext
             //    .HasNoKey()
             //    .ToTable("WorkingBy");
             entity.HasKey(e => e.ProcessId);
-            entity.ToTable("WorkingBy");
+            entity.ToTable("WorkingBy"); ;
 
             entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
             entity.Property(e => e.ProcessId).HasColumnName("process_id");
