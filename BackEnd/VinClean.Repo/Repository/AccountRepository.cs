@@ -13,12 +13,15 @@ namespace VinClean.Repo.Repository
         {
             Task<ICollection<Account>> GetAccountList();
             Task<Account> GetAccountById(int id);
+            Task<Account> GetToken(string token);
+            Task<Account> GetbyEmail(string email);
+            Task<Account> GetPasswordResetToken(string token);
             Task<bool> AddAccount(Account account);
 
             Task<bool> SoftDeleteAccount(int id);
             Task<bool> HardDeleteAccount(Account account);
             Task<bool> UpdateAccount(Account account);
-            Task<bool> CheckEmailAccountExist(String email);
+            Task<bool> CheckEmailAccountExist(string email);
             Task<Account> Login(string email, string password);
 
 
@@ -39,6 +42,21 @@ namespace VinClean.Repo.Repository
         async Task<Account> IAccountRepository.GetAccountById(int id)
         {
             return await _context.Accounts.FirstOrDefaultAsync(a => a.AccountId == id);
+        }
+        async Task<Account> IAccountRepository.GetbyEmail(string email)
+        {
+            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Email == email);
+            return account;
+        }
+
+        async Task<Account> IAccountRepository.GetToken(string token)
+        {
+            return await _context.Accounts.FirstOrDefaultAsync(a => a.VerificationToken == token);
+        }
+
+        async Task<Account> IAccountRepository.GetPasswordResetToken(string token)
+        {
+            return await _context.Accounts.FirstOrDefaultAsync(a => a.PasswordResetToken == token);
         }
 
         async Task<bool> IAccountRepository.AddAccount(Account account)
