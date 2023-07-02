@@ -41,7 +41,7 @@ namespace VinClean.Repo.Repository
 
         async public Task<Employee> GetEmployeeById(int id)
         {
-            return await _context.Employees.FirstOrDefaultAsync(a => a.EmployeeId == id);
+            return await _context.Employees.Include(e => e.Account).FirstOrDefaultAsync(a => a.EmployeeId == id);
         }
 
 
@@ -94,7 +94,8 @@ namespace VinClean.Repo.Repository
                                 AccountId = e.AccountId.Value,
                                 Gender = a.Gender,
                                 Email = a.Email,
-                                Img = a.Img
+                                Img = a.Img,
+                                Status = a.Status,
                             }
 
                         }).GroupBy(e => e.EmployeeId)
