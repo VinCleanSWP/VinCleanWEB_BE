@@ -231,12 +231,15 @@ namespace VinClean.Service.Service
                 _newAccount.Name = request.FirstName + " " + request.LastName;
                 _newAccount.Password = request.Password;
                 _newAccount.Email = request.Email;
+                _newAccount.Gender = request.Gender;
+                _newAccount.Img = request.Img;
                 await _accountRepository.UpdateAccount(_newAccount);
 
                 existingCustomer.FirstName = request.FirstName;
                 existingCustomer.LastName = request.LastName;
                 existingCustomer.Phone = request.Phone;
                 existingCustomer.Address = request.Address;
+
 
                 if (!await _customerRepository.UpdateCustomer(existingCustomer))
                 {
