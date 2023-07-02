@@ -40,7 +40,7 @@ namespace VinClean.Service.Service
                 Repo.Models.Service _newService = new Repo.Models.Service()
                 {
                     Name = request.Name,
-                    Cost = request.CostPerSlot,
+                    Cost = request.Cost,
                     MinimalSlot = request.MinimalSlot,
                     Description = request.Description,
                     Status = "Active",
@@ -205,7 +205,7 @@ namespace VinClean.Service.Service
                 }
                 // cac gia trị cho sua
                 existingService.Name = request.Name;
-                existingService.Cost = request.CostPerSlot;
+                existingService.Cost = request.Cost;
                 existingService.MinimalSlot = request.MinimalSlot;
                 existingService.Description = request.Description;
                 existingService.Status = request.Status;                

@@ -15,7 +15,7 @@ namespace VinClean.Service.DTO.Service
 
         [Required(ErrorMessage = "Name is required")]
 
-        public decimal CostPerSlot { get; set; }
+        public decimal Cost { get; set; }
 
         [Required(ErrorMessage = "CostPerSlot is required")]
 
