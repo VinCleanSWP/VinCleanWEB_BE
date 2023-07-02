@@ -104,6 +104,85 @@ namespace VinCleanDemo2.Controllers
             return Ok(newAccount);
         }
 
+        [HttpPost]
+        [Route("Verify")]
+        public async Task<ActionResult<Account>> Verify(string token)
+        {
+
+
+            var account = await _service.Verify(token);
+            if (account.Success == true && account.Message == "OK")
+            {
+                return Ok(account);
+            }
+
+            if (account.Success == false && account.Message == "InvalidToken")
+            {
+                ModelState.AddModelError("", $"Invalid Token");
+                return StatusCode(500, ModelState);
+            }
+
+            if (account.Success == false && account.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when adding Account {token}");
+                return StatusCode(500, ModelState);
+            }
+            return Ok(account);
+        }
+
+        [HttpPost]
+        [Route("forgot-password")]
+        public async Task<ActionResult<Account>> ForgotPassword(string email)
+        {
+
+
+            var account = await _service.ForgotPassword(email);
+            if (account.Success == true && account.Message == "OK")
+            {
+                return Ok(account);
+            }
+
+            if (account.Success == false && account.Message == "NotFound")
+            {
+                ModelState.AddModelError("", $"Email {email} is not existed");
+                return StatusCode(500, ModelState);
+            }
+
+            if (account.Success == false && account.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when adding Account {email}");
+                return StatusCode(500, ModelState);
+            }
+            return Ok(account);
+        }
+
+        [HttpPost]
+        [Route("reset-password")]
+        public async Task<ActionResult<Account>> ResetPassword(ResetPasswordReqsuet request)
+        {
+
+
+            var account = await _service.ResetPassword(request);
+            if (account.Success == true && account.Message == "OK")
+            {
+                return Ok(account);
+            }
+
+            if (account.Success == false && account.Message == "InvalidToken")
+            {
+                ModelState.AddModelError("", $"Token is not correct! Please Check again");
+                return StatusCode(500, ModelState);
+            }
+
+            if (account.Success == false && account.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer ");
+                return StatusCode(500, ModelState);
+            }
+            return Ok(account);
+        }
+
+
         [HttpPut]
         public async Task<ActionResult> UpdateAccount(AccountdDTO request)
         {

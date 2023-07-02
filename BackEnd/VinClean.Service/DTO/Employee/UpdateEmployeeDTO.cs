@@ -9,6 +9,8 @@ namespace VinClean.Service.DTO.Employee
     public class UpdateEmployeeDTO
     {
         public int EmployeeId { get; set; }
+
+        public int AccountId { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
         public string Password { get; set; } 
@@ -16,5 +18,7 @@ namespace VinClean.Service.DTO.Employee
         public string LastName { get; set; }
         public string Phone { get; set; }
         public string Status { get; set; }
+        public string Gender { get; set; }
+        public string Img { get; set; }
     }
 }
