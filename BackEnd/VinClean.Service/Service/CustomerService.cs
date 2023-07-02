@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using VinClean.Repo.Models;
@@ -175,8 +176,9 @@ namespace VinClean.Service.Service
                     Email = request.Email,
                     RoleId = 1, // assign a default role for new accounts
                     Status = "Active", // set the status to active by default
-                    IsDeleted = false, // set the isDeleted flag to false by default
-                    CreatedDate = DateTime.Now // set the created date to the current date/time
+                    IsDeleted =  false, // set the isDeleted flag to false by default
+                    CreatedDate = DateTime.Now, // set the created date to the current date/time
+                    VerificationToken =  CreateRandomToken()
                 };
                 await _accountRepository.AddAccount(_newAccount);
 
@@ -373,6 +375,13 @@ namespace VinClean.Service.Service
                 _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
             }
             return _response;
+        }
+
+
+
+        private string CreateRandomToken()
+        {
+            return Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
         }
 
 

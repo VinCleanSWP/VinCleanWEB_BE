@@ -19,7 +19,7 @@ namespace VinCleanDemo2.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<ProcessDTO>>> Process()
+        public async Task<ActionResult<List<ProcessModeDTO>>> Process()
         {
             return Ok(await _service.GetProcessList());
         }

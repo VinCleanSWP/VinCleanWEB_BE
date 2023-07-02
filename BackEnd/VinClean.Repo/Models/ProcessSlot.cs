@@ -21,7 +21,7 @@ public partial class ProcessSlot
 
     public int? CreateBy { get; set; }
 
-    public virtual Employee? CreateByNavigation { get; set; }
+    public virtual Account? CreateByNavigation { get; set; }
 
     public virtual Employee? NewEmployee { get; set; }
 
