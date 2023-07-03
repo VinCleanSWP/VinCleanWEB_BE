@@ -30,10 +30,12 @@ namespace VinClean.Service.DTO
 
         public DateTime CreatedDate { get; set; }
 
+
         public DateTime Dob { get; set; }
 
         public string Gender { get; set; }
 
         public string Img { get; set; }
+
     }
 }
