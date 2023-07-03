@@ -8,10 +8,10 @@ namespace VinClean.Repo.Models.ProcessModel
 {
     public class SelectEmployee
     {
-        public DateTime Date { get; set; }
+        public String Date { get; set; }
 
-        public TimeSpan StarTime { get; set; }
+        public String StarTime { get; set; }
 
-        public TimeSpan EndTime { get; set; }
+        public String EndTime { get; set; }
     }
 }

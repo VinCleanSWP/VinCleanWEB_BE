@@ -15,7 +15,7 @@ namespace VinClean.Repo.Repository
         Task<ICollection<Employee>> SearchEmployee(string search);
         Task<Employee> GetEmployeeById(int id);
 
-        Task<ICollection<Employee>> SelectEmployeeList(String startTime, String endTime, String date);
+        Task<ICollection<Employee>> SelectEmployeeList(SelectEmployee select);
         Task<bool> AddEmployee(Employee employee);
         Task<bool> DeleteEmployee(Employee employee);
         Task<bool> UpdateEmployee(Employee employee);
@@ -63,11 +63,11 @@ namespace VinClean.Repo.Repository
             return await _context.SaveChangesAsync() > 0 ? true : false;
         }
 
-        public async Task<ICollection<Employee>> SelectEmployeeList(String startTime, String endTime, String date)
+        public async Task<ICollection<Employee>> SelectEmployeeList(SelectEmployee select)
         {
-            TimeSpan startTimeSpan = TimeSpan.Parse(startTime);
-            TimeSpan endTimeSpan = TimeSpan.Parse(endTime);
-            DateTime dateValue = DateTime.Parse(date);
+            TimeSpan startTimeSpan = TimeSpan.Parse(@select.StarTime);
+            TimeSpan endTimeSpan = TimeSpan.Parse(@select.EndTime);
+            DateTime dateValue = DateTime.Parse(@select.Date);
 
             var query = (from e in _context.Employees
                          join a in _context.Accounts on e.AccountId equals a.AccountId

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VinClean.Repo.Models;
+using VinClean.Repo.Models.ProcessModel;
 using VinClean.Repo.Repository;
 using VinClean.Service.DTO;
 using VinClean.Service.DTO.Employee;
@@ -18,7 +19,7 @@ namespace VinClean.Service.Service
         Task<ServiceResponse<List<EmployeeDTO>>> GetEmployeeList();
         Task<ServiceResponse<List<EmployeeDTO>>> SearchEmployee(string search);
         Task<ServiceResponse<EmployeeDTO>> GetEmployeeById(int id);
-        Task<ServiceResponse<List<EmployeeDTO>>> SelectEmployeeList(String startTime, String endTime, String date);
+        Task<ServiceResponse<List<EmployeeDTO>>> SelectEmployeeList(SelectEmployee select);
         Task<ServiceResponse<EmployeeDTO>> AddEmployee(RegisterEmployeeDTO request);
         Task<ServiceResponse<EmployeeDTO>> UpdateEmployee(UpdateEmployeeDTO request);
         Task<ServiceResponse<EmployeeDTO>> DeleteEmployee(int id);
@@ -185,12 +186,12 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<List<EmployeeDTO>>> SelectEmployeeList(String startTime, String endTime, String date)
+        public async Task<ServiceResponse<List<EmployeeDTO>>> SelectEmployeeList(SelectEmployee select)
         {
             ServiceResponse<List<EmployeeDTO>> _response = new();
             //try
             //{
-                var ListEmployee = await _repository.SelectEmployeeList(startTime,endTime,date);
+                var ListEmployee = await _repository.SelectEmployeeList(select);
                 var ListEmployeeDTO = new List<EmployeeDTO>();
                 foreach (var employee in ListEmployee)
                 {
