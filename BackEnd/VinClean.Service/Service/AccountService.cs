@@ -4,6 +4,7 @@ using Azure.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,9 @@ namespace VinClean.Service.Service
         Task<ServiceResponse<AccountdDTO>> GetAccountById(int id);
         Task<ServiceResponse<AccountdDTO>> AddAccount(AccountdDTO request);
         Task<ServiceResponse<AccountdDTO>> UpdateAccount(AccountdDTO request);
+        Task<ServiceResponse<AccountdDTO>> Verify(string token);
+        Task<ServiceResponse<AccountdDTO>> ResetPassword(ResetPasswordReqsuet requset);
+        Task<ServiceResponse<AccountdDTO>> ForgotPassword(string email);
 
         Task<ServiceResponse<AccountdDTO>> SoftDeleteAccount(int id);
         Task<ServiceResponse<AccountdDTO>> HardDeleteAccount(int id);
@@ -145,6 +149,9 @@ namespace VinClean.Service.Service
                     Status = request.Status,
                     IsDeleted = false,
                     CreatedDate = DateTime.Now,
+                    Dob = request.Dob,
+                    Gender = request.Gender,
+                    Img = request.Img
 
                 };
 
@@ -190,8 +197,11 @@ namespace VinClean.Service.Service
                 existingAccount.Name = request.Name;
                 existingAccount.Status = request.Status;
                 existingAccount.IsDeleted = request.IsDeleted;
+                existingAccount.Dob = request.Dob;
+                existingAccount.Gender = request.Gender;
+                existingAccount.Img = request.Img;
 
-                if(!await _repository.UpdateAccount(existingAccount))
+                if (!await _repository.UpdateAccount(existingAccount))
                 {
                     _response.Success = false;
                     _response.Message= "RepoError";
@@ -203,6 +213,126 @@ namespace VinClean.Service.Service
                 _response.Success = true;
                 _response.Data = _accountDTO;
                 _response.Message = "Updated";
+
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Data = null;
+                _response.Message = "Error";
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            }
+            return _response;
+        }
+        public async Task<ServiceResponse<AccountdDTO>> Verify(string token)
+        {
+            ServiceResponse<AccountdDTO> _response = new();
+            try
+            {
+                var account = await _repository.GetToken(token);
+                if (account == null)
+                {
+                    _response.Success = false;
+                    _response.Message = "InvalidToken";
+                    _response.Data = null;
+                    return _response;
+                }
+
+                account.VerifiedAt = DateTime.Now;
+
+                if (!await _repository.UpdateAccount(account))
+                {
+                    _response.Success = false;
+                    _response.Message = "RepoError";
+                    _response.Data = null;
+                    return _response;
+                }
+
+                var _accountDTO = _mapper.Map<AccountdDTO>(account);
+                _response.Success = true;
+                _response.Data = _accountDTO;
+                _response.Message = "User verified";
+
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Data = null;
+                _response.Message = "Error";
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            }
+            return _response;
+        }
+
+        public async Task<ServiceResponse<AccountdDTO>> ForgotPassword(string email)
+        {
+            ServiceResponse<AccountdDTO> _response = new();
+            try
+            {
+                var account = await _repository.GetbyEmail(email);
+                if (account == null)
+                {
+                    _response.Success = false;
+                    _response.Message = "NotFound";
+                    _response.Data = null;
+                    return _response;
+                }
+
+                account.PasswordResetToken = CreateRandomToken();
+                account.ResetTokenExpires = DateTime.Now.AddDays(1);
+
+                if (!await _repository.UpdateAccount(account))
+                {
+                    _response.Success = false;
+                    _response.Message = "RepoError";
+                    _response.Data = null;
+                    return _response;
+                }
+
+                var _accountDTO = _mapper.Map<AccountdDTO>(account);
+                _response.Success = true;
+                _response.Data = _accountDTO;
+                _response.Message = "User verified";
+
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Data = null;
+                _response.Message = "Error";
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            }
+            return _response;
+        }
+
+        public async Task<ServiceResponse<AccountdDTO>> ResetPassword(ResetPasswordReqsuet requset)
+        {
+            ServiceResponse<AccountdDTO> _response = new();
+            try
+            {
+                var account = await _repository.GetPasswordResetToken(requset.Token);
+                if (account == null || account.ResetTokenExpires < DateTime.Now)
+                {
+                    _response.Success = false;
+                    _response.Message = "InvalidToken";
+                    _response.Data = null;
+                    return _response;
+                }
+
+                account.Password = requset.Password;
+
+                if (!await _repository.UpdateAccount(account))
+                {
+                    _response.Success = false;
+                    _response.Message = "RepoError";
+                    _response.Data = null;
+                    return _response;
+                }
+
+                var _accountDTO = _mapper.Map<AccountdDTO>(account);
+                _response.Success = true;
+                _response.Data = _accountDTO;
+                _response.Message = "Reset Password Successfully";
 
             }
             catch (Exception ex)
@@ -292,6 +422,13 @@ namespace VinClean.Service.Service
 
             }
             return _response;
+        }
+        
+
+
+        private string CreateRandomToken()
+        {
+            return Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
         }
 
 

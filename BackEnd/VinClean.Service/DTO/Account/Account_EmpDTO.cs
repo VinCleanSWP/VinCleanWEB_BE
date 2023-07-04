@@ -29,5 +29,9 @@ namespace VinClean.Service.DTO.Account
         public bool IsDeleted { get; set; }
 
         public DateTime CreatedDate { get; set; }
+
+        public string Gender { get; set; }
+
+        public string Img { get; set; }
     }
 }

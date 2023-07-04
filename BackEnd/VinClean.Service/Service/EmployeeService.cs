@@ -18,7 +18,6 @@ namespace VinClean.Service.Service
         Task<ServiceResponse<List<EmployeeDTO>>> GetEmployeeList();
         Task<ServiceResponse<List<EmployeeDTO>>> SearchEmployee(string search);
         Task<ServiceResponse<EmployeeDTO>> GetEmployeeById(int id);
-
         Task<ServiceResponse<List<EmployeeDTO>>> SelectEmployeeList(String startTime, String endTime, String date);
         Task<ServiceResponse<EmployeeDTO>> AddEmployee(RegisterEmployeeDTO request);
         Task<ServiceResponse<EmployeeDTO>> UpdateEmployee(UpdateEmployeeDTO request);
@@ -52,7 +51,9 @@ namespace VinClean.Service.Service
                     Status = "Active", // set the status to active by default
                     IsDeleted = false, // set the isDeleted flag to false by default
                     CreatedDate = DateTime.Now, // set the created date to the current date/time
-                    Img = null,
+                    Gender = request.Gender,
+                    Img = request.Img,
+
 
                 };
                 await _accountRepository.AddAccount(_newAccount);
@@ -65,7 +66,7 @@ namespace VinClean.Service.Service
                     EndDate = null,
                     AccountId = _newAccount.AccountId,
                     Phone = request.Phone,
-                    Status = "Active",
+                    Status = "Available",
                     
                 };
 
@@ -247,12 +248,14 @@ namespace VinClean.Service.Service
                     _response.Data = null;
                     return _response;
                 }
-                var _newAccount = await _accountRepository.GetAccountById(existingEmployee.Account.AccountId);
-                _newAccount.Name = request.Name;
-                _newAccount.Password = request.Password;
-                _newAccount.Email = request.Email;
+                    var _newAccount = await _accountRepository.GetAccountById(existingEmployee.Account.AccountId);
+                    _newAccount.Name = request.Name;
+                    _newAccount.Password = request.Password;
+                    _newAccount.Email = request.Email;
+                    _newAccount.Gender = request.Gender;
+                    _newAccount.Img = request.Img;
 
-                await _accountRepository.UpdateAccount(_newAccount);
+                    await _accountRepository.UpdateAccount(_newAccount);
                 
                 existingEmployee.FirstName = request.FirstName;
                 existingEmployee.LastName = request.LastName;

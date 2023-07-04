@@ -57,7 +57,7 @@ public partial class ServiceAppContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=26.114.230.87;Initial Catalog=ServiceApp;User ID=sa;Password=12345;TrustServerCertificate=True");
+        => optionsBuilder.UseSqlServer("Server=tcp:vinclean.database.windows.net,1433;Initial Catalog=ServiceApp;Trusted_Connection=true;Integrated Security=False;User ID=test;Password=Swp12345@");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -95,10 +95,14 @@ public partial class ServiceAppContext : DbContext
                 .HasMaxLength(100)
                 .IsUnicode(false)
                 .HasColumnName("password");
+            entity.Property(e => e.PasswordResetToken).IsUnicode(false);
+            entity.Property(e => e.ResetTokenExpires).HasColumnType("datetime");
             entity.Property(e => e.RoleId).HasColumnName("role_id");
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
                 .HasColumnName("status");
+            entity.Property(e => e.VerificationToken).IsUnicode(false);
+            entity.Property(e => e.VerifiedAt).HasColumnType("datetime");
 
             entity.HasOne(d => d.Role).WithMany(p => p.Accounts)
                 .HasForeignKey(d => d.RoleId)
@@ -618,7 +622,7 @@ public partial class ServiceAppContext : DbContext
             //    .HasNoKey()
             //    .ToTable("WorkingBy");
             entity.HasKey(e => e.ProcessId);
-            entity.ToTable("WorkingBy");
+            entity.ToTable("WorkingBy"); ;
 
             entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
             entity.Property(e => e.ProcessId).HasColumnName("process_id");
