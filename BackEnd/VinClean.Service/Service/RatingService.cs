@@ -16,7 +16,8 @@ namespace VinClean.Service.Service
 {
     public interface IRatingService
     {
-        Task<ServiceResponse<List<RatingDTO>>> GetRatingList();
+        Task<ServiceResponse<List<RatingModelDTO>>> GetRatingList();
+        Task<ServiceResponse<List<RatingDTO>>> GetRatingByService(int id);
         Task<ServiceResponse<RatingDTO>> GetRatingById(int id);
         Task<ServiceResponse<RatingDTO>> AddRating(RatingDTO Rating);
         Task<ServiceResponse<RatingDTO>> UpdateRating(RatingDTO Rating);
@@ -24,24 +25,29 @@ namespace VinClean.Service.Service
     }
     public class RatingService : IRatingService
     {
-        private readonly IRatingRepository _repository;
+        private readonly ICustomerRepository _customerRepository;
+        private readonly IRatingRepository _ratingRepository;
+        private readonly IServiceRepository _serviceRepository;
         public readonly IMapper _mapper;
-        public RatingService(IRatingRepository repository, IMapper mapper)
+        public RatingService(ICustomerRepository customerRepository, IRatingRepository ratingRepository, IServiceRepository serviceRepository, IMapper mapper)
         {
-            _repository = repository;
+            _customerRepository = customerRepository;
+            _ratingRepository = ratingRepository;
+            _serviceRepository = serviceRepository;
             _mapper = mapper;
         }
 
-        public async Task<ServiceResponse<List<RatingDTO>>> GetRatingList()
+        // Get Rating List
+        public async Task<ServiceResponse<List<RatingModelDTO>>> GetRatingList()
         {
-            ServiceResponse<List<RatingDTO>> _response = new();
+            ServiceResponse<List<RatingModelDTO>> _response = new();
             try
             {
-                var listRating = await _repository.GetRatinglist();
-                var listRatingDTO = new List<RatingDTO>();
-                foreach (var Rating in listRating)
+                var listRating = await _ratingRepository.GetRatinglist();
+                var listRatingDTO = new List<RatingModelDTO>();
+                foreach (var rating in listRating)
                 {
-                    listRatingDTO.Add(_mapper.Map<RatingDTO>(Rating));
+                    listRatingDTO.Add(_mapper.Map<RatingModelDTO>(rating));
                 }
                 _response.Success = true;
                 _response.Message = "OK";
@@ -57,12 +63,46 @@ namespace VinClean.Service.Service
             return _response;
         }
 
+        // Get Rating List By ServiceID
+        async Task<ServiceResponse<List<RatingDTO>>> IRatingService.GetRatingByService(int id)
+        {
+            ServiceResponse<List<RatingDTO>> _response = new();
+            try
+            {
+                var ratingList = await _ratingRepository.GetRatingByService(id);
+                if (ratingList == null)
+                {
+                    _response.Success = false;
+                    _response.Message = "NotFound";
+                    return _response;
+                }
+                var ratingDTO = new List<RatingDTO>();
+                foreach (var rating in ratingList)
+                {
+                    ratingDTO.Add(_mapper.Map<RatingDTO>(rating));
+                }
+                _response.Success = true;
+                _response.Message = "OK";
+                _response.Data = ratingDTO;
+
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Message = "Error";
+                _response.Data = null;
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            }
+            return _response;
+        }
+
+        // Get Rating By ID
         public async Task<ServiceResponse<RatingDTO>> GetRatingById(int id)
         {
             ServiceResponse<RatingDTO> _response = new();
             try
             {
-                var rating = await _repository.GetRatingById(id);
+                var rating = await _ratingRepository.GetRatingById(id);
                 if (rating == null)
                 {
                     _response.Success = false;
@@ -85,23 +125,31 @@ namespace VinClean.Service.Service
             return _response;
         }
 
+        // Add Rating To Ordered Service
         public async Task<ServiceResponse<RatingDTO>> AddRating(RatingDTO request)
         {
             ServiceResponse<RatingDTO> _response = new();
             try
             {
+                //var existingRating = await _ratingRepository.GetRatingById(request.RateId);
+                if (! await _ratingRepository.CheckServiceRating(request.ServiceId, request.CustomerId))
+                {
+                    _response.Success = false;
+                    _response.Message = "NotFound";
+                    _response.Data = null;
+                    return _response;
+                }
                 Rating _newRating = new Rating()
                 {
-                    //RateId = request.RateId,
-                    //ServiceId = request.ServiceId,
-                    //CustomerId = request.CustomerId,
+                    ServiceId = request.ServiceId,
                     Rate = request.Rate,
                     Comment = request.Comment,
                     CreatedDate = DateTime.Now,
+                    CustomerId = request.CustomerId,
                     IsDeleted = false,
                 };
 
-                if (!await _repository.AddRating(_newRating))
+                if (!await _ratingRepository.AddRating(_newRating))
                 {
                     _response.Error = "RepoError";
                     _response.Success = false;
@@ -125,12 +173,13 @@ namespace VinClean.Service.Service
             return _response;
         }
 
+        // Update Existing Rating
         public async Task<ServiceResponse<RatingDTO>> UpdateRating(RatingDTO request)
         {
             ServiceResponse<RatingDTO> _response = new();
             try
             {
-                var existingRating = await _repository.GetRatingById(request.RateId);
+                var existingRating = await _ratingRepository.GetRatingById(request.RateId);
                 if (existingRating == null)
                 {
                     _response.Success = false;
@@ -141,11 +190,9 @@ namespace VinClean.Service.Service
 
                 existingRating.Rate = request.Rate;
                 existingRating.Comment = request.Comment;
-                existingRating.IsDeleted = request.IsDeleted;
-                //existingRating.ModifiedDate = DateTime.Now;
-                //existingRating.ModifiedBy = request.ModifiedBy;
+                existingRating.ModifiedDate = DateTime.Now;
 
-                if (!await _repository.UpdateRating(existingRating))
+                if (!await _ratingRepository.UpdateRating(existingRating))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";
@@ -169,12 +216,13 @@ namespace VinClean.Service.Service
             return _response;
         }
 
+        // Delete Existing Rating
         public async Task<ServiceResponse<RatingDTO>> DeleteRating(int id)
         {
             ServiceResponse<RatingDTO> _response = new();
             try
             {
-                var existingRating = await _repository.GetRatingById(id);
+                var existingRating = await _ratingRepository.GetRatingById(id);
                 if (existingRating == null)
                 {
                     _response.Success = false;
@@ -183,7 +231,7 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                if (!await _repository.DeleteRating(existingRating))
+                if (!await _ratingRepository.DeleteRating(existingRating))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";
