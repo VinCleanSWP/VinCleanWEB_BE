@@ -52,6 +52,7 @@ namespace VinClean.Service.Service
                     DateWork = request.DateWork,
                     StartTime = request.StartTime,
                     EndTime = request.EndTime,
+                    
 
                 };
                 var check1 = await _repository.AddOrder(_newOrder);

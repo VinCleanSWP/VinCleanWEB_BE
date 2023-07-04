@@ -47,8 +47,8 @@ namespace VinClean.Service.Service
         public async Task<ServiceResponse<List<ProcessModeDTO>>> GetProcessList()
         {
             ServiceResponse<List<ProcessModeDTO>> _response = new();
-            try
-            {
+            /*try
+            {*/
                 var listProcess = await _repository.GetProcesslist();
                 var listProcessDTO = new List<ProcessModeDTO>();
                 foreach (var process in listProcess)
@@ -58,14 +58,14 @@ namespace VinClean.Service.Service
                 _response.Success = true;
                 _response.Message = "OK";
                 _response.Data = listProcessDTO;
-            }
+           /* }
             catch (Exception ex)
             {
                 _response.Success = false;
                 _response.Message = "Error";
                 _response.Data = null;
                 _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
-            }
+            }*/
             return _response;
         }
 
