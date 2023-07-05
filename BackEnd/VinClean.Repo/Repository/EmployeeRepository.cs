@@ -41,7 +41,7 @@ namespace VinClean.Repo.Repository
 
         async public Task<Employee> GetEmployeeById(int id)
         {
-            return await _context.Employees.FirstOrDefaultAsync(a => a.EmployeeId == id);
+            return await _context.Employees.Include(e => e.Account).FirstOrDefaultAsync(a => a.EmployeeId == id);
         }
 
 
@@ -77,16 +77,16 @@ namespace VinClean.Repo.Repository
                         join a in _context.Accounts on e.AccountId equals a.AccountId into accountJoin
                         from a in accountJoin.DefaultIfEmpty()
 
-                        where wb == null || !(((p.StarTime >= startTimeSpan && p.StarTime <= endTimeSpan)
-                         || (p.EndTime >= startTimeSpan && p.EndTime <= endTimeSpan))
-                         && p.Date == dateValue) && e.Status == "Available"
+                        where wb == null || !(((p.StarTime >= startTimeSpan && p.StarTime <= endTimeSpan) 
+                        || (p.EndTime >= startTimeSpan && p.EndTime <= endTimeSpan))
+                        && p.Date == dateValue) && e.Status == "Available"
+
                         select new Employee
                         {
                             EmployeeId = e.EmployeeId,
                             FirstName = e.FirstName,
                             LastName = e.LastName,
                             Phone = e.Phone,
-                            AccountId = e.AccountId,
                             Status = e.Status,
                             EndDate = e.EndDate,
                             StartDate = e.StartDate,
@@ -100,6 +100,7 @@ namespace VinClean.Repo.Repository
                             }
                             
                         }).GroupBy(e => e.EmployeeId).Select(g => g.First()); ;
+
             return await query.ToListAsync();
         }
     }

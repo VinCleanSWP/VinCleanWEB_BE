@@ -149,6 +149,9 @@ namespace VinClean.Service.Service
                     Status = request.Status,
                     IsDeleted = false,
                     CreatedDate = DateTime.Now,
+                    Dob = request.Dob,
+                    Gender = request.Gender,
+                    Img = request.Img
 
                 };
 
@@ -194,8 +197,11 @@ namespace VinClean.Service.Service
                 existingAccount.Name = request.Name;
                 existingAccount.Status = request.Status;
                 existingAccount.IsDeleted = request.IsDeleted;
+                existingAccount.Dob = request.Dob;
+                existingAccount.Gender = request.Gender;
+                existingAccount.Img = request.Img;
 
-                if(!await _repository.UpdateAccount(existingAccount))
+                if (!await _repository.UpdateAccount(existingAccount))
                 {
                     _response.Success = false;
                     _response.Message= "RepoError";
