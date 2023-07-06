@@ -45,14 +45,76 @@ namespace VinClean.Controllers
                 ModelState.AddModelError("", $"Some thing went wrong in service layer when adding Account ");
                 return StatusCode(500, ModelState);
             }
-            return Ok(newAccount.Data);
+            return Ok(newAccount);
         }
 
         [HttpPost("ResetPassword")]
-        public IActionResult SendEmailResetPassword(string email)
+        public async Task<ActionResult<Account>> SendEmailResetPassword(EmailFormDTO email)
         {
-            _emailService.SendEmailResetPassword(email);
-            return Ok();
+            var newAccount = await _emailService.SendEmailResetPassword(email);
+            if (newAccount.Success == false && newAccount.Message == "Exist")
+            {
+                return Ok(newAccount);
+            }
+
+            if (newAccount.Success == false && newAccount.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when adding Account ");
+                return StatusCode(500, ModelState);
+            }
+
+            if (newAccount.Success == false && newAccount.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when adding Account ");
+                return StatusCode(500, ModelState);
+            }
+            return Ok(newAccount);
+        }
+
+        [HttpPost("SendAssignToCustomer")]
+        public async Task<ActionResult<Account>> SendAssignToCustomer(EmailFormDTO email)
+        {
+            var newAccount = await _emailService.SendAssignToCustomer(email);
+            if (newAccount.Success == false && newAccount.Message == "Exist")
+            {
+                return Ok(newAccount);
+            }
+
+            if (newAccount.Success == false && newAccount.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when adding Account ");
+                return StatusCode(500, ModelState);
+            }
+
+            if (newAccount.Success == false && newAccount.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when adding Account ");
+                return StatusCode(500, ModelState);
+            }
+            return Ok(newAccount);
+        }
+
+        [HttpPost("SendAssignToEmployee")]
+        public async Task<ActionResult<Account>> SendAssignToEmployee(EmailFormDTO email)
+        {
+            var newAccount = await _emailService.SendAssignToEmployee(email);
+            if (newAccount.Success == false && newAccount.Message == "Exist")
+            {
+                return Ok(newAccount);
+            }
+
+            if (newAccount.Success == false && newAccount.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when adding Account ");
+                return StatusCode(500, ModelState);
+            }
+
+            if (newAccount.Success == false && newAccount.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when adding Account ");
+                return StatusCode(500, ModelState);
+            }
+            return Ok(newAccount);
         }
     }
 }

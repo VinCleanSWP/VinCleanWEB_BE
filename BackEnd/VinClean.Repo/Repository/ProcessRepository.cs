@@ -49,6 +49,7 @@ namespace VinClean.Repo.Repository
                         from ac1 in ac1Group.DefaultIfEmpty()
                         join t in _context.Types on s.TypeId equals t.TypeId into tGroup
                         from t in tGroup.DefaultIfEmpty()
+                        where p.IsDeleted == false
                         select new ProcessModeDTO
                         {
                             ProcessId = p.ProcessId,
@@ -57,7 +58,9 @@ namespace VinClean.Repo.Repository
                             Name = ac.Name,
                             Phone = p.Phone,
                             Address = p.Address,
+                            Email = ac.Email,
                             Status = p.Status,
+                            Date = (DateTime)p.Date,
                             Note = p.Note,
                             IsDeleted = p.IsDeleted,
                             StartWorking = p.StartWorking,
@@ -73,8 +76,8 @@ namespace VinClean.Repo.Repository
                             TypeName = t.Type1,
                             StartTime = p.StarTime,
                             EndTime = p.EndTime,
-                            TotalMoney = c.TotalMoney,
-                            TotalPoint = c.TotalPoint,
+                            Price = p.Price,
+                            PointUsed = p.PointUsed,
                             AccountImage = ac.Img,
                             EmployeeImage = ac1.Img,
                             EmployeeId = e.EmployeeId,
@@ -116,7 +119,7 @@ namespace VinClean.Repo.Repository
                         from ac1 in ac1Group.DefaultIfEmpty()
                         join t in _context.Types on s.TypeId equals t.TypeId into tGroup
                         from t in tGroup.DefaultIfEmpty()
-                        where p.ProcessId == id
+                        where p.ProcessId == id && p.IsDeleted == false
                         select new ProcessModeDTO
                         {
                             ProcessId = p.ProcessId,
@@ -126,6 +129,8 @@ namespace VinClean.Repo.Repository
                             Phone = c.Phone,
                             Address = c.Address,
                             Status = p.Status,
+                            Email = ac.Email,
+                            Date = (DateTime)p.Date,
                             Note = p.Note,
                             IsDeleted = p.IsDeleted,
                             StartWorking = p.StartWorking,
@@ -140,8 +145,8 @@ namespace VinClean.Repo.Repository
                             TypeName = t.Type1,
                             StartTime = p.StarTime,
                             EndTime = p.EndTime,
-                            TotalMoney = c.TotalMoney,
-                            TotalPoint = c.TotalPoint,
+                            Price = p.Price,
+                            PointUsed = p.PointUsed,
                             AccountImage = ac.Img,
                             EmployeeImage = ac1.Img,
                             EmployeeId = e.EmployeeId,

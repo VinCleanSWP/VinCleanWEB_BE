@@ -119,7 +119,7 @@ namespace VinCleanDemo2.Controllers
         }
 
         [HttpPut("StartWorking")]
-        public async Task<ActionResult> UpdateStartWorking(ProcessDTO request)
+        public async Task<ActionResult> UpdateStartWorking(ProcessStartWorking request)
         {
             if (request == null)
             {
@@ -152,7 +152,7 @@ namespace VinCleanDemo2.Controllers
         }
 
         [HttpPut("EndWorking")]
-        public async Task<ActionResult> UpdateEndWorking(ProcessDTO request)
+        public async Task<ActionResult> UpdateEndWorking(ProcessEndWorking request)
         {
             if (request == null)
             {
@@ -184,16 +184,16 @@ namespace VinCleanDemo2.Controllers
 
         }
 
-        [HttpPut("Status")]
-        public async Task<ActionResult> UpdateStatus(ProcessDTO request)
+        [HttpPut("StatusCompleted")]
+        public async Task<ActionResult> UpdateStatus(int processid)
         {
-            if (request == null)
-            {
-                return BadRequest(ModelState);
-            }
+            //if (request == null)
+            //{
+            //    return BadRequest(ModelState);
+            //}
 
 
-            var updateProcess = await _service.UpdateStatus(request);
+            var updateProcess = await _service.UpdateStatusCompleted(processid);
 
             if (updateProcess.Success == false && updateProcess.Message == "NotFound")
             {
@@ -202,13 +202,13 @@ namespace VinCleanDemo2.Controllers
 
             if (updateProcess.Success == false && updateProcess.Message == "RepoError")
             {
-                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating Process {request}");
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating Process ");
                 return StatusCode(500, ModelState);
             }
 
             if (updateProcess.Success == false && updateProcess.Message == "Error")
             {
-                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating Process {request}");
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating Process ");
                 return StatusCode(500, ModelState);
             }
 

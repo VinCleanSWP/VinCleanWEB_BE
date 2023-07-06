@@ -16,8 +16,8 @@ namespace VinClean.Service.Service
 {
     public interface IProcessSlotService
     {
-        Task<ServiceResponse<List<ProcessSlotDTO>>> GetPS();
-        Task<ServiceResponse<ProcessSlotDTO>> GetPSById(int id);
+        Task<ServiceResponse<List<ProcessRequestModel>>> GetPS();
+        Task<ServiceResponse<ProcessRequestModel>> GetPSById(int id);
         Task<ServiceResponse<ProcessSlotDTO>> CreatePS(AddProcessSlot processSlotDTO);
         Task<ServiceResponse<ProcessSlotDTO>> UpdatePS(ProcessSlotDTO processSlotDTO);
         Task<ServiceResponse<ProcessSlotDTO>> CancelRequest(ProcessSlotDTO processSlotDTO);
@@ -34,17 +34,17 @@ namespace VinClean.Service.Service
             _mapper = mapper;
         }
 
-        public async Task<ServiceResponse<List<ProcessSlotDTO>>> GetPS()
+        public async Task<ServiceResponse<List<ProcessRequestModel>>> GetPS()
         {
-            ServiceResponse<List<ProcessSlotDTO>> _response = new();
+            ServiceResponse<List<ProcessRequestModel>> _response = new();
             /*try
             {*/
                 var processSlots = await _repository.GetPSList();
-                var processSlotDTOs = new List<ProcessSlotDTO>();
+                var processSlotDTOs = new List<ProcessRequestModel>();
 
                 foreach (var processSlot in processSlots)
                 {
-                    var processSlotDTO = _mapper.Map<ProcessSlotDTO>(processSlot);
+                    var processSlotDTO = _mapper.Map<ProcessRequestModel>(processSlot);
                     
 
                     processSlotDTOs.Add(processSlotDTO);
@@ -65,19 +65,19 @@ namespace VinClean.Service.Service
 return _response;
         }
 
-        public async Task<ServiceResponse<ProcessSlotDTO>> GetPSById(int id)
+        public async Task<ServiceResponse<ProcessRequestModel>> GetPSById(int id)
         {
-            ServiceResponse<ProcessSlotDTO> _response = new();
+            ServiceResponse<ProcessRequestModel> _response = new();
             try
             {
-                var process = await _repository.GetPSById(id);
+                var process = await _repository.GetInfoPSById(id);
                 if (process == null)
                 {
                     _response.Success = false;
                     _response.Message = "NotFound";
                     return _response;
                 }
-                var processSlotDTO = _mapper.Map<ProcessSlotDTO>(process);
+                var processSlotDTO = _mapper.Map<ProcessRequestModel>(process);
                 _response.Success = true;
                 _response.Message = "OK";
                 _response.Data = processSlotDTO;

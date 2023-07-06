@@ -35,6 +35,10 @@ public partial class Process
 
     public string? Phone { get; set; }
 
+    public decimal? Price { get; set; }
+
+    public int? PointUsed { get; set; }
+
     public virtual Customer? Customer { get; set; }
 
     public virtual Account? ModifiedByNavigation { get; set; }

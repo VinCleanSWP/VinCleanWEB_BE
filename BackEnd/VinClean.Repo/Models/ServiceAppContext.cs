@@ -269,7 +269,7 @@ public partial class ServiceAppContext : DbContext
         {
             //entity
             //    .HasNoKey()
-            //    .ToTable("FinshedBy");
+            //    .ToTable("WorkingBy");
             entity.HasKey(e => e.OrderId);
             entity.ToTable("FinshedBy");
 
@@ -365,6 +365,8 @@ public partial class ServiceAppContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false)
                 .HasColumnName("phone");
+            entity.Property(e => e.PointUsed).HasColumnName("Point_used");
+            entity.Property(e => e.Price).HasColumnType("money");
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
                 .HasColumnName("status");
@@ -455,12 +457,12 @@ public partial class ServiceAppContext : DbContext
                 .HasColumnName("comment");
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
-                .HasColumnType("date");
+                .HasColumnType("datetime");
             entity.Property(e => e.CustomerId).HasColumnName("customer_id");
             entity.Property(e => e.IsDeleted)
                 .HasDefaultValueSql("((0))")
                 .HasColumnName("isDeleted");
-            entity.Property(e => e.ModifiedDate).HasColumnType("date");
+            entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
             entity.Property(e => e.Rate).HasColumnName("rate");
             entity.Property(e => e.ServiceId).HasColumnName("service_id");
 
@@ -622,7 +624,7 @@ public partial class ServiceAppContext : DbContext
             //    .HasNoKey()
             //    .ToTable("WorkingBy");
             entity.HasKey(e => e.ProcessId);
-            entity.ToTable("WorkingBy"); ;
+            entity.ToTable("WorkingBy");
 
             entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
             entity.Property(e => e.ProcessId).HasColumnName("process_id");
