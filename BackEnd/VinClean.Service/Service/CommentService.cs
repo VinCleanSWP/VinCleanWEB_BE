@@ -125,6 +125,7 @@ namespace VinClean.Service.Service
                 {
                      Content= request.Content,
                      BlogId = request.BlogId,
+                     ModifiedBy =request.ModifiedBy,
                      CreatedDate = DateTime.Now
 
 
