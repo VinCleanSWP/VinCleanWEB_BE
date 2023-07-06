@@ -18,7 +18,9 @@ namespace VinClean.Service.Service
         Task<ServiceResponse<List<EmployeeDTO>>> GetEmployeeList();
         Task<ServiceResponse<List<EmployeeDTO>>> SearchEmployee(string search);
         Task<ServiceResponse<EmployeeDTO>> GetEmployeeById(int id);
-        Task<ServiceResponse<List<EmployeeDTO>>> SelectEmployeeList(String startTime, String endTime, String date);
+
+
+        Task<ServiceResponse<List<EmployeeDTO>>> SelectEmployeeList(SelectEmpDTO request);
         Task<ServiceResponse<EmployeeDTO>> AddEmployee(RegisterEmployeeDTO request);
         Task<ServiceResponse<EmployeeDTO>> UpdateEmployee(UpdateEmployeeDTO request);
         Task<ServiceResponse<EmployeeDTO>> DeleteEmployee(int id);
@@ -185,12 +187,12 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<List<EmployeeDTO>>> SelectEmployeeList(String startTime, String endTime, String date)
+        public async Task<ServiceResponse<List<EmployeeDTO>>> SelectEmployeeList(SelectEmpDTO request)
         {
             ServiceResponse<List<EmployeeDTO>> _response = new();
             //try
             //{
-                var ListEmployee = await _repository.SelectEmployeeList(startTime,endTime,date);
+                var ListEmployee = await _repository.SelectEmployeeList(request.start,request.end,request.date);
                 var ListEmployeeDTO = new List<EmployeeDTO>();
                 foreach (var employee in ListEmployee)
                 {

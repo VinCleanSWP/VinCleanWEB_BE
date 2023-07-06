@@ -18,17 +18,17 @@ namespace VinClean.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<ProcessSlotDTO>>> ProcessSlot()
+        public async Task<ActionResult<List<ProcessRequestModel>>> ProcessSlot()
         {
             return Ok(await _service.GetPS());
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ProcessSlotDTO))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ProcessRequestModel))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<ProcessSlot>> GetPSById(int id)
+        public async Task<ActionResult<ProcessRequestModel>> GetPSById(int id)
         {
             if (id <= 0)
             {

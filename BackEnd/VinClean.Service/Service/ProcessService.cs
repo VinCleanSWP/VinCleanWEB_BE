@@ -24,9 +24,9 @@ namespace VinClean.Service.Service
         Task<ServiceResponse<ProcessModeDTO>> GetAllInfoById(int id);
         Task<ServiceResponse<ProcessDTO>> AddProcess(NewBooking process);
         Task<ServiceResponse<ProcessDTO>> UpdateProcess(ProcessDTO process);
-        Task<ServiceResponse<ProcessDTO>> UpdateStartWorking(ProcessDTO process);
-        Task<ServiceResponse<ProcessDTO>> UpdateEndWorking(ProcessDTO process);
-        Task<ServiceResponse<ProcessDTO>> UpdateStatus(ProcessDTO process);
+        Task<ServiceResponse<ProcessDTO>> UpdateStartWorking(ProcessStartWorking process);
+        Task<ServiceResponse<ProcessDTO>> UpdateEndWorking(ProcessEndWorking process);
+        Task<ServiceResponse<ProcessDTO>> UpdateStatusCompleted(int id);
         Task<ServiceResponse<ProcessDTO>> DeleteProcess(int id);
     }
 
@@ -35,20 +35,22 @@ namespace VinClean.Service.Service
         private readonly IProcessDetailRepository _PDrepository;
         private readonly IServiceRepository _serviceRepo;
         private readonly IProcessRepository _repository;
+        private readonly ICustomerRepository _Curepository;
         public readonly IMapper _mapper;
-        public ProcessService(IProcessRepository repository, IMapper mapper, IProcessDetailRepository pDrepository, IServiceRepository serviceRepo)
+        public ProcessService(IProcessRepository repository, IMapper mapper, IProcessDetailRepository pDrepository, IServiceRepository serviceRepo, ICustomerRepository Curepository)
         {
             _repository = repository;
             _mapper = mapper;
             _PDrepository = pDrepository;
             _serviceRepo = serviceRepo;
+            _Curepository = Curepository;
         }
 
         public async Task<ServiceResponse<List<ProcessModeDTO>>> GetProcessList()
         {
             ServiceResponse<List<ProcessModeDTO>> _response = new();
-            try
-            {
+            /*try
+            {*/
                 var listProcess = await _repository.GetProcesslist();
                 var listProcessDTO = new List<ProcessModeDTO>();
                 foreach (var process in listProcess)
@@ -58,14 +60,14 @@ namespace VinClean.Service.Service
                 _response.Success = true;
                 _response.Message = "OK";
                 _response.Data = listProcessDTO;
-            }
+           /* }
             catch (Exception ex)
             {
                 _response.Success = false;
                 _response.Message = "Error";
                 _response.Data = null;
                 _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
-            }
+            }*/
             return _response;
         }
 
@@ -132,6 +134,7 @@ namespace VinClean.Service.Service
             /*            try
                         {*/
             var service = await _serviceRepo.GetServiceById(request.ServiceId);
+            var customer = await _Curepository.GetCustomerById(request.CustomerId);
 
             Process _newProcess = new Process()
             {
@@ -144,11 +147,40 @@ namespace VinClean.Service.Service
                 Date = request.Date,
                 Phone = request.Phone,
                 Address = request.Address,
+                Price = request.Price,
+                PointUsed = request.PointUsed,
                 IsDeleted = false,
             };
             var check1 = await _repository.AddProcess(_newProcess);
 
-            ProcessDetail _processDetail = new ProcessDetail()
+                ProcessDetail _processDetail = new ProcessDetail()
+                {
+                    ProcessId = _newProcess.ProcessId,
+                    ServiceId = request.ServiceId,
+                    
+                };
+                var check2 = await _PDrepository.AddPD(_processDetail);
+
+
+                //Update TotalPoint in Cutomer
+                customer.TotalPoint = customer.TotalPoint - request.PointUsed;
+                var check3 = await _Curepository.UpdateCustomer(customer);
+
+
+            if (!check1&&!check2&&!check3)
+                {
+                    _response.Error = "RepoError";
+                    _response.Success = false;
+                    _response.Data = null;
+                    return _response;
+                }
+
+                _response.Success = true;
+                _response.Data = _mapper.Map<ProcessDTO>(_newProcess);
+                _response.Message = "Created";
+
+/*            }
+            catch (Exception ex)
             {
                 ProcessId = _newProcess.ProcessId,
                 ServiceId = request.ServiceId,
@@ -226,7 +258,7 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<ProcessDTO>> UpdateStartWorking(ProcessDTO request)
+        public async Task<ServiceResponse<ProcessDTO>> UpdateStartWorking(ProcessStartWorking request)
         {
             ServiceResponse<ProcessDTO> _response = new();
             try
@@ -267,7 +299,7 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        public async Task<ServiceResponse<ProcessDTO>> UpdateEndWorking(ProcessDTO request)
+        public async Task<ServiceResponse<ProcessDTO>> UpdateEndWorking(ProcessEndWorking request)
         {
             ServiceResponse<ProcessDTO> _response = new();
             try
@@ -308,12 +340,12 @@ namespace VinClean.Service.Service
         }
 
 
-        public async Task<ServiceResponse<ProcessDTO>> UpdateStatus(ProcessDTO request)
+        public async Task<ServiceResponse<ProcessDTO>> UpdateStatusCompleted(int id)
         {
             ServiceResponse<ProcessDTO> _response = new();
             try
             {
-                var existingProcess = await _repository.GetProcessById(request.ProcessId);
+                var existingProcess = await _repository.GetProcessById(id);
                 if (existingProcess == null)
                 {
                     _response.Success = false;
@@ -322,7 +354,7 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                existingProcess.Status = request.Status;
+                existingProcess.Status = "Completed";
 
                 if (!await _repository.UpdateProcess(existingProcess))
                 {
@@ -350,9 +382,10 @@ namespace VinClean.Service.Service
         public async Task<ServiceResponse<ProcessDTO>> DeleteProcess(int id)
         {
             ServiceResponse<ProcessDTO> _response = new();
-            try
-            {
+            /*try
+            {*/
                 var existingProcess = await _repository.GetProcessById(id);
+                var existingProcessPD = await _PDrepository.GetPDById(id);
                 if (existingProcess == null)
                 {
                     _response.Success = false;
@@ -361,7 +394,7 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                if (!await _repository.DeleteProcess(existingProcess))
+                if (!await _repository.DeleteProcess(existingProcess) && (!await _PDrepository.DeletePD(existingProcessPD)))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";
@@ -374,14 +407,14 @@ namespace VinClean.Service.Service
                 _response.Data = _processDTO;
                 _response.Message = "Deleted";
 
-            }
+            /*}
             catch (Exception ex)
             {
                 _response.Success = false;
                 _response.Data = null;
                 _response.Message = "Error";
                 _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
-            }
+            }*/
             return _response;
         }
     }

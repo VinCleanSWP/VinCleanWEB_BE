@@ -14,6 +14,8 @@ namespace VinClean.Repo.Models
         public string Name { get; set; }
         public string Phone { get; set; }
         public string Address { get; set; }
+        public string Email { get; set; }
+        public DateTime Date { get; set; }
         public string Status { get; set; }
         public string Note { get; set; }
         public bool? IsDeleted { get; set; }
@@ -29,8 +31,8 @@ namespace VinClean.Repo.Models
         public string TypeName { get; set; }
         public TimeSpan? StartTime { get; set; }
         public TimeSpan? EndTime { get; set; }
-        public decimal? TotalMoney { get; set; }
-        public int? TotalPoint { get; set; }
+        public decimal? Price { get; set; }
+        public int? PointUsed { get; set; }
         public string AccountImage { get; set; }
         public string EmployeeImage { get; set; }
         public int? EmployeeId { get; set; }

@@ -48,10 +48,10 @@ namespace VinClean.Controllers
         }
         // POST api/<EmployeeController>/
         [HttpPost("selectemployee")]
-        public async Task<ActionResult<List<Employee>>> SelectEmployee(String StarTime, String EndTime,String Date)
+        public async Task<ActionResult<List<Employee>>> SelectEmployee(SelectEmpDTO request)
         {
 
-            var response = await _service.SelectEmployeeList(StarTime, EndTime, Date);
+            var response = await _service.SelectEmployeeList(request);
 
             if (!response.Success)
             {
