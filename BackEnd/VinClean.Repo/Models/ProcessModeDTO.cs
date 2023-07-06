@@ -29,6 +29,7 @@ namespace VinClean.Repo.Models
         public string TypeName { get; set; }
         public TimeSpan? StartTime { get; set; }
         public TimeSpan? EndTime { get; set; }
+        public DateTime? Date { get; set; }
         public decimal? TotalMoney { get; set; }
         public int? TotalPoint { get; set; }
         public string AccountImage { get; set; }
