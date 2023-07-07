@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VinClean.Service.DTO.CustomerResponse;
+using VinClean.Service.DTO.Service;
 
 // Data holder
 
