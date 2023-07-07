@@ -224,7 +224,7 @@ return _response;
             ServiceResponse<WorkingByDTO> _response = new();
             try
             {
-                var existingWB = await _repository.GetWorkingByById(id);
+                var existingWB = await _repository.GetWorkingByByProcessId(id);
                 if (existingWB == null)
                 {
                     _response.Success = false;
@@ -234,7 +234,7 @@ return _response;
                 }
 
 
-                if (!await _repository.DeleteWorkingBy(id))
+                if (!await _repository.DeleteWorkingBy(existingWB))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";
