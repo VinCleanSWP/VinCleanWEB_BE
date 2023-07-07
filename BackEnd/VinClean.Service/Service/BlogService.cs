@@ -84,10 +84,6 @@ namespace VinClean.Service.Service
             }
             return _response;
            
-
-           
-           
-
             
         }
 
@@ -98,6 +94,7 @@ namespace VinClean.Service.Service
             {
                 Blog _newBlog = new Blog()
                 {
+                    Img = request.Img,
                     Title = request.Title,
                     Sumarry = request.Sumarry,
                     Content = request.Content,
@@ -280,8 +277,9 @@ namespace VinClean.Service.Service
                     _response.Data = null;
                     return _response;
                 }
-
+                
                 existingBlog.BlogId = request.BlogId;
+                existingBlog.Img = request.Img;
                 existingBlog.Title = request.Title;
                 existingBlog.Sumarry = request.Sumarry;
                 existingBlog.Content = request.Content;
