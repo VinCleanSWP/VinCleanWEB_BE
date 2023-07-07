@@ -12,6 +12,7 @@ public partial class Order
     public string? Note { get; set; }
 
     public decimal? Total { get; set; }
+    public int? PointUsed { get; set; }
 
     public DateTime? OrderDate { get; set; }
 
