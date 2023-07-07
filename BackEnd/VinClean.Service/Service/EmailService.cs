@@ -25,6 +25,7 @@ namespace VinClean.Service.Service
         Task<ServiceResponse<AccountDTO>> SendEmailResetPassword(EmailFormDTO request);
         Task<ServiceResponse<AccountDTO>> SendAssignToCustomer(EmailFormDTO request);
         Task<ServiceResponse<AccountDTO>> SendAssignToEmployee(EmailFormDTO request);
+        Task<ServiceResponse<AccountDTO>> SendEmailToChangeEmployee(EmailFormDTO request);
     }
 
     public class EmailService : IEmailService
@@ -272,6 +273,66 @@ namespace VinClean.Service.Service
                     "<p>Nếu bạn có bất cứ phàn nàn nào hãy gửi email phản hồi tới địa chỉ Email: vincleanvhgp@gmail.com hoặc Hotline: 0329 300 159." +
                     "Chúng tôi sẽ phản hồi trong thờ gian sớm nhất.</p>" +
                     "<p>Yours,<h3>The VinClean team</h3></p>"
+                };
+
+                using var smtp = new SmtpClient();
+                smtp.Connect(_config.GetSection("EmailHost").Value, 587, SecureSocketOptions.StartTls);
+                smtp.Authenticate(_config.GetSection("EmailUsername").Value, _config.GetSection("EmailPassword").Value);
+                smtp.Send(email);
+                smtp.Disconnect(true);
+
+                _response.Success = true;
+                _response.Message = "OK";
+                _response.Data = null;
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Message = "Error";
+                _response.Data = null;
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            }
+            return _response;
+        }
+
+
+        public async Task<ServiceResponse<AccountDTO>> SendEmailToChangeEmployee(EmailFormDTO request)
+        {
+            ServiceResponse<AccountDTO> _response = new();
+            try
+            {
+                var checkemail = await _Accrepository.GetbyEmail(request.To);
+                var process = await _process.GetAllInfoById(request.ProcessId);
+                if (checkemail == null && process == null)
+                {
+                    _response.Success = false;
+                    _response.Message = "NotFound";
+                    return _response;
+                }
+                var email = new MimeMessage();
+                email.From.Add(MailboxAddress.Parse(_config.GetSection("EmailUsername").Value));
+                email.To.Add(MailboxAddress.Parse(checkemail.Email));
+                email.Subject = "THÔNG BÁO CẬP NHẬT NHÂN VIÊN";
+                email.Body = new TextPart(TextFormat.Html)
+                {
+                    Text = $"<p>Xin chào <i>{checkemail.Name}</i>,</p>" +
+                    $"<p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.</p>" +
+                    "<p>Chúng tôi gửi lại bạn thông tin Dịch vụ và Nhân viên:</p>" +
+                    "<h4>Thông tin Khách Hàng:</h4>" +
+                    $"<p><b>Tên</b>: {checkemail.Name} </p>" +
+                    $"<p><b>Điện thoại</b>: {process.Phone} </p>" +
+                    $"<p><b>Địa chỉ</b>: {process.Address} </p>" +
+                    $"<p><b>Ngày Làm</b>: {process.Date.ToString("dd/MM/yyyy")}</p>" +
+                    $"<p><b>Giờ Làm</b>: {process.StartTime} - {process.EndTime}</p>" +
+                    "<h4>Thông tin Nhân viên:</h4>" +
+                    $"<p><b>Tên Nhân Viên</b>: {process.EmployeeName} </p>" +
+                    $"<p><b>Điện thoại</b>: {process.EmployeePhone} </p>" +
+                    $"<p><b>Email</b>: {process.EmployeeEmail} </p>" +
+                    $"<p><b>Xin vui lòng hãy đến đúng giờ. </p>" +
+                    "<p>Nếu bạn có bất cứ phàn nàn nào hãy gửi email phản hồi tới địa chỉ Email: vincleanvhgp@gmail.com " +
+                    "<p>hoặc Hotline: 0329 300 159.</p>" +
+                    "<p>Chúng tôi sẽ phản hồi trong thờ gian sớm nhất.</p>" +
+                    "<p><h3>The VinClean team</h3></p>"
                 };
 
                 using var smtp = new SmtpClient();
