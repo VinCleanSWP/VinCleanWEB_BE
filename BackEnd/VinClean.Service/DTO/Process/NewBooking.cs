@@ -20,7 +20,10 @@ namespace VinClean.Service.DTO.Process
         [Required]
         public string Address { get; set; }
         [Required]
-        public string Phone { get; set; }   
+        public string Phone { get; set; }
+        [Required]
+        public decimal Price { get; set; }
+        public int PointUsed { get; set; }
 
         public string Note { get; set; } 
 
