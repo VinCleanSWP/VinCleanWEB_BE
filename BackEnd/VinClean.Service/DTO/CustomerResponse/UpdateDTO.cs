@@ -17,5 +17,6 @@ namespace VinClean.Service.DTO.CustomerResponse
         public string Address { get; set; }
         public string Gender { get; set; }
         public string Img { get; set; }
+        public DateTime Dob { get; set; }
     }
 }

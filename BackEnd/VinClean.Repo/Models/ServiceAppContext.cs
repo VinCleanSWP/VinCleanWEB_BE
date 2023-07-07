@@ -208,9 +208,6 @@ public partial class ServiceAppContext : DbContext
             entity.Property(e => e.Address)
                 .HasMaxLength(100)
                 .HasColumnName("address");
-            entity.Property(e => e.Dob)
-                .HasColumnType("date")
-                .HasColumnName("dob");
             entity.Property(e => e.FirstName)
                 .HasMaxLength(100)
                 .HasColumnName("first_name");
@@ -337,6 +334,9 @@ public partial class ServiceAppContext : DbContext
             entity.HasOne(d => d.Service).WithMany()
                 .HasForeignKey(d => d.ServiceId)
                 .HasConstraintName("FK__Order_Det__servi__656C112C");
+            entity.HasOne(d => d.Rate).WithMany()
+                .HasForeignKey(d => d.RateId)
+                .HasConstraintName("FK_Order_Detail_Rating");
         });
 
         modelBuilder.Entity<Process>(entity =>

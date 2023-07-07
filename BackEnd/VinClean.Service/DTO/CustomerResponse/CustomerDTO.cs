@@ -17,7 +17,6 @@ namespace VinClean.Service.DTO.CustomerResponse
         public decimal TotalMoney { get; set; }
         public int TotalPoint { get; set; }
         public string Status { get; set; }
-        public DateTime Dob { get; set; }
         public virtual AccountdDTO Account { get; set; }
 
     }
