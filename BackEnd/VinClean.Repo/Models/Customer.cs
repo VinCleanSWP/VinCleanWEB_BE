@@ -23,7 +23,6 @@ public partial class Customer
 
     public int? AccountId { get; set; }
 
-    public DateTime? Dob { get; set; }
 
     public virtual Account? Account { get; set; }
 
