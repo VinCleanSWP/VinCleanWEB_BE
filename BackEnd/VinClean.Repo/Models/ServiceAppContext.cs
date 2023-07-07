@@ -269,7 +269,7 @@ public partial class ServiceAppContext : DbContext
         {
             //entity
             //    .HasNoKey()
-            //    .ToTable("WorkingBy");
+            //    .ToTable("FinshedBy");
             entity.HasKey(e => e.OrderId);
             entity.ToTable("FinshedBy");
 
@@ -306,6 +306,7 @@ public partial class ServiceAppContext : DbContext
             entity.Property(e => e.Total)
                 .HasColumnType("money")
                 .HasColumnName("total");
+            entity.Property(e => e.PointUsed).HasColumnName("Point_used");
 
             entity.HasOne(d => d.Customer).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.CustomerId)
