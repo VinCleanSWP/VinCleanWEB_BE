@@ -198,7 +198,7 @@ namespace VinClean.Service.Service
                 email.Subject = "Thông báo dịch vụ VinClean";
                 email.Body = new TextPart(TextFormat.Html)
                 {
-                    Text = $"<p>Xin chào <i>{checkemail.Name}</i>,</p>" +
+                    Text = $"<div><p>Xin chào <i>{checkemail.Name}</i>,</p>" +
                     $"<p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.</p>" +
                     "<p>Chúng tôi gửi lại bạn thông tin Dịch vụ và Nhân viên:</p>" +
                     "<h4>Thông tin Khách Hàng:</h4>" +
@@ -215,7 +215,7 @@ namespace VinClean.Service.Service
                     "<p>Nếu bạn có bất cứ phàn nàn nào hãy gửi email phản hồi tới địa chỉ Email: vincleanvhgp@gmail.com " +
                     "<p>hoặc Hotline: 0329 300 159.</p>" +
                     "<p>Chúng tôi sẽ phản hồi trong thờ gian sớm nhất.</p>" +
-                    "<p><h3>The VinClean team</h3></p>"
+                    "<p><h3>The VinClean team</h3></p </div>"
                 };
 
                 using var smtp = new SmtpClient();
