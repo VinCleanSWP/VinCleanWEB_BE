@@ -16,7 +16,7 @@ namespace VinClean.Service.Service
     {
         Task<ServiceResponse<List<OrderModelDTO>>> GetOrderList();
         Task<ServiceResponse<OrderModelDTO>> GetOrderById(int id);
-        Task<ServiceResponse<NewOderDTO>> AddOrder(NewOderDTO request);
+        Task<ServiceResponse<Order>> AddOrder(NewOderDTO request);
         Task<ServiceResponse<OrderDTO>> UpdateOrder(OrderDTO request);
         Task<ServiceResponse<OrderDTO>> DeleteOrder(int id);
 
@@ -40,9 +40,9 @@ namespace VinClean.Service.Service
             _processRepository = processRepository;
             _CUrepository = cUrepository;
         }
-        public async Task<ServiceResponse<NewOderDTO>> AddOrder(NewOderDTO request)
+        public async Task<ServiceResponse<Order>> AddOrder(NewOderDTO request)
         {
-            ServiceResponse<NewOderDTO> _response = new();
+            ServiceResponse<Order> _response = new();
             /*try
             {*/
                 Order _newOrder = new Order()
@@ -55,7 +55,6 @@ namespace VinClean.Service.Service
                     StartTime = request.StartTime,
                     EndTime = request.EndTime,
                     PointUsed = request.PointUsed
-
                 };
                 var check1 = await _repository.AddOrder(_newOrder);
                 FinshedBy _finshedBy = new FinshedBy()
@@ -92,7 +91,7 @@ namespace VinClean.Service.Service
                 }
 
                 _response.Success = true;
-                _response.Data = _mapper.Map<NewOderDTO>(_newOrder);
+                _response.Data = _mapper.Map<Order>(_newOrder);
                 _response.Message = "Created";
 
 
@@ -157,6 +156,7 @@ namespace VinClean.Service.Service
             {
                 var existingOrder = await _repository.GetOrderById(id);
                 var existingOrderDetail = await _odRepository.GetOrderDetailById(id);
+                var existingFB = await _fbRepository.GetFinishedById(id);
                 if (existingOrder == null)
                 {
                     _response.Success = false;
@@ -166,7 +166,9 @@ namespace VinClean.Service.Service
                 } 
 
 
-                if (!await _repository.DeleteOrder(existingOrder) && !await _odRepository.DeleteOrderDetail(existingOrderDetail))
+                if (!await _repository.DeleteOrder(existingOrder) && 
+                    !await _odRepository.DeleteOrderDetail(existingOrderDetail) &&
+                    !await _fbRepository.DeleteFinishedBy(existingFB))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";

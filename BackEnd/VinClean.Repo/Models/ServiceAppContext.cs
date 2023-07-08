@@ -208,6 +208,9 @@ public partial class ServiceAppContext : DbContext
             entity.Property(e => e.Address)
                 .HasMaxLength(100)
                 .HasColumnName("address");
+            entity.Property(e => e.Dob)
+                .HasColumnType("date")
+                .HasColumnName("dob");
             entity.Property(e => e.FirstName)
                 .HasMaxLength(100)
                 .HasColumnName("first_name");
@@ -300,10 +303,10 @@ public partial class ServiceAppContext : DbContext
             entity.Property(e => e.OrderDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("date");
+            entity.Property(e => e.PointUsed).HasColumnName("Point_used");
             entity.Property(e => e.Total)
                 .HasColumnType("money")
                 .HasColumnName("total");
-            entity.Property(e => e.PointUsed).HasColumnName("Point_used");
 
             entity.HasOne(d => d.Customer).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.CustomerId)
@@ -319,6 +322,7 @@ public partial class ServiceAppContext : DbContext
             entity.ToTable("Order_Detail");
 
             entity.Property(e => e.OrderId).HasColumnName("order_id");
+            entity.Property(e => e.RateId).HasColumnName("rate_id");
             entity.Property(e => e.ServiceId).HasColumnName("service_id");
             entity.Property(e => e.Slot)
                 .HasDefaultValueSql("((1))")
@@ -331,12 +335,13 @@ public partial class ServiceAppContext : DbContext
                 .HasForeignKey(d => d.OrderId)
                 .HasConstraintName("FK__Order_Det__order__6477ECF3");
 
-            entity.HasOne(d => d.Service).WithMany()
-                .HasForeignKey(d => d.ServiceId)
-                .HasConstraintName("FK__Order_Det__servi__656C112C");
             entity.HasOne(d => d.Rate).WithMany()
                 .HasForeignKey(d => d.RateId)
                 .HasConstraintName("FK_Order_Detail_Rating");
+
+            entity.HasOne(d => d.Service).WithMany()
+                .HasForeignKey(d => d.ServiceId)
+                .HasConstraintName("FK__Order_Det__servi__656C112C");
         });
 
         modelBuilder.Entity<Process>(entity =>
