@@ -16,7 +16,7 @@ namespace VinClean.Service.Service
     {
         Task<ServiceResponse<List<OrderModelDTO>>> GetOrderList();
         Task<ServiceResponse<OrderModelDTO>> GetOrderById(int id);
-        Task<ServiceResponse<Order>> AddOrder(NewOderDTO request);
+        Task<ServiceResponse<OrderDTO>> AddOrder(NewOderDTO request);
         Task<ServiceResponse<OrderDTO>> UpdateOrder(OrderDTO request);
         Task<ServiceResponse<OrderDTO>> DeleteOrder(int id);
 
@@ -40,9 +40,9 @@ namespace VinClean.Service.Service
             _processRepository = processRepository;
             _CUrepository = cUrepository;
         }
-        public async Task<ServiceResponse<Order>> AddOrder(NewOderDTO request)
+        public async Task<ServiceResponse<OrderDTO>> AddOrder(NewOderDTO request)
         {
-            ServiceResponse<Order> _response = new();
+            ServiceResponse<OrderDTO> _response = new();
             /*try
             {*/
                 Order _newOrder = new Order()
@@ -91,7 +91,7 @@ namespace VinClean.Service.Service
                 }
 
                 _response.Success = true;
-                _response.Data = _mapper.Map<Order>(_newOrder);
+                _response.Data = _mapper.Map<OrderDTO>(_newOrder);
                 _response.Message = "Created";
 
 
