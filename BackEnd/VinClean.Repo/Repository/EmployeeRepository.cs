@@ -39,6 +39,13 @@ namespace VinClean.Repo.Repository
             return await _context.Employees.Include(e=>e.Account).ToListAsync();
         }
 
+        async public Task<ICollection<Employee>> SearchEmployee(string search)
+        {
+            return await _context.Employees.Include(e => e.Account)
+                .Where(e => e.Account.Name.Contains(search) || e.EmployeeId.ToString() == search
+                    || e.Account.Email.Contains(search) || e.Phone.Contains(search)).ToListAsync();
+        }
+
         async public Task<Employee> GetEmployeeById(int id)
         {
             return await _context.Employees.Include(e => e.Account).FirstOrDefaultAsync(a => a.EmployeeId == id);

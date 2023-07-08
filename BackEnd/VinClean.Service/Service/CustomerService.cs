@@ -233,6 +233,7 @@ namespace VinClean.Service.Service
                 _newAccount.Email = request.Email;
                 _newAccount.Gender = request.Gender;
                 _newAccount.Img = request.Img;
+                _newAccount.Dob = request.Dob;
                 await _accountRepository.UpdateAccount(_newAccount);
 
                 existingCustomer.FirstName = request.FirstName;

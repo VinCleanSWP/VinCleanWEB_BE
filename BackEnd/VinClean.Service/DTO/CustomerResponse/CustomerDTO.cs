@@ -14,8 +14,10 @@ namespace VinClean.Service.DTO.CustomerResponse
         public string LastName { get; set; }
         public string Phone { get; set; }
         public string Address { get; set; }
+        public decimal TotalMoney { get; set; }
         public int TotalPoint { get; set; }
-        
+        public string Status { get; set; }
         public virtual AccountdDTO Account { get; set; }
+
     }
 }

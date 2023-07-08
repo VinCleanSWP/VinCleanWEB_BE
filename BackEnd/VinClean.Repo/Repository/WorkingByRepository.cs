@@ -15,7 +15,7 @@ namespace VinClean.Repo.Repository
         Task<WorkingBy> GetWorkingByByProcessId(int id);
         Task<bool> UpdateWorkingBy(WorkingBy customer);
         Task<bool> AddWorkingBy(WorkingBy slot);
-        Task<bool> DeleteWorkingBy(int id);
+        Task<bool> DeleteWorkingBy(WorkingBy workingBy);
     }
     public class WorkingByRepository : IWorkingByRepository
     {
@@ -49,16 +49,14 @@ namespace VinClean.Repo.Repository
             return await _context.SaveChangesAsync() > 0 ? true : false;
         }
 
-        async Task<bool> IWorkingByRepository.DeleteWorkingBy(int id)
+        async Task<bool> IWorkingByRepository.DeleteWorkingBy(WorkingBy workingBy)
         {
-            var _exisitngWB = await _context.WorkingBies.FirstOrDefaultAsync(a => a.EmployeeId == id);
-            if (_exisitngWB != null)
-            {
-                _context.WorkingBies.Remove(_exisitngWB);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            return false;
+             
+                _context.WorkingBies.Remove(workingBy);
+                return await _context.SaveChangesAsync() > 0 ? true : false; ;
+
+
         }
+
     }
 }

@@ -9,11 +9,13 @@ namespace VinClean.Service.DTO.Order
     public class NewOderDTO
     {
         public int CustomerId { get; set; }
+        public int ProcessId { get; set; }
         public int ServiceId { get; set; }
 
         public string Note { get; set; }
 
         public decimal Total { get; set; }
+        public int PointUsed { get; set; }
 
         public DateTime OrderDate { get; set; }
 

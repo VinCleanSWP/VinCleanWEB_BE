@@ -45,7 +45,7 @@ namespace VinClean.Controllers
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RatingDTO))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RateServiceDTO))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]

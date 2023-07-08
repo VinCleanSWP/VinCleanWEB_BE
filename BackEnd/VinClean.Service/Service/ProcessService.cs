@@ -36,14 +36,16 @@ namespace VinClean.Service.Service
         private readonly IServiceRepository _serviceRepo;
         private readonly IProcessRepository _repository;
         private readonly ICustomerRepository _Curepository;
+        private readonly IWorkingByRepository _WBrepository;
         public readonly IMapper _mapper;
-        public ProcessService(IProcessRepository repository, IMapper mapper, IProcessDetailRepository pDrepository, IServiceRepository serviceRepo, ICustomerRepository Curepository)
+        public ProcessService(IProcessRepository repository, IMapper mapper, IProcessDetailRepository pDrepository, IServiceRepository serviceRepo, ICustomerRepository Curepository, IWorkingByRepository WBrepository)
         {
             _repository = repository;
             _mapper = mapper;
             _PDrepository = pDrepository;
             _serviceRepo = serviceRepo;
             _Curepository = Curepository;
+            _WBrepository = WBrepository;
         }
 
         public async Task<ServiceResponse<List<ProcessModeDTO>>> GetProcessList()
@@ -386,6 +388,7 @@ namespace VinClean.Service.Service
             {*/
                 var existingProcess = await _repository.GetProcessById(id);
                 var existingProcessPD = await _PDrepository.GetPDById(id);
+                var existingWorkingBy = await _WBrepository.GetWorkingByByProcessId(id);
                 if (existingProcess == null)
                 {
                     _response.Success = false;
@@ -394,7 +397,9 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                if (!await _repository.DeleteProcess(existingProcess) && (!await _PDrepository.DeletePD(existingProcessPD)))
+                if (!await _repository.DeleteProcess(existingProcess) 
+                && (!await _PDrepository.DeletePD(existingProcessPD))
+                && (!await _WBrepository.DeleteWorkingBy(existingWorkingBy)))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";
