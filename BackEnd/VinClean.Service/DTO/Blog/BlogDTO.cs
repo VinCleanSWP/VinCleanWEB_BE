@@ -28,6 +28,6 @@ namespace VinClean.Service.DTO.Blog
         public DateTime ModifiedDate { get; set; }
 
         public int ModifiedBy { get; set; }
-        public string Img { get; set; }
+       
     }
 }

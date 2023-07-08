@@ -13,6 +13,6 @@ namespace VinClean.Service.DTO.Type
         public string? Type1 { get; set; }
         public string Img { get; set; }
         public bool? Avaiable { get; set; }
-        public string? Img { get; set; }
+        
     }
 }

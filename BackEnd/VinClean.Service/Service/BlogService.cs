@@ -79,7 +79,7 @@ namespace VinClean.Service.Service
                     Content = request.Content,
                     IsDeleted = false,
                     CreatedDate = DateTime.Now,
-                    Img = request.Img,
+                   
 
                 };
 
