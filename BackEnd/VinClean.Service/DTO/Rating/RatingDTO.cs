@@ -15,6 +15,7 @@ namespace VinClean.Service.DTO.Rating
         public byte Rate { get; set; }
 
         public string Comment { get; set; }
+        public int OrderId { get; set; }
 
         public int ServiceId { get; set; }
 

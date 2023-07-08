@@ -12,9 +12,15 @@ namespace VinClean.Service.DTO.Order
 
         public int ServiceId { get; set; }
 
+        public int RateId { get; set; }
+
         public byte Slot { get; set; }
 
         public decimal Total { get; set; }
+
+        public TimeSpan StartWorking { get; set; }
+
+        public TimeSpan EndWorking { get; set; }
 
     }
 }

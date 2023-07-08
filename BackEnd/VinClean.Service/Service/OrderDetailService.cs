@@ -173,6 +173,7 @@ namespace VinClean.Service.Service
                 // cac gia trị cho sua
                 existingOrderDetail.Slot = request.Slot;
                 existingOrderDetail.Total = request.Total;
+                existingOrderDetail.RateId = request.RateId;
 
 
                 if (!await _repository.UpdateOrderDetail(existingOrderDetail))

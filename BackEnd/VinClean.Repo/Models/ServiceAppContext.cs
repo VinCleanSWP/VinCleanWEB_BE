@@ -269,9 +269,10 @@ public partial class ServiceAppContext : DbContext
         {
             //entity
             //    .HasNoKey()
-            //    .ToTable("WorkingBy");
+            //    .ToTable("FinshedBy");
             entity.HasKey(e => e.OrderId);
             entity.ToTable("FinshedBy");
+
 
             entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
             entity.Property(e => e.OrderId).HasColumnName("order_id");
@@ -303,6 +304,7 @@ public partial class ServiceAppContext : DbContext
             entity.Property(e => e.OrderDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("date");
+            entity.Property(e => e.PointUsed).HasColumnName("Point_used");
             entity.Property(e => e.Total)
                 .HasColumnType("money")
                 .HasColumnName("total");
@@ -320,7 +322,9 @@ public partial class ServiceAppContext : DbContext
             entity.HasKey(e => e.OrderId);
             entity.ToTable("Order_Detail");
 
+
             entity.Property(e => e.OrderId).HasColumnName("order_id");
+            entity.Property(e => e.RateId).HasColumnName("rate_id");
             entity.Property(e => e.ServiceId).HasColumnName("service_id");
             entity.Property(e => e.Slot)
                 .HasDefaultValueSql("((1))")
@@ -332,6 +336,10 @@ public partial class ServiceAppContext : DbContext
             entity.HasOne(d => d.Order).WithMany()
                 .HasForeignKey(d => d.OrderId)
                 .HasConstraintName("FK__Order_Det__order__6477ECF3");
+
+            entity.HasOne(d => d.Rate).WithMany()
+                .HasForeignKey(d => d.RateId)
+                .HasConstraintName("FK_Order_Detail_Rating");
 
             entity.HasOne(d => d.Service).WithMany()
                 .HasForeignKey(d => d.ServiceId)
@@ -407,6 +415,7 @@ public partial class ServiceAppContext : DbContext
             //    .ToTable("Process_Slot");
             entity.HasKey(e => e.ProcessId);
             entity.ToTable("Process_Slot");
+
 
             entity.Property(e => e.CreateAt)
                 .HasColumnType("datetime")

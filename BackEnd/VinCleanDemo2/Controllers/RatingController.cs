@@ -63,7 +63,7 @@ namespace VinClean.Controllers
             return Ok(ratingFound);
         }
         [HttpPost]
-        public async Task<ActionResult<Rating>> AddRating(RatingDTO request)
+        public async Task<ActionResult<Rating>> AddRating(AddRateDTO request)
         {
 
 

@@ -23,5 +23,7 @@ public partial class Order
 
     public DateTime? DateWork { get; set; }
 
+    public int? PointUsed { get; set; }
+
     public virtual Customer? Customer { get; set; }
 }

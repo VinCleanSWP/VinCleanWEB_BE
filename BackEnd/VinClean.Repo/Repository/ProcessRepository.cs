@@ -66,7 +66,6 @@ namespace VinClean.Repo.Repository
                             StartWorking = p.StartWorking,
                             EndWorking = p.EndWorking,
                             CreatedDate = p.CreatedDate,
-                            Date = p.Date,
                             ModifiedBy = p.ModifiedBy,
                             ServiceId = s.ServiceId,
                             ServiceName = s.Name,

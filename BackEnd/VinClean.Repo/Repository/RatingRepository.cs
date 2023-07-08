@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MailKit.Search;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,30 +33,58 @@ namespace VinClean.Repo.Repository
         {
             //return await _context.Ratings.ToListAsync();
 
-            var list = from s in _context.Services
-                       join t in _context.Types on s.TypeId equals t.TypeId into st
-                       from subt in st.DefaultIfEmpty()
-                        join r in _context.Ratings on s.ServiceId equals r.ServiceId into sr
-                        from subr in sr.DefaultIfEmpty()
-                        join c in _context.Customers on subr.CustomerId equals c.CustomerId into cr
-                        from subc in cr.DefaultIfEmpty()
-                        join o in _context.Orders on subc.CustomerId equals o.CustomerId into oc
-                        from subo in oc.DefaultIfEmpty()
-                        where subo.CustomerId == subc.CustomerId && s.ServiceId == subr.ServiceId
-                        select new RatingModelDTO
-                        {
-                            RateId = subr.RateId,
-                            OrderId = subo.OrderId,
-                            ServiceName = s.Name,
-                            ServiceType = subt.Type1,
-                            Note = subo.Note,
-                            CustomerName = subc.FirstName,
-                            Rate = subr.Rate,
-                            Comment = subr.Comment,
-                            RatedDate = subr.CreatedDate
-                        };
+            //var list = from s in _context.Services
+            //           join t in _context.Types on s.TypeId equals t.TypeId into st
+            //           from subt in st.DefaultIfEmpty()
+            //            join r in _context.Ratings on s.ServiceId equals r.ServiceId into sr
+            //            from subr in sr.DefaultIfEmpty()
+            //            join c in _context.Customers on subr.CustomerId equals c.CustomerId into cr
+            //            from subc in cr.DefaultIfEmpty()
+            //            join o in _context.Orders on subc.CustomerId equals o.CustomerId into oc
+            //            from subo in oc.DefaultIfEmpty()
+            //            where subo.CustomerId == subc.CustomerId && s.ServiceId == subr.ServiceId
+            //            select new RatingModelDTO
+            //            {
+            //                RateId = subr.RateId,
+            //                OrderId = subo.OrderId,
+            //                ServiceName = s.Name,
+            //                ServiceType = subt.Type1,
+            //                Note = subo.Note,
+            //                CustomerName = subc.FirstName,
+            //                Rate = subr.Rate,
+            //                Comment = subr.Comment,
+            //                RatedDate = subr.CreatedDate
+            //            };
 
-            return await list.ToListAsync();
+            //return await list.ToListAsync();
+            var result = from r in _context.Ratings
+                         join c in _context.Customers on r.CustomerId equals c.CustomerId into customerGroup
+                         from c in customerGroup.DefaultIfEmpty()
+                         join o in _context.Orders on c.CustomerId equals o.CustomerId into orderGroup
+                         from o in orderGroup.DefaultIfEmpty()
+                         join s in _context.Services on r.ServiceId equals s.ServiceId into serviceGroup
+                         from s in serviceGroup.DefaultIfEmpty()
+                         join t in _context.Types on s.TypeId equals t.TypeId into typeGroup
+                         from t in typeGroup.DefaultIfEmpty()
+                         join a in _context.Accounts on c.AccountId equals a.AccountId into accountGroup
+                         from a in accountGroup.DefaultIfEmpty()
+                         select new RatingModelDTO
+                         {
+                           CustomerId = c.CustomerId,
+                           RateId = r.RateId,
+                           OrderId = o.OrderId,
+                           ServiceId =  (int)r.ServiceId,
+                             TypeId = t.TypeId,
+                             TypeName = t.Type1,
+                             Rate = (byte)r.Rate,
+                             Comment = r.Comment,
+                             CustomerName = c.LastName + c.FirstName,
+                             ServiceName = s.Name,
+                             RatedDate = (DateTime)r.CreatedDate,
+                             Img = a.Img,
+
+                         };
+            return await result.ToListAsync();
         }
 
         async Task<ICollection<Rating>> IRatingRepository.GetRatingByService(int id)
@@ -70,26 +99,7 @@ namespace VinClean.Repo.Repository
 
         async Task<bool> IRatingRepository.AddRating(Rating rating)
         {
-            //var query = from s in _context.Services
-            //            join r in _context.Ratings on s.ServiceId equals r.ServiceId into sr
-            //            from subr in sr.DefaultIfEmpty()
-            //            join c in _context.Customers on subr.CustomerId equals c.CustomerId into cr
-            //            from subc in cr.DefaultIfEmpty()
-            //            join o in _context.Orders on subc.CustomerId equals o.CustomerId into oc
-            //            from subo in oc.DefaultIfEmpty()
-            //            where subo.CustomerId == subc.CustomerId && s.ServiceId == subr.ServiceId
-            //            select new
-            //            {
-            //                OrderId = subo.OrderId,
-            //                ServiceName = s.Name,
-            //                Note = subo.Note,
-            //                CustomerFirstName = subc.FirstName,
-            //                Rate = subr.Rate,
-            //                Comment = subr.Comment,
-            //                RatingCreatedDate = subr.CreatedDate
-            //            }; con ChatBot lo nay bay dai nen ko xai khuc nay
-
-            _context.Entry(rating).State = EntityState.Added;
+            _context.Ratings.Add(rating);
             return await _context.SaveChangesAsync() > 0 ? true : false;
         }
 
