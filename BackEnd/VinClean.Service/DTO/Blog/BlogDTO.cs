@@ -9,6 +9,7 @@ namespace VinClean.Service.DTO.Blog
     public class BlogDTO
     {
         public int BlogId { get; set; }
+        public string Img { get; set; }
 
         public string Title { get; set; }
 
@@ -27,5 +28,6 @@ namespace VinClean.Service.DTO.Blog
         public DateTime ModifiedDate { get; set; }
 
         public int ModifiedBy { get; set; }
+       
     }
 }

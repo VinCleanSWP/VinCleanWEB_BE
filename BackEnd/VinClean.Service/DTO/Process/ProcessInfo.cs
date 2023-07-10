@@ -35,7 +35,7 @@ namespace VinClean.Service.DTO.Process
         /// 
         /// </summary>
         public virtual ICollection<ProcessDetail_processDTO> ProcessDetails { get; set; }
-        public virtual ICollection<ProcessSlot_processDTO> ProcessSlots { get; set; }
+        public virtual ICollection<AddProcessSlot> ProcessSlots { get; set; }
         public virtual ICollection<WorkingBy_processDTO> WorkingBies { get; set; }
     }
 }

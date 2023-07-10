@@ -32,6 +32,7 @@ namespace VinClean.Repo.Repository
                          join ac1 in _context.Accounts on c.AccountId equals ac1.AccountId
                          join od in _context.OrderDetails on o.OrderId equals od.OrderId
                          join s in _context.Services on od.ServiceId equals s.ServiceId
+                         join t in _context.Types on s.TypeId equals t.TypeId
                          join f in _context.FinshedBies on o.OrderId equals f.OrderId
                          join e in _context.Employees on f.EmployeeId equals e.EmployeeId
                          join ac2 in _context.Accounts on e.AccountId equals ac2.AccountId
@@ -39,20 +40,26 @@ namespace VinClean.Repo.Repository
                          {
                              OrderId = o.OrderId,
                              CustomerId = (int)o.CustomerId,
-                             Dob = (DateTime)c.Dob,
+                             CustomerName = ac1.Name,
+                             Dob = (DateTime)ac1.Dob,
                              Address = c.Address,
                              Phone = c.Phone,
                              CustomerEmail = ac1.Email,
                              CustomerImage = ac1.Img,
                              ServiceId = (int)od.ServiceId,
                              ServiceName = s.Name,
+                             TypeId = t.TypeId,
+                             Type = t.Type1,
                              DateWork = o.DateWork,
                              StartTime = o.StartTime,
                              EndTime = o.EndTime,
                              StartWorking = od.StartWorking,
                              EndWorking = od.EndWorking,
                              Total = o.Total,
+                             PonitUsed = (int)o.PointUsed,
+                             Status = "Completed",
                              EmployeeName = ac2.Name,
+                             EmployeeImg = ac2.Img,
                              EmployeeEmail = ac2.Email,
                              EmployeePhone = e.Phone
                          };
@@ -82,6 +89,7 @@ namespace VinClean.Repo.Repository
                          join ac1 in _context.Accounts on c.AccountId equals ac1.AccountId
                          join od in _context.OrderDetails on o.OrderId equals od.OrderId
                          join s in _context.Services on od.ServiceId equals s.ServiceId
+                         join t in _context.Types on s.TypeId equals t.TypeId
                          join f in _context.FinshedBies on o.OrderId equals f.OrderId
                          join e in _context.Employees on f.EmployeeId equals e.EmployeeId
                          join ac2 in _context.Accounts on e.AccountId equals ac2.AccountId
@@ -90,20 +98,26 @@ namespace VinClean.Repo.Repository
                          {
                              OrderId = o.OrderId,
                              CustomerId = (int)o.CustomerId,
-                             Dob = (DateTime)c.Dob,
+                             CustomerName = ac1.Name,
+                             Dob = (DateTime)ac1.Dob,
                              Address = c.Address,
                              Phone = c.Phone,
                              CustomerEmail = ac1.Email,
                              CustomerImage = ac1.Img,
                              ServiceId = (int)od.ServiceId,
                              ServiceName = s.Name,
+                             TypeId = t.TypeId,
+                             Type = t.Type1,
                              DateWork = o.DateWork,
                              StartTime = o.StartTime,
                              EndTime = o.EndTime,
                              StartWorking = od.StartWorking,
                              EndWorking = od.EndWorking,
                              Total = o.Total,
+                             PonitUsed = (int)o.PointUsed,
+                             Status = "Completed",
                              EmployeeName = ac2.Name,
+                             EmployeeImg = ac2.Img,
                              EmployeeEmail = ac2.Email,
                              EmployeePhone = e.Phone
                          };

@@ -18,15 +18,18 @@ namespace VinClean.Service.Service
         Task<ServiceResponse<WorkingByDTO>> DeleteWB(int id);
         Task<ServiceResponse<WorkingByDTO>> AddWB(WorkingByDTO request);
         Task<ServiceResponse<WorkingByDTO>> UpdateWB(WorkingByDTO request);
+        Task<ServiceResponse<WorkingByDTO>> AcceptRequest(WorkingByDTO request);
     }
     public class WorkingByService : IWorkingByService
     {
         private readonly IWorkingByRepository _repository;
+        private readonly IProcessSlotRepository _PRrepository;
         private readonly IMapper _mapper;
-        public WorkingByService(IWorkingByRepository repository, IMapper mapper)
+        public WorkingByService(IWorkingByRepository repository, IMapper mapper, IProcessSlotRepository pRrepository)
         {
             _repository = repository;
             _mapper = mapper;
+            _PRrepository = pRrepository;
         }
 
         public async Task<ServiceResponse<List<WorkingByDTO>>> GetWBList()
@@ -123,6 +126,61 @@ namespace VinClean.Service.Service
             return _response;
         }
 
+        public async Task<ServiceResponse<WorkingByDTO>> AcceptRequest(WorkingByDTO request)
+        {
+            ServiceResponse<WorkingByDTO> _response = new();
+            try
+            {
+                var existingWSlot = await _repository.GetWorkingByByProcessId(request.ProcessId);
+                if (existingWSlot == null)
+                {
+                    _response.Success = false;
+                    _response.Message = "NotFound";
+                    _response.Data = null;
+                    return _response;
+                }
+                existingWSlot.EmployeeId = request.EmployeeId;
+
+                var check1 = await _repository.UpdateWorkingBy(existingWSlot);
+
+                //Update ProcessRequest
+                var existingProcess = await _PRrepository.GetPSById(request.ProcessId);
+                if (existingProcess == null)
+                {
+                    _response.Success = false;
+                    _response.Message = "NotFound";
+                    _response.Data = null;
+                    return _response;
+                }
+                existingProcess.Satus = "Accepted";
+                existingProcess.NewEmployeeId = request.EmployeeId;
+                var check2 = await _PRrepository.UpdatePS(existingProcess);
+                //Update ProcessRequest
+
+                if (!check1 && !check2)
+                {
+                    _response.Success = false;
+                    _response.Message = "RepoError";
+                    _response.Data = null;
+                    return _response;
+                }
+
+                var _WSlotDTO = _mapper.Map<WorkingByDTO>(existingWSlot);
+                _response.Success = true;
+                _response.Data = _WSlotDTO;
+                _response.Message = "Updated";
+
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Data = null;
+                _response.Message = "Error";
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            }
+            return _response;
+        }
+
         public async Task<ServiceResponse<WorkingByDTO>> AddWB(WorkingByDTO request)
         {
             ServiceResponse<WorkingByDTO> _response = new();
@@ -166,7 +224,7 @@ return _response;
             ServiceResponse<WorkingByDTO> _response = new();
             try
             {
-                var existingWB = await _repository.GetWorkingByById(id);
+                var existingWB = await _repository.GetWorkingByByProcessId(id);
                 if (existingWB == null)
                 {
                     _response.Success = false;
@@ -176,7 +234,7 @@ return _response;
                 }
 
 
-                if (!await _repository.DeleteWorkingBy(id))
+                if (!await _repository.DeleteWorkingBy(existingWB))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";

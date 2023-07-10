@@ -10,8 +10,6 @@ namespace VinClean.Service.DTO.Process
     public class NewBooking
     {
         [Required]
-        public int ProcessId { get; set; }
-        [Required]
         public int CustomerId { get; set; }
         [Required]
         public TimeSpan? StarTime { get; set; }
@@ -19,6 +17,14 @@ namespace VinClean.Service.DTO.Process
         public DateTime? Date { get; set; }
         [Required]
         public int ServiceId {get; set; }
+        [Required]
+        public string Address { get; set; }
+        [Required]
+        public string Phone { get; set; }
+        [Required]
+        public decimal Price { get; set; }
+        public int PointUsed { get; set; }
+
         public string Note { get; set; } 
 
     }

@@ -1,3 +1,4 @@
+using MailKit;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 
@@ -103,6 +104,9 @@ builder.Services.AddScoped<ISlotRepository, SlotRepository>();
 
 builder.Services.AddScoped<IWorkingByService, WorkingByService>();
 builder.Services.AddScoped<IWorkingByRepository, WorkingByRepository>();
+
+builder.Services.AddScoped<IEmailService, EmailService>();
+
 
 
 builder.Services.AddAutoMapper(typeof(MappingConfig));

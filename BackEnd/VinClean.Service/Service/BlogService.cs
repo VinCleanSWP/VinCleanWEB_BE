@@ -38,28 +38,7 @@ namespace VinClean.Service.Service
 
         async Task<ServiceResponse<List<CommentDTO>>> IBlogService.GetCommentsByBlogId(int blogId)
         {
-            //ServiceResponse<List<BlogDTO>> _response = new();
-            //try
-            //{
-            //    var ListBlog = await _repository.GetBlogs();
-            //    var ListBlogDTO = new List<BlogDTO>();
-            //    foreach (var blog in ListBlog)
-            //    {
-            //        ListBlogDTO.Add(_mapper.Map<BlogDTO>(blog));
-            //    }
-            //    _response.Success = true;
-            //    _response.Message = "OK";
-            //    _response.Data = ListBlogDTO;
-            //}
-            //catch (Exception ex)
-            //{
-
-            //    _response.Success = false;
-            //    _response.Message = "Error";
-            //    _response.Data = null;
-            //    _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
-            //}
-            //return _response;
+            
             ServiceResponse<List<CommentDTO>> _response = new();
             try
             {
@@ -84,10 +63,6 @@ namespace VinClean.Service.Service
             }
             return _response;
            
-
-           
-           
-
             
         }
 
@@ -98,11 +73,13 @@ namespace VinClean.Service.Service
             {
                 Blog _newBlog = new Blog()
                 {
+                    Img = request.Img,
                     Title = request.Title,
                     Sumarry = request.Sumarry,
                     Content = request.Content,
                     IsDeleted = false,
                     CreatedDate = DateTime.Now,
+                   
 
                 };
 
@@ -280,12 +257,14 @@ namespace VinClean.Service.Service
                     _response.Data = null;
                     return _response;
                 }
-
+                
                 existingBlog.BlogId = request.BlogId;
+                existingBlog.Img = request.Img;
                 existingBlog.Title = request.Title;
                 existingBlog.Sumarry = request.Sumarry;
                 existingBlog.Content = request.Content;
                 existingBlog.CreatedDate = DateTime.Now;
+                existingBlog.Img = request.Img;
 
 
                 if (!await _repository.UpdateBlog(existingBlog))

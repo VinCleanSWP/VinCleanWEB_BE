@@ -16,7 +16,7 @@ namespace VinClean.Service.Service
     {
         Task<ServiceResponse<List<OrderModelDTO>>> GetOrderList();
         Task<ServiceResponse<OrderModelDTO>> GetOrderById(int id);
-        Task<ServiceResponse<NewOderDTO>> AddOrder(NewOderDTO request);
+        Task<ServiceResponse<OrderDTO>> AddOrder(NewOderDTO request);
         Task<ServiceResponse<OrderDTO>> UpdateOrder(OrderDTO request);
         Task<ServiceResponse<OrderDTO>> DeleteOrder(int id);
 
@@ -27,9 +27,10 @@ namespace VinClean.Service.Service
         private readonly IOrderDetailRepository _odRepository;
         private readonly IFinishedByRepository _fbRepository;
         private readonly IOrderRepository _repository;
+        private readonly ICustomerRepository _CUrepository;
         private readonly IMapper _mapper;
 
-        public OrderService(IOrderRepository repository, IMapper mapper, IOrderDetailRepository odRepository, IFinishedByRepository fbRepository, IProcessRepository processRepository)
+        public OrderService(IOrderRepository repository, IMapper mapper, IOrderDetailRepository odRepository, IFinishedByRepository fbRepository, IProcessRepository processRepository, ICustomerRepository cUrepository)
         {
             _odRepository = odRepository;
             _odRepository = odRepository;
@@ -37,12 +38,13 @@ namespace VinClean.Service.Service
             _repository = repository;
             _mapper = mapper;
             _processRepository = processRepository;
+            _CUrepository = cUrepository;
         }
-        public async Task<ServiceResponse<NewOderDTO>> AddOrder(NewOderDTO request)
+        public async Task<ServiceResponse<OrderDTO>> AddOrder(NewOderDTO request)
         {
-            ServiceResponse<NewOderDTO> _response = new();
-            try
-            {
+            ServiceResponse<OrderDTO> _response = new();
+            /*try
+            {*/
                 Order _newOrder = new Order()
                 {
                     CustomerId = request.CustomerId,
@@ -52,7 +54,7 @@ namespace VinClean.Service.Service
                     DateWork = request.DateWork,
                     StartTime = request.StartTime,
                     EndTime = request.EndTime,
-
+                    PointUsed = request.PointUsed
                 };
                 var check1 = await _repository.AddOrder(_newOrder);
                 FinshedBy _finshedBy = new FinshedBy()
@@ -71,14 +73,16 @@ namespace VinClean.Service.Service
                 };
                 var check3 = await _odRepository.AddOrderDetail(_oderDetail);
 
-                Process _updateIsDeleted = new Process()
-                {
-                    IsDeleted = true
-                };
-                var check4 = await _processRepository.UpdateProcess(_updateIsDeleted);
+                var process = await _processRepository.GetProcessById(request.ProcessId);
+                process.IsDeleted = true;
+                var check4 = await _processRepository.UpdateProcess(process);
+
+                var Customer = await _CUrepository.GetCustomerById(request.CustomerId);
+                Customer.TotalPoint = (int?)(Customer.TotalPoint + ((double)request.Total * 0.05));
+                var check5 = await _CUrepository.UpdateCustomer(Customer);
 
 
-                if (!check1&&!check2&&!check3&&check4)
+                if (!check1 && !check2 && !check3 && !check4 && !check5)
                 {
                     _response.Error = "RepoError";
                     _response.Success = false;
@@ -87,21 +91,22 @@ namespace VinClean.Service.Service
                 }
 
                 _response.Success = true;
-                _response.Data = _mapper.Map<NewOderDTO>(_newOrder);
+                _response.Data = _mapper.Map<OrderDTO>(_newOrder);
                 _response.Message = "Created";
 
-        }
+
+           /* }
             catch (Exception ex)
             {
                 _response.Success = false;
                 _response.Data = null;
                 _response.Message = "Error";
                 _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message)
-    };
-}
+            };
+            }*/
 
-return _response;
-        }
+        return _response;
+    }
         public async Task<ServiceResponse<OrderDTO>> UpdateOrder(OrderDTO request)
         {
             ServiceResponse<OrderDTO> _response = new();
@@ -150,15 +155,20 @@ return _response;
             try
             {
                 var existingOrder = await _repository.GetOrderById(id);
+                var existingOrderDetail = await _odRepository.GetOrderDetailById(id);
+                var existingFB = await _fbRepository.GetFinishedById(id);
                 if (existingOrder == null)
                 {
                     _response.Success = false;
                     _response.Message = "NotFound";
                     _response.Data = null;
                     return _response;
-                }
+                } 
 
-                if (await _repository.DeleteOrder(existingOrder))
+
+                if (!await _repository.DeleteOrder(existingOrder) && 
+                    !await _odRepository.DeleteOrderDetail(existingOrderDetail) &&
+                    !await _fbRepository.DeleteFinishedBy(existingFB))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";
