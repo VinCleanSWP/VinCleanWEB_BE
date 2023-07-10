@@ -143,7 +143,6 @@ namespace VinClean.Service.Service
 
                 Rating _newRating = new Rating()
                 {
-
                     ServiceId = request.ServiceId,
                     Rate = request.Rate,
                     Comment = request.Comment,
@@ -257,36 +256,5 @@ namespace VinClean.Service.Service
             }
             return _response;
         }
-
-        //async Task<ServiceResponse<AverageRatingDTO>> IRatingService.GetAverageTypeRating(int id)
-        //{
-        //    ServiceResponse <AverageRatingDTO> _response = new();
-
-        //    try
-        //    {
-        //        var ratings = await _ratingRepository.GetRatingByService(id);
-
-        //        if (ratings.Count > 0)
-        //        {
-        //            double averageRate = ratings.Average(r => r.Rate);
-        //            _response.Success = true;
-        //            _response.Data = averageRate;
-        //            _response.Message = "OK";
-        //        }
-        //        else
-        //        {
-        //            _response.Success = false;
-        //            _response.Message = "No ratings found for the specified TypeId.";
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _response.Success = false;
-        //        _response.Message = "Error";
-        //        _response.ErrorMessages = new List<string> { ex.Message };
-        //    }
-
-        //    return _response;
-        //}
     }
 }
