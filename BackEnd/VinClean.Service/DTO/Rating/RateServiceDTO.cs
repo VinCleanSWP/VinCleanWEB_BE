@@ -34,7 +34,5 @@ namespace VinClean.Service.DTO.Rating
         public virtual ServiceDTO Service { get; set; }
 
         public virtual CustomerDTO Customer { get; set; }
-
-        public virtual Customer_processDTO  CustomerAccount { get; set; }
     }
 }

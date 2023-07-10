@@ -17,7 +17,7 @@ namespace VinClean.Service.Service
     public interface IRatingService
     {
         Task<ServiceResponse<List<RatingModelDTO>>> GetRatingList();
-        Task<ServiceResponse<List<RateServiceDTO>>> GetRatingByService(int id);
+        Task<ServiceResponse<List<RatingModelDTO>>> GetRatingByService(int id);
         Task<ServiceResponse<RateServiceDTO>> GetRatingById(int id);
         Task<ServiceResponse<RatingDTO>> AddRating(RatingDTO Rating);
         Task<ServiceResponse<RatingDTO>> UpdateRating(RatingDTO Rating);
@@ -65,9 +65,9 @@ namespace VinClean.Service.Service
         }
 
         // Get Rating List By TypeID
-        async Task<ServiceResponse<List<RateServiceDTO>>> IRatingService.GetRatingByService(int id)
+        async Task<ServiceResponse<List<RatingModelDTO>>> IRatingService.GetRatingByService(int id)
         {
-            ServiceResponse<List<RateServiceDTO>> _response = new();
+            ServiceResponse<List<RatingModelDTO>> _response = new();
             try
             {
                 var ratingList = await _ratingRepository.GetRatingByService(id);
@@ -77,10 +77,10 @@ namespace VinClean.Service.Service
                     _response.Message = "NotFound";
                     return _response;
                 }
-                var ratingDTO = new List<RateServiceDTO>();
+                var ratingDTO = new List<RatingModelDTO>();
                 foreach (var rating in ratingList)
                 {
-                    ratingDTO.Add(_mapper.Map<RateServiceDTO>(rating));
+                    ratingDTO.Add(_mapper.Map<RatingModelDTO>(rating));
                 }
                 _response.Success = true;
                 _response.Message = "OK";
@@ -133,22 +133,21 @@ namespace VinClean.Service.Service
             try
             {
                 //var existingRating = await _ratingRepository.GetRatingById(request.RateId);
-                //if (!await _ratingRepository.CheckServiceRating(request.ServiceId, request.CustomerId))
-                //{
-                //    _response.Success = false;
-                //    _response.Message = "NotFound";
-                //    _response.Data = null;
-                //    return _response;
-                //}
+                if (!await _ratingRepository.CheckServiceRating(request.ServiceId, request.CustomerId))
+                {
+                    _response.Success = false;
+                    _response.Message = "NotFound";
+                    _response.Data = null;
+                    return _response;
+                }
 
                 Rating _newRating = new Rating()
                 {
-
-                    //ServiceId = request.ServiceId,
+                    ServiceId = request.ServiceId,
                     Rate = request.Rate,
                     Comment = request.Comment,
                     CreatedDate = DateTime.Now,
-                    //CustomerId = request.CustomerId,
+                    CustomerId = request.CustomerId,
                     IsDeleted = false,
                 };
 
@@ -257,36 +256,5 @@ namespace VinClean.Service.Service
             }
             return _response;
         }
-
-        //async Task<ServiceResponse<AverageRatingDTO>> IRatingService.GetAverageTypeRating(int id)
-        //{
-        //    ServiceResponse <AverageRatingDTO> _response = new();
-
-        //    try
-        //    {
-        //        var ratings = await _ratingRepository.GetRatingByService(id);
-
-        //        if (ratings.Count > 0)
-        //        {
-        //            double averageRate = ratings.Average(r => r.Rate);
-        //            _response.Success = true;
-        //            _response.Data = averageRate;
-        //            _response.Message = "OK";
-        //        }
-        //        else
-        //        {
-        //            _response.Success = false;
-        //            _response.Message = "No ratings found for the specified TypeId.";
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _response.Success = false;
-        //        _response.Message = "Error";
-        //        _response.ErrorMessages = new List<string> { ex.Message };
-        //    }
-
-        //    return _response;
-        //}
     }
 }
