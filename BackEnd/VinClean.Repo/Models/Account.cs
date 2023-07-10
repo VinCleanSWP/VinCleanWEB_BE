@@ -27,6 +27,14 @@ public partial class Account
 
     public string? Img { get; set; }
 
+    public string? VerificationToken { get; set; }
+
+    public DateTime? VerifiedAt { get; set; }
+
+    public string? PasswordResetToken { get; set; }
+
+    public DateTime? ResetTokenExpires { get; set; }
+
     public virtual ICollection<Blog> BlogCreatedByNavigations { get; set; } = new List<Blog>();
 
     public virtual ICollection<Blog> BlogModifiedByNavigations { get; set; } = new List<Blog>();

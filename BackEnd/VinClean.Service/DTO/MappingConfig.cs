@@ -66,6 +66,7 @@ namespace VinClean.Service.DTO
             CreateMap<Repo.Models.Process, ProcessInfo>().ReverseMap();
 
             CreateMap<Repo.Models.Rating, RatingDTO>().ReverseMap();
+            CreateMap<Repo.Models.Rating, RateServiceDTO>().ReverseMap();
 
             CreateMap<ProcessDetail, ProcessDetailDTO>().ReverseMap();
             CreateMap<ProcessSlot, ProcessSlotDTO>().ReverseMap();

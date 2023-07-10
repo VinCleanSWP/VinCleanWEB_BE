@@ -17,11 +17,12 @@ namespace VinClean.Service.Service
     public interface IRatingService
     {
         Task<ServiceResponse<List<RatingModelDTO>>> GetRatingList();
-        Task<ServiceResponse<List<RatingDTO>>> GetRatingByService(int id);
-        Task<ServiceResponse<RatingDTO>> GetRatingById(int id);
+        Task<ServiceResponse<List<RatingModelDTO>>> GetRatingByService(int id);
+        Task<ServiceResponse<RateServiceDTO>> GetRatingById(int id);
         Task<ServiceResponse<RatingDTO>> AddRating(RatingDTO Rating);
         Task<ServiceResponse<RatingDTO>> UpdateRating(RatingDTO Rating);
         Task<ServiceResponse<RatingDTO>> DeleteRating(int id);
+        //Task<ServiceResponse<AverageRatingDTO>> GetAverageTypeRating(int id);
     }
     public class RatingService : IRatingService
     {
@@ -63,10 +64,10 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        // Get Rating List By ServiceID
-        async Task<ServiceResponse<List<RatingDTO>>> IRatingService.GetRatingByService(int id)
+        // Get Rating List By TypeID
+        async Task<ServiceResponse<List<RatingModelDTO>>> IRatingService.GetRatingByService(int id)
         {
-            ServiceResponse<List<RatingDTO>> _response = new();
+            ServiceResponse<List<RatingModelDTO>> _response = new();
             try
             {
                 var ratingList = await _ratingRepository.GetRatingByService(id);
@@ -76,10 +77,10 @@ namespace VinClean.Service.Service
                     _response.Message = "NotFound";
                     return _response;
                 }
-                var ratingDTO = new List<RatingDTO>();
+                var ratingDTO = new List<RatingModelDTO>();
                 foreach (var rating in ratingList)
                 {
-                    ratingDTO.Add(_mapper.Map<RatingDTO>(rating));
+                    ratingDTO.Add(_mapper.Map<RatingModelDTO>(rating));
                 }
                 _response.Success = true;
                 _response.Message = "OK";
@@ -97,9 +98,9 @@ namespace VinClean.Service.Service
         }
 
         // Get Rating By ID
-        public async Task<ServiceResponse<RatingDTO>> GetRatingById(int id)
+        public async Task<ServiceResponse<RateServiceDTO>> GetRatingById(int id)
         {
-            ServiceResponse<RatingDTO> _response = new();
+            ServiceResponse<RateServiceDTO> _response = new();
             try
             {
                 var rating = await _ratingRepository.GetRatingById(id);
@@ -109,7 +110,7 @@ namespace VinClean.Service.Service
                     _response.Message = "NotFound";
                     return _response;
                 }
-                var ratingDTO = _mapper.Map<RatingDTO>(rating);
+                var ratingDTO = _mapper.Map<RateServiceDTO>(rating);
                 _response.Success = true;
                 _response.Message = "OK";
                 _response.Data = ratingDTO;
@@ -132,15 +133,17 @@ namespace VinClean.Service.Service
             try
             {
                 //var existingRating = await _ratingRepository.GetRatingById(request.RateId);
-                if (! await _ratingRepository.CheckServiceRating(request.ServiceId, request.CustomerId))
+                if (!await _ratingRepository.CheckServiceRating(request.ServiceId, request.CustomerId))
                 {
                     _response.Success = false;
                     _response.Message = "NotFound";
                     _response.Data = null;
                     return _response;
                 }
+
                 Rating _newRating = new Rating()
                 {
+
                     ServiceId = request.ServiceId,
                     Rate = request.Rate,
                     Comment = request.Comment,
@@ -254,5 +257,36 @@ namespace VinClean.Service.Service
             }
             return _response;
         }
+
+        //async Task<ServiceResponse<AverageRatingDTO>> IRatingService.GetAverageTypeRating(int id)
+        //{
+        //    ServiceResponse <AverageRatingDTO> _response = new();
+
+        //    try
+        //    {
+        //        var ratings = await _ratingRepository.GetRatingByService(id);
+
+        //        if (ratings.Count > 0)
+        //        {
+        //            double averageRate = ratings.Average(r => r.Rate);
+        //            _response.Success = true;
+        //            _response.Data = averageRate;
+        //            _response.Message = "OK";
+        //        }
+        //        else
+        //        {
+        //            _response.Success = false;
+        //            _response.Message = "No ratings found for the specified TypeId.";
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _response.Success = false;
+        //        _response.Message = "Error";
+        //        _response.ErrorMessages = new List<string> { ex.Message };
+        //    }
+
+        //    return _response;
+        //}
     }
 }
