@@ -380,9 +380,15 @@ namespace VinClean.Service.Service
 
 
 
+        //private string CreateRandomToken()
+        //{
+        //    return Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
+        //}
         private string CreateRandomToken()
         {
-            return Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
+            var random = new Random();
+            var token = random.Next(10000000, 99999999).ToString();
+            return token;
         }
 
 

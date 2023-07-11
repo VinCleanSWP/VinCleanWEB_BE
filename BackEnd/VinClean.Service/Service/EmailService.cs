@@ -46,7 +46,51 @@ namespace VinClean.Service.Service
             email.From.Add(MailboxAddress.Parse(_config.GetSection("EmailUsername").Value));
             email.To.Add(MailboxAddress.Parse(request.To));
             email.Subject = request.Subject;
-            email.Body = new TextPart(TextFormat.Html) { Text = request.Body };
+            email.Body = new TextPart(TextFormat.Html) {
+                Text = "<!DOCTYPE html> <html lang='en' xmlns='http://www.w3.org/1999/xhtml' xmlns:o='urn:schemas-microsoft-com:office:office'>" +
+                    "<head>   <meta charset='UTF-8'>   <meta name='viewport' content='width=device-width,initial-scale=1'>" +
+                    "  <meta name='x-apple-disable-message-reformatting'>   <title></title>   <!--[if mso]>   " +
+                    "<noscript>     <xml>       <o:OfficeDocumentSettings>         <o:PixelsPerInch>96</o:PixelsPerInch>       </o:OfficeDocumentSettings>     " +
+                    "</xml></noscript>  <![endif]-->   " +
+                    "<style>" +
+                    "    table, td, div, h1, p {font-family: Arial, sans-serif;}" +
+                    "   .token{padding:5px 5px;       background-color:rgba(0, 0, 0, 0.1);   border-radius:5px; text-align: center;    padding : 5px;}" +
+                    "</style>" +
+                    "</head>" +
+                    "<body style='margin:0;padding:0;'>  " +
+                    "<table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;background:#ffffff;'>     " +
+                    "<tr>       <td align='center' style='padding:0;'>         " +
+                    "<table role='presentation' style='width:602px;border-collapse:collapse;border:1px solid #cccccc;border-spacing:0;text-align:left;'>           " +
+                    "<tr>             <td align='center' style='padding:40px 0 30px 0;background:#70bbd9;'>               " +
+                    "<img src='https://assets.codepen.io/210284/h1.png' alt='' width='300' style='height:auto;display:block;' /></td></tr>" +
+                    "<tr>           <td style='padding:36px 30px 42px 30px;'>          " +
+                    " <table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;'>" +
+                    " <tr>         <td style='padding:0 0 36px 0;color:#153643;'>      " +
+                    " <h1 style='font-size:24px;margin:0 0 20px 0;font-family:Arial,sans-serif;'>Verification Account</h1>            " +
+                    " <p style='margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;'></p>     " +
+
+                    $" <p>{request.Body}</p> " +
+
+                    "<p style='margin:0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;'>" +
+                    "<a href='http://www.example.com' style='color:#ee4c50;text-decoration:underline;'> </a></p> </td> </tr>" +
+                    "<tr><td style='padding:0;'>" +
+                    "<table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;'>" +
+                    "<tr><td style='width:260px;padding:0;vertical-align:top;color:#153643;'>" +
+                    " <tr> <td style='padding:30px;background:#ee4c50;'> " +
+                    "<table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;font-size:9px;font-family:Arial,sans-serif;'>  " +
+                    "<tr><td style='padding:0;width:50%;' align='left'>" +
+                    "<p style='margin:0;font-size:14px;line-height:16px;font-family:Arial,sans-serif;color:#ffffff;'>" +
+                    "&reg; VinClean, HoChiMinh 2023<br/><a href='http://www.example.com' style='color:#ffffff;text-decoration:underline;'>Unsubscribe</a></p>   </td>           " +
+                    "<td style='padding:0;width:50%;' align='right'>                 <table role='presentation' style='border-collapse:collapse;border:0;border-spacing:0;'>             " +
+                    " <tr>     <td style='padding:0 0 0 10px;width:38px;'>  <a href='http://www.twitter.com/' style='color:#ffffff;'><img src='https://assets.codepen.io/210284/tw_1.png' alt='Twitter' width='38' style='height:auto;display:block;border:0;' /></a> </td>  <td style='padding:0 0 0 10px;width:38px;'> " +
+                    " <a href='http://www.facebook.com/' style='color:#ffffff;'><img src='https://assets.codepen.io/210284/fb_1.png' alt='Facebook' width='38' style='height:auto;display:block;border:0;' /></a></td> " +
+                    "</tr>" +
+                    "</table>" +
+                    "</td>" +
+                    "</tr>" +
+                    "</table></td></tr></table></td></tr></table></body></html>"
+
+            };
 
             using var smtp = new SmtpClient();
             smtp.Connect(_config.GetSection("EmailHost").Value, 587, SecureSocketOptions.StartTls);
@@ -73,12 +117,84 @@ namespace VinClean.Service.Service
                 email.Subject = "Verification Account";
                 email.Body = new TextPart(TextFormat.Html)
                 {
-                    Text = $"<p>Hello <i>{checkemail.Name}</i></p>" +
-                           $"<p>You registered an account on {checkemail.Email}, before being able to use your account you need to verify that this is your email address by clicking here: </p>" +
-                           $"<p>https://localhost:7013/api/Account/Verify?token={checkemail.VerificationToken}</p>" +
-                           $"<p>Or you can copy this Token and paste in Token form : </p>" +
-                           $"<p><b>{checkemail.VerificationToken}</b></p>" +
-                           "<p>Kind Regards, <h3>VinClean</h3></p>"
+
+                    Text= "<!DOCTYPE html> <html lang='en' xmlns='http://www.w3.org/1999/xhtml' xmlns:o='urn:schemas-microsoft-com:office:office'>" +
+                    "<head>   <meta charset='UTF-8'>   <meta name='viewport' content='width=device-width,initial-scale=1'>" +
+                    "  <meta name='x-apple-disable-message-reformatting'>   <title></title>   <!--[if mso]>   " +
+                    "<noscript>     <xml>       <o:OfficeDocumentSettings>         <o:PixelsPerInch>96</o:PixelsPerInch>       </o:OfficeDocumentSettings>     " +
+                    "</xml></noscript>  <![endif]-->   " +
+                    "<style>" +
+                    "    table, td, div, h1, p {font-family: Arial, sans-serif;}" +
+                    "   .token{padding:5px 5px;       background-color:rgba(0, 0, 0, 0.1);   border-radius:5px; text-align: center;    padding : 5px;}" +
+                    "</style>" +
+                    "</head>" +
+                    "<body style='margin:0;padding:0;'>  " +
+                    "<table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;background:#ffffff;'>     " +
+                    "<tr>       <td align='center' style='padding:0;'>         " +
+                    "<table role='presentation' style='width:602px;border-collapse:collapse;border:1px solid #cccccc;border-spacing:0;text-align:left;'>           " +
+                    "<tr>             <td align='center' style='padding:40px 0 30px 0;background:#70bbd9;'>               " +
+                    "<img src='https://assets.codepen.io/210284/h1.png' alt='' width='300' style='height:auto;display:block;' /></td></tr>" +
+                    "<tr>           <td style='padding:36px 30px 42px 30px;'>          " +
+                    " <table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;'>" +
+                    " <tr>         <td style='padding:0 0 36px 0;color:#153643;'>      " +
+                    " <h1 style='font-size:24px;margin:0 0 20px 0;font-family:Arial,sans-serif;'>Verification Account</h1>            " +
+                    " <p style='margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;'></p>     " +
+                    
+                    $" <p>Hello <i>{checkemail.Name}</i></p> " +
+                    $"<p>You registered an account on {checkemail.Email}, before being able to use your account you need to verify that this is your email address by clicking here: </p>" +
+                    $"<p>https://localhost:7013/api/Account/Verify?token={checkemail.VerificationToken}</p>" +
+                    $"<p>Or you can copy this Token and paste in Token form : </p>" +
+                    $"<p><b class='token'>{checkemail.VerificationToken}</b></p>" +
+                    $"<p>Kind Regards, <h3>VinClean</h3></p> " +
+                    
+                    "<p style='margin:0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;'>" +
+                    "<a href='http://www.example.com' style='color:#ee4c50;text-decoration:underline;'> </a></p> </td> </tr>" +
+                    "<tr><td style='padding:0;'>" +
+                    "<table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;'>" +
+                    "<tr><td style='width:260px;padding:0;vertical-align:top;color:#153643;'>" +
+                    " <tr> <td style='padding:30px;background:#ee4c50;'> " +
+                    "<table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;font-size:9px;font-family:Arial,sans-serif;'>  " +
+                    "<tr><td style='padding:0;width:50%;' align='left'>" +
+                    "<p style='margin:0;font-size:14px;line-height:16px;font-family:Arial,sans-serif;color:#ffffff;'>" +
+                    "&reg; VinClean, HoChiMinh 2023<br/><a href='http://www.example.com' style='color:#ffffff;text-decoration:underline;'>Unsubscribe</a></p>   </td>           " +
+                    "<td style='padding:0;width:50%;' align='right'>                 <table role='presentation' style='border-collapse:collapse;border:0;border-spacing:0;'>             " +
+                    " <tr>     <td style='padding:0 0 0 10px;width:38px;'>  <a href='http://www.twitter.com/' style='color:#ffffff;'><img src='https://assets.codepen.io/210284/tw_1.png' alt='Twitter' width='38' style='height:auto;display:block;border:0;' /></a> </td>  <td style='padding:0 0 0 10px;width:38px;'> " +
+                    " <a href='http://www.facebook.com/' style='color:#ffffff;'><img src='https://assets.codepen.io/210284/fb_1.png' alt='Facebook' width='38' style='height:auto;display:block;border:0;' /></a></td> " +
+                    "</tr>" +
+                    "</table>" +
+                    "</td>" +
+                    "</tr>" +
+                    "</table></td></tr></table></td></tr></table></body></html>"
+
+                    //Text = "<head>" +
+                    //"<style>" +
+                    //".myDiv {" +
+                    //"   border: 2px solid grey;"+
+                    //"background-color:rgba(0, 0, 0, 0.01);"+
+                    //"   text-align: center;" +
+                    //"   margin: 30px 100px;" +
+                    //"   padding:20px 20px;" +
+                    //"   font-family: Arial, sans-serif;" +
+                    //"   font-size: 15px;"+
+                    //"}" +
+                    //".token{" +
+                    //"   padding:5px 5px;" +
+                    //"   background-color:rgba(0, 0, 0, 0.1);" +
+                    //"   border-radius:5px;" +
+                    //"   text-align: center;" +
+                    //"}" +
+                    //"</style></head>" +
+                    //"<body>" +
+                    //"<h1>The div element</h1>" +
+                    //"<div class='myDiv'>" +
+                    //$"<p>Hello <i>{checkemail.Name}</i></p> " +
+                    //$"<p>You registered an account on {checkemail.Email}, before being able to use your account you need to verify that this is your email address by clicking here: </p>" +
+                    //$"<p>https://localhost:7013/api/Account/Verify?token={checkemail.VerificationToken}</p>" +
+                    //$"<p>Or you can copy this Token and paste in Token form : </p>" +
+                    //$"<p><b class='token'>{checkemail.VerificationToken}</b></p>" +
+                    //" <p>Kind Regards, <h3>VinClean</h3></p>" +
+                    //"+</div></body></html>"
+
                 };
 
                 using var smtp = new SmtpClient();
@@ -113,13 +229,13 @@ namespace VinClean.Service.Service
                 email.Body = new TextPart(TextFormat.Html)
                 {
                     Text = "Hello [name]," +
-                    $"\r\n\r\nSomebody requested a new password for the {checkemail.Name} account associated with {checkemail.Email}." +
-                    "\r\n\r\nNo changes have been made to your account yet." +
-                    "\r\n\r\nYou can reset your password by clicking the link below:" +
-                    "\r\n\r\nOr Use your secret code!:" +
-                    $"\r\n\r\n{checkemail.PasswordResetToken}" +
-                    "\r\n\r\nIf you did not request a new password, please let us know immediately by replying to this email." +
-                    "\r\n\r\nYours,\r\nThe VinClean team"
+                    $"  Somebody requested a new password for the {checkemail.Name} account associated with {checkemail.Email}." +
+                    "  No changes have been made to your account yet." +
+                    "  You can reset your password by clicking the   below:" +
+                    "  Or Use your secret code!:" +
+                    $"  {checkemail.PasswordResetToken}" +
+                    "  If you did not request a new password, please let us know immediately by replying to this email." +
+                    "  Yours, The VinClean team"
                 };
 
                 using var smtp = new SmtpClient();
@@ -148,14 +264,67 @@ namespace VinClean.Service.Service
                 email.Subject = "Verification Account";
                 email.Body = new TextPart(TextFormat.Html)
                 {
-                    Text = $"<p>Hello <i>{checkemail.Name}</i>,</p>" +
+
+                    Text = "<!DOCTYPE html> <html lang='en' xmlns='http://www.w3.org/1999/xhtml' xmlns:o='urn:schemas-microsoft-com:office:office'>" +
+                    "<head>   <meta charset='UTF-8'>   <meta name='viewport' content='width=device-width,initial-scale=1'>" +
+                    "  <meta name='x-apple-disable-message-reformatting'>   <title></title>   <!--[if mso]>   " +
+                    "<noscript>     <xml>       <o:OfficeDocumentSettings>         <o:PixelsPerInch>96</o:PixelsPerInch>       </o:OfficeDocumentSettings>     " +
+                    "</xml></noscript>  <![endif]-->   " +
+                    "<style>" +
+                    "    table, td, div, h1, p {font-family: Arial, sans-serif;}" +
+                    "   .token{padding:5px 5px;       background-color:rgba(0, 0, 0, 0.1);   border-radius:5px; text-align: center;    padding : 5px;}" +
+                    "</style>" +
+                    "</head>" +
+                    "<body style='margin:0;padding:0;'>  " +
+                    "<table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;background:#ffffff;'>     " +
+                    "<tr>       <td align='center' style='padding:0;'>         " +
+                    "<table role='presentation' style='width:602px;border-collapse:collapse;border:1px solid #cccccc;border-spacing:0;text-align:left;'>           " +
+                    "<tr>             <td align='center' style='padding:40px 0 30px 0;background:#70bbd9;'>               " +
+                    "<img src='https://assets.codepen.io/210284/h1.png' alt='' width='300' style='height:auto;display:block;' /></td></tr>" +
+                    "<tr>           <td style='padding:36px 30px 42px 30px;'>          " +
+                    " <table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;'>" +
+                    " <tr>         <td style='padding:0 0 36px 0;color:#153643;'>      " +
+                    " <h1 style='font-size:24px;margin:0 0 20px 0;font-family:Arial,sans-serif;'>Verification Account</h1>            " +
+                    " <p style='margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;'></p>     " +
+                   
+                    $"<p>Hello <i>{checkemail.Name}</i>,</p>" +
                     $"<p>Somebody requested a new password for the {checkemail.Name} account associated with {checkemail.Email}.</p>" +
                     "<p>No changes have been made to your account yet.</p>" +
-                    "<p>You can reset your password by clicking the link below:</p>" +
+                    "<p>You can reset your password by clicking the   below:</p>" +
                     "<p>Or Use your secret code!:</p>" +
-                    $"<p><b>{checkemail.PasswordResetToken}</b></p>" +
+                    $"<p><b class='token'>{checkemail.PasswordResetToken}</b></p>" +
+                    
                     "<p>If you did not request a new password, please let us know immediately by replying to this email.</p>" +
-                    "<p>Yours,<h3>The VinClean team</h3></p>"
+                    "<p>Yours,<h3>The VinClean team</h3></p>" +
+                    "<p style='margin:0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;'>" +
+                    "<a href='http://www.example.com' style='color:#ee4c50;text-decoration:underline;'> </a></p> </td> </tr>" +
+                    "<tr><td style='padding:0;'>" +
+                    "<table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;'>" +
+                    "<tr><td style='width:260px;padding:0;vertical-align:top;color:#153643;'>" +
+                    " <tr> <td style='padding:30px;background:#ee4c50;'> " +
+                    "<table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;font-size:9px;font-family:Arial,sans-serif;'>  " +
+                    "<tr><td style='padding:0;width:50%;' align='left'>" +
+                    "<p style='margin:0;font-size:14px;line-height:16px;font-family:Arial,sans-serif;color:#ffffff;'>" +
+                    "&reg; VinClean, HoChiMinh 2023<br/><a href='http://www.example.com' style='color:#ffffff;text-decoration:underline;'>Unsubscribe</a></p>   </td>           " +
+                    "<td style='padding:0;width:50%;' align='right'>                 <table role='presentation' style='border-collapse:collapse;border:0;border-spacing:0;'>             " +
+                    " <tr>     <td style='padding:0 0 0 10px;width:38px;'>  <a href='http://www.twitter.com/' style='color:#ffffff;'><img src='https://assets.codepen.io/210284/tw_1.png' alt='Twitter' width='38' style='height:auto;display:block;border:0;' /></a> </td>  <td style='padding:0 0 0 10px;width:38px;'> " +
+                    " <a href='http://www.facebook.com/' style='color:#ffffff;'><img src='https://assets.codepen.io/210284/fb_1.png' alt='Facebook' width='38' style='height:auto;display:block;border:0;' /></a></td> " +
+                    "</tr>" +
+                    "</table>" +
+                    "</td>" +
+                    "</tr>" +
+                    "</table></td></tr></table></td></tr></table></body></html>"
+
+
+
+                    //Text = $"<p>Hello <i>{checkemail.Name}</i>,</p>" +
+                    //$"<p>Somebody requested a new password for the {checkemail.Name} account associated with {checkemail.Email}.</p>" +
+                    //"<p>No changes have been made to your account yet.</p>" +
+                    //"<p>You can reset your password by clicking the   below:</p>" +
+                    //"<p>Or Use your secret code!:</p>" +
+                    //$"<p><b>{checkemail.PasswordResetToken}</b></p>" +
+                    //"<p>If you did not request a new password, please let us know immediately by replying to this email.</p>" +
+                    //"<p>Yours,<h3>The VinClean team</h3></p>"
                 };
 
                 using var smtp = new SmtpClient();
@@ -198,10 +367,33 @@ namespace VinClean.Service.Service
                 email.Subject = "Thông báo dịch vụ VinClean";
                 email.Body = new TextPart(TextFormat.Html)
                 {
-                    Text = $"<div><p>Xin chào <i>{checkemail.Name}</i>,</p>" +
+
+                    Text = "<!DOCTYPE html> <html lang='en' xmlns='http://www.w3.org/1999/xhtml' xmlns:o='urn:schemas-microsoft-com:office:office'>" +
+                    "<head>   <meta charset='UTF-8'>   <meta name='viewport' content='width=device-width,initial-scale=1'>" +
+                    "  <meta name='x-apple-disable-message-reformatting'>   <title></title>   <!--[if mso]>   " +
+                    "<noscript>     <xml>       <o:OfficeDocumentSettings>         <o:PixelsPerInch>96</o:PixelsPerInch>       </o:OfficeDocumentSettings>     " +
+                    "</xml></noscript>  <![endif]-->   " +
+                    "<style>" +
+                    "    table, td, div, h1, p {font-family: Arial, sans-serif;}" +
+                    "   .token{padding:5px 5px;       background-color:rgba(0, 0, 0, 0.1);   border-radius:5px; text-align: center;    padding : 5px;}" +
+                    "</style>" +
+                    "</head>" +
+                    "<body style='margin:0;padding:0;'>  " +
+                    "<table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;background:#ffffff;'>     " +
+                    "<tr>       <td align='center' style='padding:0;'>         " +
+                    "<table role='presentation' style='width:602px;border-collapse:collapse;border:1px solid #cccccc;border-spacing:0;text-align:left;'>           " +
+                    "<tr>             <td align='center' style='padding:40px 0 30px 0;background:#70bbd9;'>               " +
+                    "<img src='https://assets.codepen.io/210284/h1.png' alt='' width='300' style='height:auto;display:block;' /></td></tr>" +
+                    "<tr>           <td style='padding:36px 30px 42px 30px;'>          " +
+                    " <table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;'>" +
+                    " <tr>         <td style='padding:0 0 36px 0;color:#153643;'>      " +
+                    " <h1 style='font-size:24px;margin:0 0 20px 0;font-family:Arial,sans-serif;'>Verification Account</h1>            " +
+                    " <p style='margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;'></p>     " +
+                    $"<div><p>Xin chào <i>{checkemail.Name}</i>,</p>" +
                     $"<p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.</p>" +
                     "<p>Chúng tôi gửi lại bạn thông tin Dịch vụ và Nhân viên:</p>" +
                     "<h4>Thông tin Khách Hàng:</h4>" +
+                   
                     $"<p><b>Tên</b>: {checkemail.Name} </p>" +
                     $"<p><b>Điện thoại</b>: {process.Phone} </p>" +
                     $"<p><b>Địa chỉ</b>: {process.Address} </p>" +
@@ -212,10 +404,48 @@ namespace VinClean.Service.Service
                     $"<p><b>Điện thoại</b>: {process.EmployeePhone} </p>" +
                     $"<p><b>Email</b>: {process.EmployeeEmail} </p>" +
                     $"<p><b>Xin vui lòng hãy đến đúng giờ. </p>" +
+                    
                     "<p>Nếu bạn có bất cứ phàn nàn nào hãy gửi email phản hồi tới địa chỉ Email: vincleanvhgp@gmail.com " +
                     "<p>hoặc Hotline: 0329 300 159.</p>" +
                     "<p>Chúng tôi sẽ phản hồi trong thờ gian sớm nhất.</p>" +
-                    "<p><h3>The VinClean team</h3></p </div>"
+                    "<p><h3>The VinClean team</h3></p </div>" +
+                    "<p style='margin:0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;'>" +
+                    "<a href='http://www.example.com' style='color:#ee4c50;text-decoration:underline;'> </a></p> </td> </tr>" +
+                    "<tr><td style='padding:0;'>" +
+                    "<table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;'>" +
+                    "<tr><td style='width:260px;padding:0;vertical-align:top;color:#153643;'>" +
+                    " <tr> <td style='padding:30px;background:#ee4c50;'> " +
+                    "<table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;font-size:9px;font-family:Arial,sans-serif;'>  " +
+                    "<tr><td style='padding:0;width:50%;' align='left'>" +
+                    "<p style='margin:0;font-size:14px;line-height:16px;font-family:Arial,sans-serif;color:#ffffff;'>" +
+                    "&reg; VinClean, HoChiMinh 2023<br/><a href='http://www.example.com' style='color:#ffffff;text-decoration:underline;'>Unsubscribe</a></p>   </td>           " +
+                    "<td style='padding:0;width:50%;' align='right'>                 <table role='presentation' style='border-collapse:collapse;border:0;border-spacing:0;'>             " +
+                    " <tr>     <td style='padding:0 0 0 10px;width:38px;'>  <a href='http://www.twitter.com/' style='color:#ffffff;'><img src='https://assets.codepen.io/210284/tw_1.png' alt='Twitter' width='38' style='height:auto;display:block;border:0;' /></a> </td>  <td style='padding:0 0 0 10px;width:38px;'> " +
+                    " <a href='http://www.facebook.com/' style='color:#ffffff;'><img src='https://assets.codepen.io/210284/fb_1.png' alt='Facebook' width='38' style='height:auto;display:block;border:0;' /></a></td> " +
+                    "</tr>" +
+                    "</table>" +
+                    "</td>" +
+                    "</tr>" +
+                    "</table></td></tr></table></td></tr></table></body></html>"
+
+                    //Text = $"<div><p>Xin chào <i>{checkemail.Name}</i>,</p>" +
+                    //$"<p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.</p>" +
+                    //"<p>Chúng tôi gửi lại bạn thông tin Dịch vụ và Nhân viên:</p>" +
+                    //"<h4>Thông tin Khách Hàng:</h4>" +
+                    //$"<p><b>Tên</b>: {checkemail.Name} </p>" +
+                    //$"<p><b>Điện thoại</b>: {process.Phone} </p>" +
+                    //$"<p><b>Địa chỉ</b>: {process.Address} </p>" +
+                    //$"<p><b>Ngày Làm</b>: {process.Date.ToString("dd/MM/yyyy")}</p>" +
+                    //$"<p><b>Giờ Làm</b>: {process.StartTime} - {process.EndTime}</p>" +
+                    //"<h4>Thông tin Nhân viên:</h4>" +
+                    //$"<p><b>Tên Nhân Viên</b>: {process.EmployeeName} </p>" +
+                    //$"<p><b>Điện thoại</b>: {process.EmployeePhone} </p>" +
+                    //$"<p><b>Email</b>: {process.EmployeeEmail} </p>" +
+                    //$"<p><b>Xin vui lòng hãy đến đúng giờ. </p>" +
+                    //"<p>Nếu bạn có bất cứ phàn nàn nào hãy gửi email phản hồi tới địa chỉ Email: vincleanvhgp@gmail.com " +
+                    //"<p>hoặc Hotline: 0329 300 159.</p>" +
+                    //"<p>Chúng tôi sẽ phản hồi trong thờ gian sớm nhất.</p>" +
+                    //"<p><h3>The VinClean team</h3></p </div>"
                 };
 
                 using var smtp = new SmtpClient();
@@ -257,7 +487,30 @@ namespace VinClean.Service.Service
                 email.Subject = "THÔNG BÁO CÔNG VIỆC";
                 email.Body = new TextPart(TextFormat.Html)
                 {
-                    Text = $"<p>Thông báo tới nhân viên <i>{checkemail.Name}</i>,</p>" +
+
+                    Text = "<!DOCTYPE html> <html lang='en' xmlns='http://www.w3.org/1999/xhtml' xmlns:o='urn:schemas-microsoft-com:office:office'>" +
+                    "<head>   <meta charset='UTF-8'>   <meta name='viewport' content='width=device-width,initial-scale=1'>" +
+                    "  <meta name='x-apple-disable-message-reformatting'>   <title></title>   <!--[if mso]>   " +
+                    "<noscript>     <xml>       <o:OfficeDocumentSettings>         <o:PixelsPerInch>96</o:PixelsPerInch>       </o:OfficeDocumentSettings>     " +
+                    "</xml></noscript>  <![endif]-->   " +
+                    "<style>" +
+                    "    table, td, div, h1, p {font-family: Arial, sans-serif;}" +
+                    "   .token{padding:5px 5px;       background-color:rgba(0, 0, 0, 0.1);   border-radius:5px; text-align: center;    padding : 5px;}" +
+                    "</style>" +
+                    "</head>" +
+                    "<body style='margin:0;padding:0;'>  " +
+                    "<table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;background:#ffffff;'>     " +
+                    "<tr>       <td align='center' style='padding:0;'>         " +
+                    "<table role='presentation' style='width:602px;border-collapse:collapse;border:1px solid #cccccc;border-spacing:0;text-align:left;'>           " +
+                    "<tr>             <td align='center' style='padding:40px 0 30px 0;background:#70bbd9;'>               " +
+                    "<img src='https://assets.codepen.io/210284/h1.png' alt='' width='300' style='height:auto;display:block;' /></td></tr>" +
+                    "<tr>           <td style='padding:36px 30px 42px 30px;'>          " +
+                    " <table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;'>" +
+                    " <tr>         <td style='padding:0 0 36px 0;color:#153643;'>      " +
+                    " <h1 style='font-size:24px;margin:0 0 20px 0;font-family:Arial,sans-serif;'>Verification Account</h1>            " +
+                    " <p style='margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;'></p>     " +
+                    
+                    $"<p>Thông báo tới nhân viên <i>{checkemail.Name}</i>,</p>" +
                     $"<p>Bạn có một công việc mới.</p>" +
                     "<p>Chúng tôi gửi lại bạn thông tin Dịch vụ và Khác Hàng:</p>" +
                     "<h4>Thông tin Khách Hàng:</h4>" +
@@ -270,9 +523,46 @@ namespace VinClean.Service.Service
                     $"<p><b>Tên Nhân Viên</b>: {process.EmployeeName} </p>" +
                     $"<p><b>Điện thoại</b>: {process.EmployeePhone} </p>" +
                     $"<p><b>Email</b>: {process.EmployeeEmail} </p>" +
+                    
                     "<p>Nếu bạn có bất cứ phàn nàn nào hãy gửi email phản hồi tới địa chỉ Email: vincleanvhgp@gmail.com hoặc Hotline: 0329 300 159." +
                     "Chúng tôi sẽ phản hồi trong thờ gian sớm nhất.</p>" +
-                    "<p>Yours,<h3>The VinClean team</h3></p>"
+                    "<p>Yours,<h3>The VinClean team</h3></p>" +
+                    "<p style='margin:0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;'>" +
+                    "<a href='http://www.example.com' style='color:#ee4c50;text-decoration:underline;'> </a></p> </td> </tr>" +
+                    "<tr><td style='padding:0;'>" +
+                    "<table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;'>" +
+                    "<tr><td style='width:260px;padding:0;vertical-align:top;color:#153643;'>" +
+                    " <tr> <td style='padding:30px;background:#ee4c50;'> " +
+                    "<table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;font-size:9px;font-family:Arial,sans-serif;'>  " +
+                    "<tr><td style='padding:0;width:50%;' align='left'>" +
+                    "<p style='margin:0;font-size:14px;line-height:16px;font-family:Arial,sans-serif;color:#ffffff;'>" +
+                    "&reg; VinClean, HoChiMinh 2023<br/><a href='http://www.example.com' style='color:#ffffff;text-decoration:underline;'>Unsubscribe</a></p>   </td>           " +
+                    "<td style='padding:0;width:50%;' align='right'>                 <table role='presentation' style='border-collapse:collapse;border:0;border-spacing:0;'>             " +
+                    " <tr>     <td style='padding:0 0 0 10px;width:38px;'>  <a href='http://www.twitter.com/' style='color:#ffffff;'><img src='https://assets.codepen.io/210284/tw_1.png' alt='Twitter' width='38' style='height:auto;display:block;border:0;' /></a> </td>  <td style='padding:0 0 0 10px;width:38px;'> " +
+                    " <a href='http://www.facebook.com/' style='color:#ffffff;'><img src='https://assets.codepen.io/210284/fb_1.png' alt='Facebook' width='38' style='height:auto;display:block;border:0;' /></a></td> " +
+                    "</tr>" +
+                    "</table>" +
+                    "</td>" +
+                    "</tr>" +
+                    "</table></td></tr></table></td></tr></table></body></html>"
+
+
+                    //Text = $"<p>Thông báo tới nhân viên <i>{checkemail.Name}</i>,</p>" +
+                    //$"<p>Bạn có một công việc mới.</p>" +
+                    //"<p>Chúng tôi gửi lại bạn thông tin Dịch vụ và Khác Hàng:</p>" +
+                    //"<h4>Thông tin Khách Hàng:</h4>" +
+                    //$"<p><b>Tên</b>: {process.Name} </p>" +
+                    //$"<p><b>Điện thoại</b>: {process.Phone} </p>" +
+                    //$"<p><b>Địa chỉ</b>: {process.Address} </p>" +
+                    //$"<p><b>Ngày Làm</b>: {process.Date.ToString("dd/MM/yyyy")}</p>" +
+                    //$"<p><b>Giờ Làm</b>: {process.StartTime} - {process.EndTime}</p>" +
+                    //"<h4>Thông tin Nhân viên:</h4>" +
+                    //$"<p><b>Tên Nhân Viên</b>: {process.EmployeeName} </p>" +
+                    //$"<p><b>Điện thoại</b>: {process.EmployeePhone} </p>" +
+                    //$"<p><b>Email</b>: {process.EmployeeEmail} </p>" +
+                    //"<p>Nếu bạn có bất cứ phàn nàn nào hãy gửi email phản hồi tới địa chỉ Email: vincleanvhgp@gmail.com hoặc Hotline: 0329 300 159." +
+                    //"Chúng tôi sẽ phản hồi trong thờ gian sớm nhất.</p>" +
+                    //"<p>Yours,<h3>The VinClean team</h3></p>"
                 };
 
                 using var smtp = new SmtpClient();
@@ -315,7 +605,29 @@ namespace VinClean.Service.Service
                 email.Subject = "THÔNG BÁO CẬP NHẬT NHÂN VIÊN";
                 email.Body = new TextPart(TextFormat.Html)
                 {
-                    Text = $"<p>Xin chào <i>{checkemail.Name}</i>,</p>" +
+                    Text = "<!DOCTYPE html> <html lang='en' xmlns='http://www.w3.org/1999/xhtml' xmlns:o='urn:schemas-microsoft-com:office:office'>" +
+                    "<head>   <meta charset='UTF-8'>   <meta name='viewport' content='width=device-width,initial-scale=1'>" +
+                    "  <meta name='x-apple-disable-message-reformatting'>   <title></title>   <!--[if mso]>   " +
+                    "<noscript>     <xml>       <o:OfficeDocumentSettings>         <o:PixelsPerInch>96</o:PixelsPerInch>       </o:OfficeDocumentSettings>     " +
+                    "</xml></noscript>  <![endif]-->   " +
+                    "<style>" +
+                    "    table, td, div, h1, p {font-family: Arial, sans-serif;}" +
+                    "   .token{padding:5px 5px;       background-color:rgba(0, 0, 0, 0.1);   border-radius:5px; text-align: center;    padding : 5px;}" +
+                    "</style>" +
+                    "</head>" +
+                    "<body style='margin:0;padding:0;'>  " +
+                    "<table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;background:#ffffff;'>     " +
+                    "<tr>       <td align='center' style='padding:0;'>         " +
+                    "<table role='presentation' style='width:602px;border-collapse:collapse;border:1px solid #cccccc;border-spacing:0;text-align:left;'>           " +
+                    "<tr>             <td align='center' style='padding:40px 0 30px 0;background:#70bbd9;'>               " +
+                    "<img src='https://assets.codepen.io/210284/h1.png' alt='' width='300' style='height:auto;display:block;' /></td></tr>" +
+                    "<tr>           <td style='padding:36px 30px 42px 30px;'>          " +
+                    " <table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;'>" +
+                    " <tr>         <td style='padding:0 0 36px 0;color:#153643;'>      " +
+                    " <h1 style='font-size:24px;margin:0 0 20px 0;font-family:Arial,sans-serif;'>Verification Account</h1>            " +
+                    " <p style='margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;'></p>     " +
+                    
+                    $"<p>Xin chào <i>{checkemail.Name}</i>,</p>" +
                     $"<p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.</p>" +
                     "<p>Chúng tôi gửi lại bạn thông tin Dịch vụ và Nhân viên:</p>" +
                     "<h4>Thông tin Khách Hàng:</h4>" +
@@ -329,10 +641,48 @@ namespace VinClean.Service.Service
                     $"<p><b>Điện thoại</b>: {process.EmployeePhone} </p>" +
                     $"<p><b>Email</b>: {process.EmployeeEmail} </p>" +
                     $"<p><b>Xin vui lòng hãy đến đúng giờ. </p>" +
+                    
                     "<p>Nếu bạn có bất cứ phàn nàn nào hãy gửi email phản hồi tới địa chỉ Email: vincleanvhgp@gmail.com " +
                     "<p>hoặc Hotline: 0329 300 159.</p>" +
                     "<p>Chúng tôi sẽ phản hồi trong thờ gian sớm nhất.</p>" +
-                    "<p><h3>The VinClean team</h3></p>"
+                    "<p><h3>The VinClean team</h3></p>" +
+                    "<p style='margin:0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;'>" +
+                    "<a href='http://www.example.com' style='color:#ee4c50;text-decoration:underline;'> </a></p> </td> </tr>" +
+                    "<tr><td style='padding:0;'>" +
+                    "<table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;'>" +
+                    "<tr><td style='width:260px;padding:0;vertical-align:top;color:#153643;'>" +
+                    " <tr> <td style='padding:30px;background:#ee4c50;'> " +
+                    "<table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;font-size:9px;font-family:Arial,sans-serif;'>  " +
+                    "<tr><td style='padding:0;width:50%;' align='left'>" +
+                    "<p style='margin:0;font-size:14px;line-height:16px;font-family:Arial,sans-serif;color:#ffffff;'>" +
+                    "&reg; VinClean, HoChiMinh 2023<br/><a href='http://www.example.com' style='color:#ffffff;text-decoration:underline;'>Unsubscribe</a></p>   </td>           " +
+                    "<td style='padding:0;width:50%;' align='right'>                 <table role='presentation' style='border-collapse:collapse;border:0;border-spacing:0;'>             " +
+                    " <tr>     <td style='padding:0 0 0 10px;width:38px;'>  <a href='http://www.twitter.com/' style='color:#ffffff;'><img src='https://assets.codepen.io/210284/tw_1.png' alt='Twitter' width='38' style='height:auto;display:block;border:0;' /></a> </td>  <td style='padding:0 0 0 10px;width:38px;'> " +
+                    " <a href='http://www.facebook.com/' style='color:#ffffff;'><img src='https://assets.codepen.io/210284/fb_1.png' alt='Facebook' width='38' style='height:auto;display:block;border:0;' /></a></td> " +
+                    "</tr>" +
+                    "</table>" +
+                    "</td>" +
+                    "</tr>" +
+                    "</table></td></tr></table></td></tr></table></body></html>"
+
+                    //Text = $"<p>Xin chào <i>{checkemail.Name}</i>,</p>" +
+                    //$"<p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.</p>" +
+                    //"<p>Chúng tôi gửi lại bạn thông tin Dịch vụ và Nhân viên:</p>" +
+                    //"<h4>Thông tin Khách Hàng:</h4>" +
+                    //$"<p><b>Tên</b>: {checkemail.Name} </p>" +
+                    //$"<p><b>Điện thoại</b>: {process.Phone} </p>" +
+                    //$"<p><b>Địa chỉ</b>: {process.Address} </p>" +
+                    //$"<p><b>Ngày Làm</b>: {process.Date.ToString("dd/MM/yyyy")}</p>" +
+                    //$"<p><b>Giờ Làm</b>: {process.StartTime} - {process.EndTime}</p>" +
+                    //"<h4>Thông tin Nhân viên:</h4>" +
+                    //$"<p><b>Tên Nhân Viên</b>: {process.EmployeeName} </p>" +
+                    //$"<p><b>Điện thoại</b>: {process.EmployeePhone} </p>" +
+                    //$"<p><b>Email</b>: {process.EmployeeEmail} </p>" +
+                    //$"<p><b>Xin vui lòng hãy đến đúng giờ. </p>" +
+                    //"<p>Nếu bạn có bất cứ phàn nàn nào hãy gửi email phản hồi tới địa chỉ Email: vincleanvhgp@gmail.com " +
+                    //"<p>hoặc Hotline: 0329 300 159.</p>" +
+                    //"<p>Chúng tôi sẽ phản hồi trong thờ gian sớm nhất.</p>" +
+                    //"<p><h3>The VinClean team</h3></p>"
                 };
 
                 using var smtp = new SmtpClient();
