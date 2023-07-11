@@ -13,7 +13,7 @@ namespace VinClean.Repo.Repository
     public interface IRatingRepository
     {
         Task<ICollection<RatingModelDTO>> GetRatinglist();
-        Task<ICollection<Rating>> GetRatingByService(int id);
+        Task<ICollection<RatingModelDTO>> GetRatingByService(int id);
         Task<Rating> GetRatingById(int id);
         Task<bool> AddRating(Rating rating);
         Task<bool> UpdateRating(Rating rating);
@@ -50,21 +50,49 @@ namespace VinClean.Repo.Repository
                            ServiceName = s.Name,
                            ServiceType = subt.Type1,
                            Note = subo.Note,
-                           CustomerName = subc.FirstName,
+                           CustomerFirstName = subc.FirstName,
+                           CustomerLastName = subc.LastName,
                            Rate = subr.Rate,
                            Comment = subr.Comment,
-                           RatedDate = subr.CreatedDate
+                           CreatedDate = subr.CreatedDate
                        };
 
             return await list.ToListAsync();
         }
 
-        async Task<ICollection<Rating>> IRatingRepository.GetRatingByService(int id)
+        async Task<ICollection<RatingModelDTO>> IRatingRepository.GetRatingByService(int id)
         {
-            return await _context.Ratings.Include(r => r.Service)
-                                 .Where(r => r.Service.TypeId == id)
-                                 .Include(c => c.Customer)
-                                 .ToListAsync();
+            //return await _context.Ratings.Include(r => r.Service)
+            //                     .Where(r => r.Service.TypeId == id)
+            //                     .Include(c => c.Customer)
+            //                     .ToListAsync();
+
+            var list = from r in _context.Ratings
+                        join s in _context.Services on r.ServiceId equals s.ServiceId into rs
+                        from subS in rs.DefaultIfEmpty()
+                        join t in _context.Types on subS.TypeId equals t.TypeId into st
+                        from subT in st.DefaultIfEmpty()
+                        join c in _context.Customers on r.CustomerId equals c.CustomerId into cr
+                        from subC in cr.DefaultIfEmpty()
+                        join a in _context.Accounts on subC.AccountId equals a.AccountId into ac
+                        from subA in ac.DefaultIfEmpty()
+                        where subS.TypeId == id
+                        select new RatingModelDTO
+                        {
+                            TypeId = subT.TypeId,
+                            ServiceId = subS.ServiceId,
+                            ServiceName = subS.Name,
+                            CustomerId = subC.CustomerId,
+                            Img = subA.Img,
+                            CustomerFirstName = subC.FirstName,
+                            CustomerLastName = subC.LastName,
+                            Rate = r.Rate,
+                            Comment = r.Comment,
+                            CreatedDate = r.CreatedDate,
+                            ModifiedDate = r.ModifiedDate,
+                            ModifiedBy = r.ModifiedBy
+                        };
+            return await list.ToListAsync();
         }
 
         async Task<Rating> IRatingRepository.GetRatingById(int id)

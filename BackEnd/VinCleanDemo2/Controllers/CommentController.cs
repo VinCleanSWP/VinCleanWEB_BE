@@ -47,7 +47,6 @@ namespace VinClean.Controllers
         public async Task<ActionResult<Comment>> CreateComment(CommentDTO request)
         {
 
-
             var newComment = await _service.CreateComment(request);
             if (newComment.Success == false && newComment.Message == "Exist")
             {

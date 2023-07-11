@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using VinClean.Repo.Models;
 using VinClean.Service.DTO.Order;
-using VinClean.Service.DTO.Order;
 using VinClean.Service.Service;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -33,7 +32,7 @@ namespace VinClean.Controllers
 
         // POST api/<OrderController>
         [HttpPost]
-        public async Task<ActionResult<Order>> AddOrder(NewOderDTO request)
+        public async Task<ActionResult<OrderDTO>> AddOrder(NewOderDTO request)
         {
             var newOrder = await _service.AddOrder(request);
             if (newOrder.Success == false && newOrder.Message == "Exist")
