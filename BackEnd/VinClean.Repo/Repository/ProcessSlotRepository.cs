@@ -67,7 +67,7 @@ namespace VinClean.Repo.Repository
                             Date = p.Date,
                             StartTime = p.StarTime,
                             EndTime = p.EndTime,
-                            NewEmployeeId = (int)ps.NewEmployeeId,
+                            NewEmployeeId = ps.NewEmployeeId,
                             NewEmployeeName = neac.Name,
                             NewEmployePhone = ne.Phone,
                             NewEmployeEmail = neac.Email,

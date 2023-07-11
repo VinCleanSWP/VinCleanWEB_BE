@@ -23,7 +23,7 @@ namespace VinClean.Repo.Models
         public TimeSpan? StartTime { get; set; }
         public TimeSpan? EndTime { get; set; }
         public string NewEmployeeName { get; set; }
-        public int NewEmployeeId { get; set; }
+        public int? NewEmployeeId { get; set; }
         public string NewEmployePhone { get; set; }
         public string NewEmployeEmail { get; set; }
         public string NewEmployeImg { get; set; }

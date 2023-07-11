@@ -99,8 +99,8 @@ namespace VinClean.Service.Service
         public async Task<ServiceResponse<EmployeeDTO>> DeleteEmployee(int id)
         {
             ServiceResponse<EmployeeDTO> _response = new();
-            try
-            {
+/*            try
+            {*/
                 var existingEmployee = await _repository.GetEmployeeById(id);
                 if (existingEmployee == null)
                 {
@@ -123,14 +123,14 @@ namespace VinClean.Service.Service
                 _response.Data = _OrderDTO;
                 _response.Message = "Deleted";
 
-            }
+ /*           }
             catch (Exception ex)
             {
                 _response.Success = false;
                 _response.Data = null;
                 _response.Message = "Error";
                 _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
-            }
+            }*/
             return _response;
         }
 
