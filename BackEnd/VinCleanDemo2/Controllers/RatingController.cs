@@ -26,11 +26,11 @@ namespace VinClean.Controllers
         }
 
         [HttpGet("Service/{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ServiceDTO))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RatingModelDTO))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<List<ServiceDTO>>> GetByServiceId(int id)
+        public async Task<ActionResult<List<RatingModelDTO>>> GetByServiceId(int id)
         {
             if (id <= 0)
             {
