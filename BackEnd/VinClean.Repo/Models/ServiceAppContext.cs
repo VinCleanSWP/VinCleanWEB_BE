@@ -267,9 +267,13 @@ public partial class ServiceAppContext : DbContext
 
         modelBuilder.Entity<FinshedBy>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("FinshedBy");
+            //entity
+            //    .HasNoKey()
+            //    .ToTable("FinshedBy");
+
+            entity.HasKey(e => e.OrderId);
+            
+            entity.ToTable("FinshedBy");
 
             entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
             entity.Property(e => e.OrderId).HasColumnName("order_id");
@@ -313,9 +317,13 @@ public partial class ServiceAppContext : DbContext
 
         modelBuilder.Entity<OrderDetail>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("Order_Detail");
+            //entity
+            //    .HasNoKey()
+            //    .ToTable("Order_Detail");
+
+            entity.HasKey(e => e.OrderId);
+            
+            entity.ToTable("Order_Detail");
 
             entity.Property(e => e.OrderId).HasColumnName("order_id");
             entity.Property(e => e.RateId).HasColumnName("rate_id");
@@ -384,9 +392,13 @@ public partial class ServiceAppContext : DbContext
 
         modelBuilder.Entity<ProcessDetail>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("Process_Detail");
+            //entity
+            //    .HasNoKey()
+            //    .ToTable("Process_Detail");
+
+            entity.HasKey(e => e.ProcessId);
+            
+            entity.ToTable("Process_Detail");
 
             entity.Property(e => e.ProcessId).HasColumnName("process_id");
             entity.Property(e => e.ServiceId).HasColumnName("service_id");
@@ -402,9 +414,13 @@ public partial class ServiceAppContext : DbContext
 
         modelBuilder.Entity<ProcessSlot>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("Process_Slot");
+            //entity
+            //    .HasNoKey()
+            //    .ToTable("Process_Slot");
+
+            entity.HasKey(e => e.ProcessId);
+
+            entity.ToTable("Process_Slot");
 
             entity.Property(e => e.CreateAt)
                 .HasColumnType("datetime")
@@ -618,9 +634,13 @@ public partial class ServiceAppContext : DbContext
 
         modelBuilder.Entity<WorkingBy>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("WorkingBy");
+            //entity
+            //    .HasNoKey()
+            //    .ToTable("WorkingBy");
+
+            entity.HasKey(e => e.ProcessId);
+
+            entity.ToTable("WorkingBy");
 
             entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
             entity.Property(e => e.ProcessId).HasColumnName("process_id");

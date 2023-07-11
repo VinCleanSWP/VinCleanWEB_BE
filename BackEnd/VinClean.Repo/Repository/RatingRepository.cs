@@ -43,6 +43,8 @@ namespace VinClean.Repo.Repository
                        join o in _context.Orders on subc.CustomerId equals o.CustomerId into oc
                        from subo in oc.DefaultIfEmpty()
                        where subo.CustomerId == subc.CustomerId && s.ServiceId == subr.ServiceId
+                       join a in _context.Accounts on subc.AccountId equals a.AccountId into ac
+                       from suba in ac.DefaultIfEmpty()
                        select new RatingModelDTO
                        {
                            RateId = subr.RateId,
@@ -54,7 +56,8 @@ namespace VinClean.Repo.Repository
                            CustomerLastName = subc.LastName,
                            Rate = subr.Rate,
                            Comment = subr.Comment,
-                           CreatedDate = subr.CreatedDate
+                           CreatedDate = subr.CreatedDate,
+                           Img = suba.Img
                        };
 
             return await list.ToListAsync();
