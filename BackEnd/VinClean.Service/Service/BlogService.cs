@@ -110,9 +110,10 @@ namespace VinClean.Service.Service
         async Task<ServiceResponse<BlogDTO>> IBlogService.DeleteBlog(int id)
         {
             ServiceResponse<BlogDTO> _response = new();
-            try
-            {
+            //try
+            //{
                 var existingBlog = await _repository.GetBlogById(id);
+            var existingComment = await _commentRepository.GetCommentsByBlogId(id);
                 if (existingBlog == null)
                 {
                     _response.Success = false;
@@ -121,7 +122,7 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                if (!await _repository.Deleteblog(existingBlog))
+                if (!await _repository.Deleteblog(existingBlog)&& !await _commentRepository.DeleteComment((Comment)existingComment))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";
@@ -134,14 +135,14 @@ namespace VinClean.Service.Service
                 _response.Data = _blogDTO;
                 _response.Message = "Deleted";
 
-            }
-            catch (Exception ex)
-            {
-                _response.Success = false;
-                _response.Data = null;
-                _response.Message = "Error";
-                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    _response.Success = false;
+            //    _response.Data = null;
+            //    _response.Message = "Error";
+            //    _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            //}
             return _response;
         }
 

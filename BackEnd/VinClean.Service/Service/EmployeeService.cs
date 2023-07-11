@@ -54,6 +54,7 @@ namespace VinClean.Service.Service
                     IsDeleted = false, // set the isDeleted flag to false by default
                     CreatedDate = DateTime.Now, // set the created date to the current date/time
                     Gender = request.Gender,
+                   
                     Img = request.Img,
 
 
@@ -110,7 +111,7 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                if (await _repository.DeleteEmployee(existingEmployee))
+                if (!await _repository.DeleteEmployee(existingEmployee))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";

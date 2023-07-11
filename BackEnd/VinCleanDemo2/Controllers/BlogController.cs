@@ -153,11 +153,7 @@ namespace VinClean.Controllers
             var deleteBlog = await _service.DeleteBlog(id);
 
 
-            if (deleteBlog.Success == false && deleteBlog.Message == "NotFound")
-            {
-               ModelState.AddModelError("", "Blog Not found");
-                return StatusCode(404, ModelState);
-            }
+            
 
             if (deleteBlog.Success == false && deleteBlog.Message == "RepoError")
             {
