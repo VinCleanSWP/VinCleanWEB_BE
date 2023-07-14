@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using VinClean.Repo.Models;
 using VinClean.Repo.Repository;
 using VinClean.Service.DTO;
+using VinClean.Service.DTO.WorkingBy;
 using VinClean.Service.DTO.WorkingSlot;
 
 namespace VinClean.Service.Service
@@ -18,6 +19,7 @@ namespace VinClean.Service.Service
         Task<ServiceResponse<WorkingByDTO>> DeleteWB(int id);
         Task<ServiceResponse<WorkingByDTO>> AddWB(WorkingByDTO request);
         Task<ServiceResponse<WorkingByDTO>> UpdateWB(WorkingByDTO request);
+        Task<ServiceResponse<LocationDTO>> UpdateLocation(LocationDTO request);
         Task<ServiceResponse<WorkingByDTO>> AcceptRequest(WorkingByDTO request);
     }
     public class WorkingByService : IWorkingByService
@@ -125,6 +127,47 @@ namespace VinClean.Service.Service
             }
             return _response;
         }
+
+
+        public async Task<ServiceResponse<LocationDTO>> UpdateLocation(LocationDTO request)
+        {
+            ServiceResponse<LocationDTO> _response = new();
+            //try
+            //{
+                var existingWSlot = await _repository.GetWorkingByByProcessId(request.ProcessId);
+                if (existingWSlot == null)
+                {
+                    _response.Success = false;
+                    _response.Message = "NotFound";
+                    _response.Data = null;
+                    return _response;
+                }
+                existingWSlot.Latitude = request.Latitude;
+                existingWSlot.Longtitude = request.Longtitude;
+                if (!await _repository.UpdateWorkingBy(existingWSlot))
+                {
+                    _response.Success = false;
+                    _response.Message = "RepoError";
+                    _response.Data = null;
+                    return _response;
+                }
+
+                var _WSlotDTO = _mapper.Map<LocationDTO>(existingWSlot);
+                _response.Success = true;
+                _response.Data = _WSlotDTO;
+                _response.Message = "Updated";
+
+            //}
+            //catch (Exception ex)
+            //{
+            //    _response.Success = false;
+            //    _response.Data = null;
+            //    _response.Message = "Error";
+            //    _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            //}
+            return _response;
+        }
+
 
         public async Task<ServiceResponse<WorkingByDTO>> AcceptRequest(WorkingByDTO request)
         {

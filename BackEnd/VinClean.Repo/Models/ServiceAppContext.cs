@@ -37,6 +37,8 @@ public partial class ServiceAppContext : DbContext
 
     public virtual DbSet<ProcessDetail> ProcessDetails { get; set; }
 
+    public virtual DbSet<ProcessImage> ProcessImages { get; set; }
+
     public virtual DbSet<ProcessSlot> ProcessSlots { get; set; }
 
     public virtual DbSet<Rating> Ratings { get; set; }
@@ -270,9 +272,7 @@ public partial class ServiceAppContext : DbContext
             //entity
             //    .HasNoKey()
             //    .ToTable("FinshedBy");
-
             entity.HasKey(e => e.OrderId);
-            
             entity.ToTable("FinshedBy");
 
             entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
@@ -306,6 +306,7 @@ public partial class ServiceAppContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("date");
             entity.Property(e => e.PointUsed).HasColumnName("Point_used");
+            entity.Property(e => e.SubPrice).HasColumnType("money");
             entity.Property(e => e.Total)
                 .HasColumnType("money")
                 .HasColumnName("total");
@@ -320,9 +321,7 @@ public partial class ServiceAppContext : DbContext
             //entity
             //    .HasNoKey()
             //    .ToTable("Order_Detail");
-
             entity.HasKey(e => e.OrderId);
-            
             entity.ToTable("Order_Detail");
 
             entity.Property(e => e.OrderId).HasColumnName("order_id");
@@ -380,6 +379,7 @@ public partial class ServiceAppContext : DbContext
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
                 .HasColumnName("status");
+            entity.Property(e => e.SubPrice).HasColumnType("money");
 
             entity.HasOne(d => d.Customer).WithMany(p => p.Processes)
                 .HasForeignKey(d => d.CustomerId)
@@ -395,9 +395,7 @@ public partial class ServiceAppContext : DbContext
             //entity
             //    .HasNoKey()
             //    .ToTable("Process_Detail");
-
             entity.HasKey(e => e.ProcessId);
-            
             entity.ToTable("Process_Detail");
 
             entity.Property(e => e.ProcessId).HasColumnName("process_id");
@@ -412,14 +410,43 @@ public partial class ServiceAppContext : DbContext
                 .HasConstraintName("FK__Process_D__servi__778AC167");
         });
 
+        modelBuilder.Entity<ProcessImage>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__ProcessI__3213E83F1A6C0E31");
+
+            entity.ToTable("ProcessImage");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Image)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("image");
+            entity.Property(e => e.Name)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .HasColumnName("name");
+            entity.Property(e => e.OrderId).HasColumnName("order_id");
+            entity.Property(e => e.ProcessId).HasColumnName("process_id");
+            entity.Property(e => e.Type)
+                .HasMaxLength(30)
+                .IsUnicode(false)
+                .HasColumnName("type");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.ProcessImages)
+                .HasForeignKey(d => d.OrderId)
+                .HasConstraintName("FK__ProcessIm__order__7E02B4CC");
+
+            entity.HasOne(d => d.Process).WithMany(p => p.ProcessImages)
+                .HasForeignKey(d => d.ProcessId)
+                .HasConstraintName("FK__ProcessIm__proce__7D0E9093");
+        });
+
         modelBuilder.Entity<ProcessSlot>(entity =>
         {
             //entity
             //    .HasNoKey()
             //    .ToTable("Process_Slot");
-
             entity.HasKey(e => e.ProcessId);
-
             entity.ToTable("Process_Slot");
 
             entity.Property(e => e.CreateAt)
@@ -637,12 +664,12 @@ public partial class ServiceAppContext : DbContext
             //entity
             //    .HasNoKey()
             //    .ToTable("WorkingBy");
-
             entity.HasKey(e => e.ProcessId);
-
             entity.ToTable("WorkingBy");
 
             entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
+            entity.Property(e => e.Latitude).HasColumnName("latitude");
+            entity.Property(e => e.Longtitude).HasColumnName("longtitude");
             entity.Property(e => e.ProcessId).HasColumnName("process_id");
 
             entity.HasOne(d => d.Employee).WithMany()

@@ -77,6 +77,7 @@ namespace VinClean.Repo.Repository
                             StartTime = p.StarTime,
                             EndTime = p.EndTime,
                             Price = p.Price,
+                            SubPrice = p.SubPrice,
                             PointUsed = p.PointUsed,
                             AccountImage = ac.Img,
                             EmployeeImage = ac1.Img,
@@ -84,7 +85,9 @@ namespace VinClean.Repo.Repository
                             EmployeeAccountId = e.AccountId,
                             EmployeeName = ac1.Name,
                             EmployeePhone = e.Phone,
-                            EmployeeEmail = ac1.Email
+                            EmployeeEmail = ac1.Email,
+                            Latitude = wb.Latitude,
+                            Longtitude = wb.Longtitude
                         };
             return await query.ToListAsync();
         }
@@ -147,6 +150,7 @@ namespace VinClean.Repo.Repository
                             StartTime = p.StarTime,
                             EndTime = p.EndTime,
                             Price = p.Price,
+                            SubPrice = p.SubPrice,
                             PointUsed = p.PointUsed,
                             AccountImage = ac.Img,
                             EmployeeImage = ac1.Img,
@@ -154,7 +158,9 @@ namespace VinClean.Repo.Repository
                             EmployeeAccountId = e.AccountId,
                             EmployeeName = ac1.Name,
                             EmployeePhone = e.Phone,
-                            EmployeeEmail = ac1.Email
+                            EmployeeEmail = ac1.Email,
+                            Latitude = wb.Latitude,
+                            Longtitude = wb.Longtitude
                         };
             return await query.FirstOrDefaultAsync();
 

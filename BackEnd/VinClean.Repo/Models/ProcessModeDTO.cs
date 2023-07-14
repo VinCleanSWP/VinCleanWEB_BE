@@ -33,6 +33,7 @@ namespace VinClean.Repo.Models
         public TimeSpan? StartTime { get; set; }
         public TimeSpan? EndTime { get; set; }
         public decimal? Price { get; set; }
+        public decimal? SubPrice { get; set; }
         public int? PointUsed { get; set; }
         public string? AccountImage { get; set; }
         public string? EmployeeImage { get; set; }
@@ -41,5 +42,7 @@ namespace VinClean.Repo.Models
         public string? EmployeeName { get; set; }
         public string? EmployeePhone { get; set; }
         public string? EmployeeEmail { get; set; }
+        public double? Latitude { get; set; }
+        public double? Longtitude { get; set; }
     }
 }

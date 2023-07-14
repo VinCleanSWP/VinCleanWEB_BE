@@ -22,6 +22,8 @@ using VinClean.Service.DTO.Slot;
 using VinClean.Service.DTO.Blog;
 using VinClean.Service.DTO.Comment;
 using VinClean.Service.DTO.Category;
+using VinClean.Service.DTO.ProcessImage;
+using VinClean.Service.DTO.WorkingBy;
 
 namespace VinClean.Service.DTO
 {
@@ -51,6 +53,8 @@ namespace VinClean.Service.DTO
             CreateMap<Repo.Models.Blog, BlogDTO>().ReverseMap();
             CreateMap<Repo.Models.Comment, CommentDTO>().ReverseMap();
             CreateMap<Repo.Models.Category, CategoryDTO>().ReverseMap();
+
+            CreateMap<Repo.Models.ProcessImage, ProcessImageDTO>().ReverseMap();
 
 
             CreateMap<Repo.Models.ServiceManage, ServiceDTO>().ReverseMap();
@@ -86,6 +90,9 @@ namespace VinClean.Service.DTO
             CreateMap<ServiceManage, ServiceManageDTO>().ReverseMap();
             CreateMap<VinClean.Repo.Models.Type, TypeDTO>().ReverseMap();
             CreateMap<Repo.Models.WorkingBy, WorkingByDTO>().ReverseMap();
+            CreateMap<Repo.Models.WorkingBy, LocationDTO>().ReverseMap();
+
+         
         }
     }
 }

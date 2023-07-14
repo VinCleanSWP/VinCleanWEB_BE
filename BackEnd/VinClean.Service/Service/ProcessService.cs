@@ -37,8 +37,10 @@ namespace VinClean.Service.Service
         private readonly IProcessRepository _repository;
         private readonly ICustomerRepository _Curepository;
         private readonly IWorkingByRepository _WBrepository;
+        private readonly IProcessImageRepository _PImgrepository;
         public readonly IMapper _mapper;
-        public ProcessService(IProcessRepository repository, IMapper mapper, IProcessDetailRepository pDrepository, IServiceRepository serviceRepo, ICustomerRepository Curepository, IWorkingByRepository WBrepository)
+        public ProcessService(IProcessRepository repository, IMapper mapper, IProcessDetailRepository pDrepository, 
+            IServiceRepository serviceRepo, ICustomerRepository Curepository, IWorkingByRepository WBrepository, IProcessImageRepository pImgrepository)
         {
             _repository = repository;
             _mapper = mapper;
@@ -46,6 +48,7 @@ namespace VinClean.Service.Service
             _serviceRepo = serviceRepo;
             _Curepository = Curepository;
             _WBrepository = WBrepository;
+            _PImgrepository = pImgrepository;
         }
 
         public async Task<ServiceResponse<List<ProcessModeDTO>>> GetProcessList()
@@ -163,10 +166,31 @@ namespace VinClean.Service.Service
                 };
                 var check2 = await _PDrepository.AddPD(_processDetail);
 
-
                 //Update TotalPoint in Cutomer
                 customer.TotalPoint = customer.TotalPoint - request.PointUsed;
                 var check3 = await _Curepository.UpdateCustomer(customer);
+
+            ProcessImage _processImage1 = new ProcessImage()
+            {
+                 ProcessId = _newProcess.ProcessId,
+                 Type = "Verify",
+                 Name = "Start Working"
+            };
+            await _PImgrepository.AddProcessImage(_processImage1);
+            ProcessImage _processImage2 = new ProcessImage()
+            {
+                 ProcessId = _newProcess.ProcessId,
+                 Type = "Processing",
+                 Name = "Processing"
+            };
+            await _PImgrepository.AddProcessImage(_processImage1);
+            ProcessImage _processImage3 = new ProcessImage()
+            {
+                ProcessId = _newProcess.ProcessId,
+                Type = "Completed",
+                Name = "End Working"
+            };
+            await _PImgrepository.AddProcessImage(_processImage1);
 
 
             if (!check1&&!check2&&!check3)

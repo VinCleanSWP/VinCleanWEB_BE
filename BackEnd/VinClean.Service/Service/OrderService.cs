@@ -28,9 +28,12 @@ namespace VinClean.Service.Service
         private readonly IFinishedByRepository _fbRepository;
         private readonly IOrderRepository _repository;
         private readonly ICustomerRepository _CUrepository;
+        private readonly IProcessImageRepository _PImgrepository;
         private readonly IMapper _mapper;
 
-        public OrderService(IOrderRepository repository, IMapper mapper, IOrderDetailRepository odRepository, IFinishedByRepository fbRepository, IProcessRepository processRepository, ICustomerRepository cUrepository)
+        public OrderService(IOrderRepository repository, IMapper mapper, IOrderDetailRepository odRepository, 
+            IFinishedByRepository fbRepository, IProcessRepository processRepository, 
+            ICustomerRepository cUrepository,IProcessImageRepository PImgrepository)
         {
             _odRepository = odRepository;
             _odRepository = odRepository;
@@ -39,6 +42,8 @@ namespace VinClean.Service.Service
             _mapper = mapper;
             _processRepository = processRepository;
             _CUrepository = cUrepository;
+            _PImgrepository = PImgrepository;
+
         }
         public async Task<ServiceResponse<OrderDTO>> AddOrder(NewOderDTO request)
         {
@@ -54,7 +59,8 @@ namespace VinClean.Service.Service
                     DateWork = request.DateWork,
                     StartTime = request.StartTime,
                     EndTime = request.EndTime,
-                    PointUsed = request.PointUsed
+                    PointUsed = request.PointUsed,
+                    SubPrice = request.SubPrice
                 };
                 var check1 = await _repository.AddOrder(_newOrder);
                 FinshedBy _finshedBy = new FinshedBy()
@@ -80,9 +86,15 @@ namespace VinClean.Service.Service
                 var Customer = await _CUrepository.GetCustomerById(request.CustomerId);
                 Customer.TotalPoint = (int?)(Customer.TotalPoint + ((double)request.Total * 0.05));
                 var check5 = await _CUrepository.UpdateCustomer(Customer);
+            //update OrderId ProcessImage
+            var existingProcessImg = await _PImgrepository.ProcessImageListByProcessId(request.ProcessId);
+            foreach (var processImg in existingProcessImg)
+            {
+                processImg.OrderId = _newOrder.OrderId;
+                await _PImgrepository.UpdateProcessImage(processImg);
+            }
 
-
-                if (!check1 && !check2 && !check3 && !check4 && !check5)
+            if (!check1 && !check2 && !check3 && !check4 && !check5)
                 {
                     _response.Error = "RepoError";
                     _response.Success = false;

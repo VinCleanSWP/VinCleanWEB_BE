@@ -105,6 +105,9 @@ builder.Services.AddScoped<ISlotRepository, SlotRepository>();
 builder.Services.AddScoped<IWorkingByService, WorkingByService>();
 builder.Services.AddScoped<IWorkingByRepository, WorkingByRepository>();
 
+builder.Services.AddScoped<IProcessImageService, ProcessImageService>();
+builder.Services.AddScoped<IProcessImageRepository, ProcessImageRepository>();
+
 builder.Services.AddScoped<IEmailService, EmailService>();
 
 

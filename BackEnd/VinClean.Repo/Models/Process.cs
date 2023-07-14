@@ -39,7 +39,11 @@ public partial class Process
 
     public int? PointUsed { get; set; }
 
+    public decimal? SubPrice { get; set; }
+
     public virtual Customer? Customer { get; set; }
 
     public virtual Account? ModifiedByNavigation { get; set; }
+
+    public virtual ICollection<ProcessImage> ProcessImages { get; set; } = new List<ProcessImage>();
 }

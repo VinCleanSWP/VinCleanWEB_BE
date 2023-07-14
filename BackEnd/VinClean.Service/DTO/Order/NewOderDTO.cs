@@ -15,6 +15,7 @@ namespace VinClean.Service.DTO.Order
         public string Note { get; set; }
 
         public decimal Total { get; set; }
+        public decimal SubPrice { get; set; }
         public int PointUsed { get; set; }
 
         public DateTime OrderDate { get; set; }

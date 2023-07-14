@@ -27,6 +27,7 @@ namespace VinClean.Repo.Models
         public TimeSpan? StartWorking { get; set; }
         public TimeSpan? EndWorking { get; set; }
         public decimal? Total { get; set; }
+        public decimal? SubPrice { get; set; }
         public int PonitUsed { get; set; }
         public string EmployeeName { get; set; }
         public string EmployeeImg { get; set; }

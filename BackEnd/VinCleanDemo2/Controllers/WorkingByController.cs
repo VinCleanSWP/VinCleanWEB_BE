@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using VinClean.Repo.Models;
+using VinClean.Service.DTO.WorkingBy;
 using VinClean.Service.DTO.WorkingSlot;
 using VinClean.Service.Service;
 
@@ -32,12 +33,12 @@ namespace VinClean.Controllers
             {
                 return BadRequest(id);
             }
-            var accountFound = await _service.GetWBById(id);
-            if (accountFound == null)
+            var Wb = await _service.GetWBById(id);
+            if (Wb == null)
             {
                 return NotFound();
             }
-            return Ok(accountFound);
+            return Ok(Wb);
         }
 
         [HttpPost]
@@ -82,6 +83,38 @@ namespace VinClean.Controllers
 
 
             var updateAccount = await _service.UpdateWB(request);
+
+            if (updateAccount.Success == false && updateAccount.Message == "NotFound")
+            {
+                return Ok(updateAccount);
+            }
+
+            if (updateAccount.Success == false && updateAccount.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating account {request}");
+                return StatusCode(500, ModelState);
+            }
+
+            if (updateAccount.Success == false && updateAccount.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating account {request}");
+                return StatusCode(500, ModelState);
+            }
+
+
+            return Ok(updateAccount);
+
+        }
+        [HttpPut("Location")]
+        public async Task<ActionResult> UpdateLocation(LocationDTO request)
+        {
+            if (request == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            var updateAccount = await _service.UpdateLocation(request);
 
             if (updateAccount.Success == false && updateAccount.Message == "NotFound")
             {
