@@ -81,6 +81,39 @@ namespace VinClean.Controllers
 
         }
 
+        [HttpPut("UpdateImage")]
+        public async Task<ActionResult> UpdateImage(UpdateImage request)
+        {
+            if (request == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            var updateProcessImg = await _service.UpdateImage(request);
+
+            if (updateProcessImg.Success == false && updateProcessImg.Message == "NotFound")
+            {
+                return Ok(updateProcessImg);
+            }
+
+            if (updateProcessImg.Success == false && updateProcessImg.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating account {request}");
+                return StatusCode(500, ModelState);
+            }
+
+            if (updateProcessImg.Success == false && updateProcessImg.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating account {request}");
+                return StatusCode(500, ModelState);
+            }
+
+
+            return Ok(updateProcessImg);
+
+        }
+
         [HttpPost]
         public async Task<ActionResult<ProcessImageDTO>> AddWB(ProcessImageDTO request)
         {

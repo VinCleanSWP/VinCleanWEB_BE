@@ -21,6 +21,7 @@ namespace VinClean.Service.Service
         Task<ServiceResponse<ProcessImageDTO>> DeleteProcessImage(int id);
         Task<ServiceResponse<ProcessImageDTO>> AddProcessImage(ProcessImageDTO request);
         Task<ServiceResponse<ProcessImageDTO>> UpdateProcessImage(ProcessImageDTO request);
+        Task<ServiceResponse<ProcessImageDTO>> UpdateImage(UpdateImage request);
     }
     public class ProcessImageService : IProcessImageService
     {
@@ -191,7 +192,7 @@ namespace VinClean.Service.Service
             }
             return _response;
         }
-        public async Task<ServiceResponse<ProcessImageDTO>> UpdateImgae(UpdateImage request)
+        public async Task<ServiceResponse<ProcessImageDTO>> UpdateImage(UpdateImage request)
         {
             ServiceResponse<ProcessImageDTO> _response = new();
             try
