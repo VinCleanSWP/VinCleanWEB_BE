@@ -325,6 +325,46 @@ namespace VinClean.Service.Service
             return _response;
         }
 
+        public async Task<ServiceResponse<ProcessDTO>> UpdateSubPrice(UpdateSubPirce request)
+        {
+            ServiceResponse<ProcessDTO> _response = new();
+            try
+            {
+                var existingProcess = await _repository.GetProcessById(request.ProcessId);
+                if (existingProcess == null)
+                {
+                    _response.Success = false;
+                    _response.Message = "NotFound";
+                    _response.Data = null;
+                    return _response;
+                }
+
+                existingProcess.SubPrice = request.SubPrice;
+
+                if (!await _repository.UpdateProcess(existingProcess))
+                {
+                    _response.Success = false;
+                    _response.Message = "RepoError";
+                    _response.Data = null;
+                    return _response;
+                }
+
+                var _processDTO = _mapper.Map<ProcessDTO>(existingProcess);
+                _response.Success = true;
+                _response.Data = _processDTO;
+                _response.Message = "Process Updated";
+
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Data = null;
+                _response.Message = "Error";
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            }
+            return _response;
+        }
+
         public async Task<ServiceResponse<ProcessDTO>> UpdateEndWorking(ProcessEndWorking request)
         {
             ServiceResponse<ProcessDTO> _response = new();
