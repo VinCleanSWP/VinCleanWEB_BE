@@ -24,6 +24,7 @@ namespace VinClean.Service.Service
         Task<ServiceResponse<ProcessModeDTO>> GetAllInfoById(int id);
         Task<ServiceResponse<ProcessDTO>> AddProcess(NewBooking process);
         Task<ServiceResponse<ProcessDTO>> UpdateProcess(ProcessDTO process);
+        Task<ServiceResponse<ProcessDTO>> UpdateSubPrice(UpdateSubPirce process);
         Task<ServiceResponse<ProcessDTO>> UpdateStartWorking(ProcessStartWorking process);
         Task<ServiceResponse<ProcessDTO>> UpdateEndWorking(ProcessEndWorking process);
         Task<ServiceResponse<ProcessDTO>> UpdateStatusCompleted(int id);
