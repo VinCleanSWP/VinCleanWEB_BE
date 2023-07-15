@@ -10,6 +10,5 @@ namespace VinClean.Service.DTO.Process
     {
         public int ProcessId { get; set; }
         public TimeSpan StartWorking { get; set; }
-        public string Status { get; set; }
     }
 }
