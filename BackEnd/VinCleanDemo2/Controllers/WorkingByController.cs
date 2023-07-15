@@ -40,6 +40,24 @@ namespace VinClean.Controllers
             }
             return Ok(Wb);
         }
+        [HttpGet("Process/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(WorkingByDTO))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<WorkingByDTO>> GetByProcessId(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest(id);
+            }
+            var Wb = await _service.GetWBByProcessId(id);
+            if (Wb == null)
+            {
+                return NotFound();
+            }
+            return Ok(Wb);
+        }
 
         [HttpPost]
         public async Task<ActionResult<WorkingByDTO>> AddWB(WorkingByDTO request)

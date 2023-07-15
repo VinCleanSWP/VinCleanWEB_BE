@@ -120,7 +120,6 @@ namespace VinClean.Service.Service
                 ProcessImage _newPImage = new ProcessImage()
                 {
                     ProcessId = request.ProcessId,
-                    OrderId = request.OrderId,
                     Name = request.Name,
                     Type = request.Type,
                     Image = request.Image

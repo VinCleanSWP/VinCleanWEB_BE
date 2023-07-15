@@ -11,5 +11,8 @@ namespace VinClean.Service.DTO.WorkingSlot
     {
         public int ProcessId { get; set; }
         public int EmployeeId { get; set; }
+        public double Latitude { get; set; }
+
+        public double Longtitude { get; set; }
     }
 }

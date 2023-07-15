@@ -16,6 +16,7 @@ namespace VinClean.Service.Service
     {
         Task<ServiceResponse<List<WorkingByDTO>>> GetWBList();
         Task<ServiceResponse<WorkingByDTO>> GetWBById(int id);
+        Task<ServiceResponse<WorkingByDTO>> GetWBByProcessId(int id);
         Task<ServiceResponse<WorkingByDTO>> DeleteWB(int id);
         Task<ServiceResponse<WorkingByDTO>> AddWB(WorkingByDTO request);
         Task<ServiceResponse<WorkingByDTO>> UpdateWB(WorkingByDTO request);
@@ -66,6 +67,34 @@ namespace VinClean.Service.Service
             try
             {
                 var WSlot = await _repository.GetWorkingByById(id);
+                if (WSlot == null)
+                {
+                    _response.Success = false;
+                    _response.Message = "NotFound";
+                    return _response;
+                }
+                var WSlotDTO = _mapper.Map<WorkingByDTO>(WSlot);
+                _response.Success = true;
+                _response.Message = "OK";
+                _response.Data = WSlotDTO;
+
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Message = "Error";
+                _response.Data = null;
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            }
+            return _response;
+
+        }
+        public async Task<ServiceResponse<WorkingByDTO>> GetWBByProcessId(int id)
+        {
+            ServiceResponse<WorkingByDTO> _response = new();
+            try
+            {
+                var WSlot = await _repository.GetWorkingByByProcessId(id);
                 if (WSlot == null)
                 {
                     _response.Success = false;

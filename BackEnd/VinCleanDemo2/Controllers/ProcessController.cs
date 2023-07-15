@@ -217,6 +217,39 @@ namespace VinCleanDemo2.Controllers
 
         }
 
+        [HttpPut("SubPrice")]
+        public async Task<ActionResult> UpdateSubPrice(UpdateSubPirce request)
+        {
+            if (request == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            var updateProcess = await _service.UpdateSubPrice(request);
+
+            if (updateProcess.Success == false && updateProcess.Message == "NotFound")
+            {
+                return Ok(updateProcess);
+            }
+
+            if (updateProcess.Success == false && updateProcess.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating Process {request}");
+                return StatusCode(500, ModelState);
+            }
+
+            if (updateProcess.Success == false && updateProcess.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating Process {request}");
+                return StatusCode(500, ModelState);
+            }
+
+
+            return Ok(updateProcess);
+
+        }
+
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteProcess(int id)
         {

@@ -20,7 +20,7 @@ namespace VinClean.Service.Service
         Task<ServiceResponse<ProcessRequestModel>> GetPSById(int id);
         Task<ServiceResponse<ProcessSlotDTO>> CreatePS(AddProcessSlot processSlotDTO);
         Task<ServiceResponse<ProcessSlotDTO>> UpdatePS(ProcessSlotDTO processSlotDTO);
-        Task<ServiceResponse<ProcessSlotDTO>> CancelRequest(ProcessSlotDTO processSlotDTO);
+        Task<ServiceResponse<ProcessSlotDTO>> CancelRequest(int i);
         Task<ServiceResponse<ProcessSlotDTO>> DeletePS(int id);
     }
     public class ProcessSlotService : IProcessSlotService
@@ -172,12 +172,12 @@ return _response;
             return _response;
         }
 
-        public async Task<ServiceResponse<ProcessSlotDTO>> CancelRequest(ProcessSlotDTO request)
+        public async Task<ServiceResponse<ProcessSlotDTO>> CancelRequest(int id)
         {
             ServiceResponse<ProcessSlotDTO> _response = new();
             try
             {
-                var existingProcess = await _repository.GetPSById(request.ProcessId);
+                var existingProcess = await _repository.GetPSById(id);
                 if (existingProcess == null)
                 {
                     _response.Success = false;

@@ -183,14 +183,14 @@ namespace VinClean.Service.Service
                  Type = "Processing",
                  Name = "Processing"
             };
-            await _PImgrepository.AddProcessImage(_processImage1);
+            await _PImgrepository.AddProcessImage(_processImage2);
             ProcessImage _processImage3 = new ProcessImage()
             {
                 ProcessId = _newProcess.ProcessId,
                 Type = "Completed",
                 Name = "End Working"
             };
-            await _PImgrepository.AddProcessImage(_processImage1);
+            await _PImgrepository.AddProcessImage(_processImage3);
 
 
             if (!check1&&!check2&&!check3)
@@ -453,12 +453,18 @@ namespace VinClean.Service.Service
                 var existingProcess = await _repository.GetProcessById(id);
                 var existingProcessPD = await _PDrepository.GetPDById(id);
                 var existingWorkingBy = await _WBrepository.GetWorkingByByProcessId(id);
+                var existingProcessImg = await _PImgrepository.ProcessImageListByProcessId(id);
                 if (existingProcess == null)
                 {
                     _response.Success = false;
                     _response.Message = "NotFound";
                     _response.Data = null;
                     return _response;
+                }
+
+                foreach ( var img in existingProcessImg)
+                {
+                    await _PImgrepository.DeleteProcessImage(img);
                 }
 
                 if (!await _repository.DeleteProcess(existingProcess) 

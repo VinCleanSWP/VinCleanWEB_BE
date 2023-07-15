@@ -97,16 +97,16 @@ namespace VinClean.Controllers
             return Ok(updateProcess);
 
         }
-        [HttpPut("Denied")]
-        public async Task<ActionResult> Denied(ProcessSlotDTO request)
+        [HttpPut("Denied/{id}")]
+        public async Task<ActionResult> Denied(int id)
         {
-            if (request == null)
+            if (id == null)
             {
                 return BadRequest(ModelState);
             }
 
 
-            var updateProcess = await _service.CancelRequest(request);
+            var updateProcess = await _service.CancelRequest(id);
 
             if (updateProcess.Success == false && updateProcess.Message == "NotFound")
             {
@@ -115,13 +115,13 @@ namespace VinClean.Controllers
 
             if (updateProcess.Success == false && updateProcess.Message == "RepoError")
             {
-                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating Process {request}");
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating Process {id}");
                 return StatusCode(500, ModelState);
             }
 
             if (updateProcess.Success == false && updateProcess.Message == "Error")
             {
-                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating Process {request}");
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating Process {id}");
                 return StatusCode(500, ModelState);
             }
 

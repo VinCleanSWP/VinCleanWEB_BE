@@ -353,9 +353,8 @@ namespace VinClean.Service.Service
             ServiceResponse<AccountDTO> _response = new();
             try
             {
-                var checkemail = await _Accrepository.GetbyEmail(request.To);
                 var process = await _process.GetAllInfoById(request.ProcessId);
-                if (checkemail == null && process == null)
+                if (process == null)
                 {
                     _response.Success = false;
                     _response.Message = "NotFound";
@@ -363,7 +362,7 @@ namespace VinClean.Service.Service
                 }
                 var email = new MimeMessage();
                 email.From.Add(MailboxAddress.Parse(_config.GetSection("EmailUsername").Value));
-                email.To.Add(MailboxAddress.Parse(checkemail.Email));
+                email.To.Add(MailboxAddress.Parse(process.Email));
                 email.Subject = "Thông báo dịch vụ VinClean";
                 email.Body = new TextPart(TextFormat.Html)
                 {
@@ -389,12 +388,12 @@ namespace VinClean.Service.Service
                     " <tr>         <td style='padding:0 0 36px 0;color:#153643;'>      " +
                     " <h1 style='font-size:24px;margin:0 0 20px 0;font-family:Arial,sans-serif;'>Verification Account</h1>            " +
                     " <p style='margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;'></p>     " +
-                    $"<div><p>Xin chào <i>{checkemail.Name}</i>,</p>" +
+                    $"<div><p>Xin chào <i>{process.Name}</i>,</p>" +
                     $"<p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.</p>" +
                     "<p>Chúng tôi gửi lại bạn thông tin Dịch vụ và Nhân viên:</p>" +
                     "<h4>Thông tin Khách Hàng:</h4>" +
                    
-                    $"<p><b>Tên</b>: {checkemail.Name} </p>" +
+                    $"<p><b>Tên</b>: {process.Name} </p>" +
                     $"<p><b>Điện thoại</b>: {process.Phone} </p>" +
                     $"<p><b>Địa chỉ</b>: {process.Address} </p>" +
                     $"<p><b>Ngày Làm</b>: {process.Date.ToString("dd/MM/yyyy")}</p>" +
@@ -473,9 +472,8 @@ namespace VinClean.Service.Service
             ServiceResponse<AccountDTO> _response = new();
             try
             {
-                var checkemail = await _Accrepository.GetbyEmail(request.To);
                 var process = await _process.GetAllInfoById(request.ProcessId);
-                if (checkemail == null && process == null)
+                if ( process == null)
                 {
                     _response.Success = false;
                     _response.Message = "NotFound";
@@ -483,7 +481,7 @@ namespace VinClean.Service.Service
                 }
                 var email = new MimeMessage();
                 email.From.Add(MailboxAddress.Parse(_config.GetSection("EmailUsername").Value));
-                email.To.Add(MailboxAddress.Parse(checkemail.Email));
+                email.To.Add(MailboxAddress.Parse(process.EmployeeEmail));
                 email.Subject = "THÔNG BÁO CÔNG VIỆC";
                 email.Body = new TextPart(TextFormat.Html)
                 {
@@ -510,7 +508,7 @@ namespace VinClean.Service.Service
                     " <h1 style='font-size:24px;margin:0 0 20px 0;font-family:Arial,sans-serif;'>Verification Account</h1>            " +
                     " <p style='margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;'></p>     " +
                     
-                    $"<p>Thông báo tới nhân viên <i>{checkemail.Name}</i>,</p>" +
+                    $"<p>Thông báo tới nhân viên <i>{process.EmployeeName}</i>,</p>" +
                     $"<p>Bạn có một công việc mới.</p>" +
                     "<p>Chúng tôi gửi lại bạn thông tin Dịch vụ và Khác Hàng:</p>" +
                     "<h4>Thông tin Khách Hàng:</h4>" +
