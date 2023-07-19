@@ -11,6 +11,7 @@ namespace VinClean.Repo.Repository
     public interface IFinishedByRepository
     {
         Task<ICollection<FinshedBy>> GetFinishedByList();
+        Task<ICollection<FinshedBy>> GetFinishedByListEmpID(int id);
         Task<FinshedBy> GetFinishedById(int id);
         Task<bool> AddFinishedBy(FinshedBy FinshedBy);
         Task<bool> DeleteFinishedBy(FinshedBy FinshedBy);
@@ -38,7 +39,10 @@ namespace VinClean.Repo.Repository
 
             //return async ListFinishedByDTO;
         }
-
+        async public Task<ICollection<FinshedBy>> GetFinishedByListEmpID(int id)
+        {
+            return await _context.FinshedBies.Where(e=> e.EmployeeId == id).ToListAsync();
+        }
         async public Task<FinshedBy> GetFinishedById(int id)
         {
             return await _context.FinshedBies.FirstOrDefaultAsync(a => a.OrderId == id);

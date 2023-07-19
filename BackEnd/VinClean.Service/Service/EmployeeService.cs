@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,19 +32,31 @@ namespace VinClean.Service.Service
         private readonly IEmployeeRepository _repository;
         private readonly IMapper _mapper;
         private readonly IAccountRepository _accountRepository;
+        private readonly IWorkingByRepository _workingByRepository;
+        private readonly IFinishedByRepository _finishedByRepository;
 
-        public EmployeeService(IEmployeeRepository repository, IAccountRepository accountRepository, IMapper mapper)
+        public EmployeeService(IEmployeeRepository repository, IAccountRepository accountRepository, 
+            IMapper mapper, IWorkingByRepository workingByRepository, IFinishedByRepository finishedByRepository)
         {
             _repository = repository;
             _accountRepository = accountRepository;
             _mapper = mapper;
+            _workingByRepository = workingByRepository;
+            _finishedByRepository = finishedByRepository;
         }
 
         public async Task<ServiceResponse<EmployeeDTO>> AddEmployee(RegisterEmployeeDTO request)
         {
             ServiceResponse<EmployeeDTO> _response = new();
-            //try
-            //{
+            try
+            {
+                if (await _repository.CheckEmailEmployeeExist(request.Email))
+                {
+                    _response.Message = "Exist";
+                    _response.Success = false;
+                    _response.Data = null;
+                    return _response;
+                }
                 var _newAccount = new Account()
                 {
                     Name = request.Name,
@@ -54,7 +67,6 @@ namespace VinClean.Service.Service
                     IsDeleted = false, // set the isDeleted flag to false by default
                     CreatedDate = DateTime.Now, // set the created date to the current date/time
                     Gender = request.Gender,
-                   
                     Img = request.Img,
 
 
@@ -85,14 +97,15 @@ namespace VinClean.Service.Service
                 _response.Data = _mapper.Map<EmployeeDTO>(await _repository.GetEmployeeById(_newEmployee.EmployeeId));
                 _response.Message = "Created";
 
-            //}
-            //catch (Exception ex)
-            //{
-            //    _response.Success = false;
-            //    _response.Data = null;
-            //    _response.Message = "Error";
-            //    _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
-            //}
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Data = null;
+                _response.Message = "Error";
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message)
+    };
+            }
 
             return _response;
         }
@@ -100,18 +113,38 @@ namespace VinClean.Service.Service
         public async Task<ServiceResponse<EmployeeDTO>> DeleteEmployee(int id)
         {
             ServiceResponse<EmployeeDTO> _response = new();
-/*            try
-            {*/
-                var existingEmployee = await _repository.GetEmployeeById(id);
-                if (existingEmployee == null)
+            //try
+            //{
+            var existingEmployee = await _repository.GetEmployeeById(id);
+            var existingAccount = await _accountRepository.GetAccountById((int)existingEmployee.AccountId);
+            if (existingEmployee == null)
+            {
+                _response.Success = false;
+                _response.Message = "NotFound";
+                _response.Data = null;
+                return _response;
+            }
+            else
+            {
+                var check = await _workingByRepository.Check(id);
+                if (check)
                 {
-                    _response.Success = false;
-                    _response.Message = "NotFound";
-                    _response.Data = null;
-                    return _response;
+                    var existingWBEmployee = await _workingByRepository.GetWorkingByListByEpmId(id);
+                    foreach (var WBEmployee in existingWBEmployee)
+                    {
+                        await _workingByRepository.DeleteWorkingBy(WBEmployee);
+                    }
+                }
+                var checkFB = await _finishedByRepository.GetFinishedByListEmpID(id);
+                if (checkFB != null)
+                {
+                    foreach (var FB in checkFB)
+                    {
+                        await _finishedByRepository.DeleteFinishedBy(FB);
+                    }
                 }
 
-                if (!await _repository.DeleteEmployee(existingEmployee))
+                if (!await _accountRepository.HardDeleteAccount(existingAccount))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";
@@ -124,14 +157,18 @@ namespace VinClean.Service.Service
                 _response.Data = _OrderDTO;
                 _response.Message = "Deleted";
 
- /*           }
-            catch (Exception ex)
-            {
-                _response.Success = false;
-                _response.Data = null;
-                _response.Message = "Error";
-                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
-            }*/
+            }
+
+            
+
+            //}
+            //catch (Exception ex)
+            //{
+            //    _response.Success = false;
+            //    _response.Data = null;
+            //    _response.Message = "Error";
+            //    _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            //}
             return _response;
         }
 

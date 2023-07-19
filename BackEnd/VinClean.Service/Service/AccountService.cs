@@ -36,12 +36,13 @@ namespace VinClean.Service.Service
     public class AccountService : IAccountService
     {
         private readonly IAccountRepository _repository;
+        private readonly IFinishedByRepository _finishedByRepository;
         private readonly IMapper    _mapper;
-        public AccountService (IAccountRepository repository, IMapper mapper)
+        public AccountService (IAccountRepository repository, IMapper mapper, IFinishedByRepository finishedByRepository)
         {
             _repository = repository;
             _mapper = mapper;
-            
+            _finishedByRepository = finishedByRepository;
         }
 
         public async Task<ServiceResponse<List<AccountdDTO>>> GetAccountList()
@@ -392,8 +393,8 @@ namespace VinClean.Service.Service
         public async Task<ServiceResponse<AccountdDTO>> HardDeleteAccount(int id)
         {
             ServiceResponse<AccountdDTO> _response = new();
-            try
-            {
+            //try
+            //{
                 var existingAccount = await _repository.GetAccountById(id);
                 if (existingAccount == null)
                 {
@@ -403,6 +404,7 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
+                
                 if (!await _repository.HardDeleteAccount(existingAccount))
                 {
                     _response.Success = false;
@@ -411,16 +413,16 @@ namespace VinClean.Service.Service
                 }
 
                 _response.Success = true;
-                _response.Message = "SoftDeleted";
+                _response.Message = "HardDeleted";
 
-            }
-            catch (Exception ex)
-            {
-                _response.Success = false;
-                _response.Message = "error";
-                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message)};
+            //}
+            //catch (Exception ex)
+            //{
+            //    _response.Success = false;
+            //    _response.Message = "error";
+            //    _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message)};
 
-            }
+            //}
             return _response;
         }
         

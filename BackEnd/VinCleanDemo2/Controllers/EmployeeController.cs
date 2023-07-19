@@ -67,7 +67,8 @@ namespace VinClean.Controllers
             var newEmployee = await _service.AddEmployee(request);
             if (newEmployee.Success == false && newEmployee.Message == "Exist")
             {
-                return Ok(newEmployee);
+                ModelState.AddModelError("", $"Email {request} is Existed");
+                return StatusCode(500, ModelState);
             }
 
             if (newEmployee.Success == false && newEmployee.Message == "RepoError")

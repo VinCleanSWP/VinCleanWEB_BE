@@ -11,7 +11,9 @@ namespace VinClean.Repo.Repository
     public interface IWorkingByRepository
     {
         Task<ICollection<WorkingBy>> GetWorkingByList();
+        Task<IEnumerable<WorkingBy>> GetWorkingByListByEpmId(int id);
         Task<WorkingBy> GetWorkingByById(int id);
+        Task<bool> Check(int id);
         Task<WorkingBy> GetWorkingByByProcessId(int id);
         Task<bool> UpdateWorkingBy(WorkingBy customer);
         Task<bool> AddWorkingBy(WorkingBy slot);
@@ -28,9 +30,17 @@ namespace VinClean.Repo.Repository
         {
             return await _context.WorkingBies.ToListAsync();
         }
+        async Task<IEnumerable<WorkingBy>> IWorkingByRepository.GetWorkingByListByEpmId(int id)
+        {
+            return await _context.WorkingBies.Where(e=>e.EmployeeId == id).ToListAsync();
+        }
         async Task<WorkingBy> IWorkingByRepository.GetWorkingByById(int id)
         {
             return await _context.WorkingBies.FirstOrDefaultAsync(a => a.EmployeeId == id);
+        }
+         async Task<bool> IWorkingByRepository.Check(int id)
+        {
+            return await _context.WorkingBies.AnyAsync(a => a.EmployeeId == id);
         }
         async Task<WorkingBy> IWorkingByRepository.GetWorkingByByProcessId(int id)
         {

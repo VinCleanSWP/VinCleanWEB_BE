@@ -23,8 +23,6 @@ namespace VinClean.Repo.Repository
             Task<bool> UpdateAccount(Account account);
             Task<bool> CheckEmailAccountExist(string email);
             Task<Account> Login(string email, string password);
-
-
     }
 
         public class AccountRepository : IAccountRepository
@@ -87,10 +85,24 @@ namespace VinClean.Repo.Repository
         /// </summary>
         async Task<bool> IAccountRepository.HardDeleteAccount(Account account)
         {
-            var _account = await _context.Accounts.Where(a => a.AccountId == account.AccountId).SingleOrDefaultAsync();
+            var _account = await _context.Accounts.Where(a => a.AccountId == account.AccountId).FirstOrDefaultAsync();
             var customer = await _context.Customers.Where(c => c.AccountId == account.AccountId).FirstOrDefaultAsync();
-            _context.Customers.Remove(customer);
-            _context.Accounts.Remove(_account);
+            var employee = await _context.Employees.Where(c => c.AccountId == account.AccountId).FirstOrDefaultAsync();
+            if(account != null && customer != null)
+            {
+                _context.Customers.Remove(customer);
+                _context.Accounts.Remove(_account);
+            }
+            else if (account != null && employee != null)
+            {
+                _context.Employees.Remove(employee);
+                _context.Accounts.Remove(_account);
+            }
+            else
+            {
+                _context.Accounts.Remove(_account);
+            }
+
             return await _context.SaveChangesAsync() > 0 ? true : false;
 
         }
