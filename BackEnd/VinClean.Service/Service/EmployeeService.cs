@@ -10,7 +10,6 @@ using VinClean.Repo.Repository;
 using VinClean.Service.DTO;
 using VinClean.Service.DTO.Employee;
 using VinClean.Service.DTO.Order;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace VinClean.Service.Service
 {
