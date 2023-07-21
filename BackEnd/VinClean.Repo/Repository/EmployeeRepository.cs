@@ -78,18 +78,33 @@ namespace VinClean.Repo.Repository
             TimeSpan endTimeSpan = TimeSpan.Parse(endTime);
             DateTime dateValue = DateTime.Parse(date);
 
+            //var subquery = (from e in _context.Employees
+            //               join wb in _context.WorkingBies on e.EmployeeId equals wb.EmployeeId into workingByJoin
+            //               from wb in workingByJoin.DefaultIfEmpty()
+            //               join p in _context.Processes on wb.ProcessId equals p.ProcessId into processJoin
+            //               from p in processJoin.DefaultIfEmpty()
+            //               where (p.StarTime >= startTimeSpan && p.StarTime <= endTimeSpan) ||
+            //                     (p.EndTime >= startTimeSpan && p.EndTime <= endTimeSpan) &&
+            //                     p.Date == dateValue && e.Status == "Available"
+            //               select e.EmployeeId);
+
+
             var query = (from e in _context.Employees
-                        join wb in _context.WorkingBies on e.EmployeeId equals wb.EmployeeId into workingByJoin
-                        from wb in workingByJoin.DefaultIfEmpty()
-                        join p in _context.Processes on wb.ProcessId equals p.ProcessId into processJoin
-                        from p in processJoin.DefaultIfEmpty()
-                        join a in _context.Accounts on e.AccountId equals a.AccountId into accountJoin
-                        from a in accountJoin.DefaultIfEmpty()
-
-                        where wb == null || !(((p.StarTime >= startTimeSpan && p.StarTime <= endTimeSpan) 
-                        || (p.EndTime >= startTimeSpan && p.EndTime <= endTimeSpan))
-                        && p.Date == dateValue) && e.Status == "Available"
-
+                         join wb in _context.WorkingBies on e.EmployeeId equals wb.EmployeeId into workingByJoin
+                         from wb in workingByJoin.DefaultIfEmpty()
+                         join p in _context.Processes on wb.ProcessId equals p.ProcessId into processJoin
+                         from p in processJoin.DefaultIfEmpty()
+                         join a in _context.Accounts on e.AccountId equals a.AccountId into accountJoin
+                         from a in accountJoin.DefaultIfEmpty()
+                         where !(from e in _context.Employees
+                                 join wb in _context.WorkingBies on e.EmployeeId equals wb.EmployeeId into workingByJoin
+                                 from wb in workingByJoin.DefaultIfEmpty()
+                                 join p in _context.Processes on wb.ProcessId equals p.ProcessId into processJoin
+                                 from p in processJoin.DefaultIfEmpty()
+                                 where ((p.StarTime >= startTimeSpan && p.StarTime <= endTimeSpan) ||
+                                       (p.EndTime >= startTimeSpan && p.EndTime <= endTimeSpan)) &&
+                                       p.Date == dateValue && e.Status == "Available"
+                                 select e.EmployeeId).Contains(e.EmployeeId)
                         select new Employee
                         {
                             EmployeeId = e.EmployeeId,
@@ -107,9 +122,7 @@ namespace VinClean.Repo.Repository
                                 Img = a.Img,
                                 Gender = a.Gender
                             }
-                            
-                        }).GroupBy(e => e.EmployeeId).Select(g => g.First()); ;
-
+                        }).GroupBy(e => e.EmployeeId).Select(g => g.First()); 
             return await query.ToListAsync();
         }
     }
