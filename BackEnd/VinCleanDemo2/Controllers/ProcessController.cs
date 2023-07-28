@@ -217,6 +217,39 @@ namespace VinCleanDemo2.Controllers
 
         }
 
+        [HttpPut("Denied")]
+        public async Task<ActionResult> DeniedProcess(int processid)
+        {
+            //if (request == null)
+            //{
+            //    return BadRequest(ModelState);
+            //}
+
+
+            var updateProcess = await _service.DeniedProcess(processid);
+
+            if (updateProcess.Success == false && updateProcess.Message == "NotFound")
+            {
+                return Ok(updateProcess);
+            }
+
+            if (updateProcess.Success == false && updateProcess.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating Process ");
+                return StatusCode(500, ModelState);
+            }
+
+            if (updateProcess.Success == false && updateProcess.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating Process ");
+                return StatusCode(500, ModelState);
+            }
+
+
+            return Ok(updateProcess);
+
+        }
+
         [HttpPut("SubPrice")]
         public async Task<ActionResult> UpdateSubPrice(UpdateSubPirce request)
         {

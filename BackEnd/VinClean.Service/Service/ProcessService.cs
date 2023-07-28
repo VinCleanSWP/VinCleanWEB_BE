@@ -28,6 +28,7 @@ namespace VinClean.Service.Service
         Task<ServiceResponse<ProcessDTO>> UpdateStartWorking(ProcessStartWorking process);
         Task<ServiceResponse<ProcessDTO>> UpdateEndWorking(ProcessEndWorking process);
         Task<ServiceResponse<ProcessDTO>> UpdateStatusCompleted(int id);
+        Task<ServiceResponse<ProcessDTO>> DeniedProcess(int id);
         Task<ServiceResponse<ProcessDTO>> DeleteProcess(int id);
     }
 
@@ -422,6 +423,45 @@ namespace VinClean.Service.Service
                 }
 
                 existingProcess.Status = "Completed";
+
+                if (!await _repository.UpdateProcess(existingProcess))
+                {
+                    _response.Success = false;
+                    _response.Message = "RepoError";
+                    _response.Data = null;
+                    return _response;
+                }
+
+                var _processDTO = _mapper.Map<ProcessDTO>(existingProcess);
+                _response.Success = true;
+                _response.Data = _processDTO;
+                _response.Message = "Process Updated";
+
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Data = null;
+                _response.Message = "Error";
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            }
+            return _response;
+        }
+        public async Task<ServiceResponse<ProcessDTO>> DeniedProcess(int id)
+        {
+            ServiceResponse<ProcessDTO> _response = new();
+            try
+            {
+                var existingProcess = await _repository.GetProcessById(id);
+                if (existingProcess == null)
+                {
+                    _response.Success = false;
+                    _response.Message = "NotFound";
+                    _response.Data = null;
+                    return _response;
+                }
+
+                existingProcess.Status = "Denied";
 
                 if (!await _repository.UpdateProcess(existingProcess))
                 {
