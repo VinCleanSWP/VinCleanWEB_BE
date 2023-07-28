@@ -9,6 +9,7 @@ namespace VinClean.Repo.Models
     public class OrderModelDTO
     {
         public int OrderId { get; set; }
+        public int EmployeeId { get; set; }
         public int CustomerId { get; set; }
         public DateTime Dob { get; set; }
         public string Address { get; set; }
