@@ -24,6 +24,7 @@ namespace VinClean.Service.Service
         Task<ServiceResponse<EmployeeDTO>> AddEmployee(RegisterEmployeeDTO request);
         Task<ServiceResponse<EmployeeDTO>> UpdateEmployee(UpdateEmployeeDTO request);
         Task<ServiceResponse<EmployeeDTO>> DeleteEmployee(int id);
+        Task<ServiceResponse<EmployeeDTO>> SoftDeleteEmployee(int id);
 
     }
     public class EmployeeService : IEmployeeService
@@ -169,6 +170,44 @@ namespace VinClean.Service.Service
             //    _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
             //}
             return _response;
+        }
+
+        public async Task<ServiceResponse<EmployeeDTO>> SoftDeleteEmployee(int id)
+        {
+            ServiceResponse<EmployeeDTO> _response = new();
+            try
+            {
+                var existingEmployee = await _repository.GetEmployeeById(id);
+                var existingAcc = await _accountRepository.GetAccountById((int)existingEmployee.AccountId);
+                if (existingEmployee == null)
+                {
+                    _response.Success = false;
+                    _response.Message = "NotFound";
+                    _response.Data = null;
+                    return _response;
+                }
+                else
+                {
+                    existingAcc.IsDeleted = true;
+                    await _accountRepository.UpdateAccount(existingAcc);
+
+                    var _OrderDTO = _mapper.Map<EmployeeDTO>(existingEmployee);
+                    _response.Success = true;
+                    _response.Data = _OrderDTO;
+                    _response.Message = "Deleted";
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Data = null;
+                _response.Message = "Error";
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message)
+    };
+            }
+return _response;
         }
 
         public async Task<ServiceResponse<EmployeeDTO>> GetEmployeeById(int id)
