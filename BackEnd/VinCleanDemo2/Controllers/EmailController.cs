@@ -116,5 +116,27 @@ namespace VinClean.Controllers
             }
             return Ok(newAccount);
         }
+        [HttpPost("DeniedProcess")]
+        public async Task<ActionResult<Account>> SendEmailToDeniedProcess(EmailFormDTO email)
+        {
+            var newAccount = await _emailService.SendEmailToDeniedProcess(email);
+            if (newAccount.Success == false && newAccount.Message == "Exist")
+            {
+                return Ok(newAccount);
+            }
+
+            if (newAccount.Success == false && newAccount.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when adding Account ");
+                return StatusCode(500, ModelState);
+            }
+
+            if (newAccount.Success == false && newAccount.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when adding Account ");
+                return StatusCode(500, ModelState);
+            }
+            return Ok(newAccount);
+        }
     }
 }

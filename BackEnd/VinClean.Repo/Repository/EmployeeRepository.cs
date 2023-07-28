@@ -37,14 +37,14 @@ namespace VinClean.Repo.Repository
         }
         async public Task<ICollection<Employee>> GetEmployeeList()
         {
-            return await _context.Employees.Include(e=>e.Account).ToListAsync();
+            return await _context.Employees.Include(e=>e.Account).Where(a=>a.Account.IsDeleted == false).ToListAsync();
         }
 
       
 
         async public Task<Employee> GetEmployeeById(int id)
         {
-            return await _context.Employees.Include(e => e.Account).FirstOrDefaultAsync(a => a.EmployeeId == id);
+            return await _context.Employees.Include(e => e.Account).Where(a => a.Account.IsDeleted == false).FirstOrDefaultAsync(a => a.EmployeeId == id);
         }
 
         async public Task<bool> CheckEmailEmployeeExist(string email)
@@ -103,9 +103,9 @@ namespace VinClean.Repo.Repository
                                  from p in processJoin.DefaultIfEmpty()
                                  where ((p.StarTime >= startTimeSpan && p.StarTime <= endTimeSpan) ||
                                        (p.EndTime >= startTimeSpan && p.EndTime <= endTimeSpan)) &&
-                                       p.Date == dateValue 
-                                 select e.EmployeeId).Contains(e.EmployeeId)
-                        select new Employee
+                                       p.Date == dateValue
+                                 select e.EmployeeId).Contains(e.EmployeeId) && a.IsDeleted == false && e.Status == "Available"
+                         select new Employee
                         {
                             EmployeeId = e.EmployeeId,
                             FirstName = e.FirstName,

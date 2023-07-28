@@ -119,10 +119,38 @@ namespace VinClean.Controllers
 
         }
         // DELETE api/<EmployeeController>/5
-        [HttpDelete("{id}")]
+        [HttpDelete("SoftDelete/{id}")]
         public async Task<ActionResult> DeleteEmployee(int id)
         {
             var deleteEmployee = await _service.DeleteEmployee(id);
+
+
+            if (deleteEmployee.Success == false && deleteEmployee.Message == "NotFound")
+            {
+                ModelState.AddModelError("", "Employee Not found");
+                return StatusCode(404, ModelState);
+            }
+
+            if (deleteEmployee.Success == false && deleteEmployee.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in Repository when deleting Employee");
+                return StatusCode(500, ModelState);
+            }
+
+            if (deleteEmployee.Success == false && deleteEmployee.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when deleting Employee");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> SoftDeleteEmployee(int id)
+        {
+            var deleteEmployee = await _service.SoftDeleteEmployee(id);
 
 
             if (deleteEmployee.Success == false && deleteEmployee.Message == "NotFound")
