@@ -100,7 +100,36 @@ namespace VinClean.Controllers
             }
 
             return Ok(deleteType);
-                
         }
-    }
+
+
+
+            [HttpPost]
+            public async Task<ActionResult> AddService(TypeDTO request)
+            {
+                var deleteType = await _service.AddType(request);
+
+
+                if (deleteType.Success == false && deleteType.Message == "NotFound")
+                {
+                    ModelState.AddModelError("", "Account Not found");
+                    return StatusCode(404, ModelState);
+                }
+
+                if (deleteType.Success == false && deleteType.Message == "RepoError")
+                {
+                    ModelState.AddModelError("", $"Some thing went wrong in Repository when deleting account");
+                    return StatusCode(500, ModelState);
+                }
+
+                if (deleteType.Success == false && deleteType.Message == "Error")
+                {
+                    ModelState.AddModelError("", $"Some thing went wrong in service layer when deleting account");
+                    return StatusCode(500, ModelState);
+                }
+
+                return Ok(deleteType);
+
+            }
+        }
 }

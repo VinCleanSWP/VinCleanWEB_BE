@@ -13,6 +13,7 @@ namespace VinClean.Repo.Repository
         Task<ICollection<VinClean.Repo.Models.Type>> GetTypeList();
         Task<VinClean.Repo.Models.Type> GetTypeById(int id);
         Task<bool> UpdateType(VinClean.Repo.Models.Type customer);
+        Task<bool> addType(VinClean.Repo.Models.Type customer);
         Task<bool> DeleteType(int id);
     }
     public class TypeRepository : ITypeRepository
@@ -35,6 +36,11 @@ namespace VinClean.Repo.Repository
         async Task<bool> ITypeRepository.UpdateType(Models.Type type)
         {
             _context.Types.Update(type);
+            return await _context.SaveChangesAsync() > 0 ? true : false;
+        }
+        async Task<bool> ITypeRepository.addType(Models.Type type)
+        {
+            _context.Types.Add(type);
             return await _context.SaveChangesAsync() > 0 ? true : false;
         }
 

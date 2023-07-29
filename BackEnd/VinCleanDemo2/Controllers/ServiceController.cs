@@ -61,7 +61,7 @@ namespace VinClean.Controllers
             return Ok(ServiceFound);
         }
         [HttpPost]
-        public async Task<ActionResult<Repo.Models.Service>> AddService(ServiceDTO request)
+        public async Task<ActionResult<Repo.Models.Service>> AddService(newServiceDTO request)
         {
 
 

@@ -16,6 +16,7 @@ namespace VinClean.Service.Service
         Task<ServiceResponse<TypeDTO>> GetTypeById(int id);
         Task<ServiceResponse<TypeDTO>> DeleteType(int id);
         Task<ServiceResponse<TypeDTO>> UpdateType(TypeDTO request);
+        Task<ServiceResponse<TypeDTO>> AddType(TypeDTO request);
     }
     public class TypeService : ITypeService
     {
@@ -97,6 +98,7 @@ namespace VinClean.Service.Service
                 }
                 existingType.Type1 = request.Type1;
                 existingType.Avaiable = request.Avaiable;
+                existingType.Img = request.Img;
 
 
                 if (!await _repository.UpdateType(existingType))
@@ -108,6 +110,43 @@ namespace VinClean.Service.Service
                 }
 
                 var _TypetDTO = _mapper.Map<TypeDTO>(existingType);
+                _response.Success = true;
+                _response.Data = _TypetDTO;
+                _response.Message = "Updated";
+
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Data = null;
+                _response.Message = "Error";
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            }
+            return _response;
+        }
+
+        public async Task<ServiceResponse<TypeDTO>> AddType(TypeDTO request)
+        {
+            ServiceResponse<TypeDTO> _response = new();
+            try
+            {
+                Repo.Models.Type type = new Repo.Models.Type()
+                {
+                    Type1 = request.Type1,
+                    Img = request.Img,
+                    Avaiable = request.Avaiable
+                };
+
+
+                if (!await _repository.addType(type))
+                {
+                    _response.Success = false;
+                    _response.Message = "RepoError";
+                    _response.Data = null;
+                    return _response;
+                }
+
+                var _TypetDTO = _mapper.Map<TypeDTO>(type);
                 _response.Success = true;
                 _response.Data = _TypetDTO;
                 _response.Message = "Updated";

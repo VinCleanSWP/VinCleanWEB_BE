@@ -37,8 +37,8 @@ namespace VinClean.Service.Service
         public async Task<ServiceResponse<List<ProcessRequestModel>>> GetPS()
         {
             ServiceResponse<List<ProcessRequestModel>> _response = new();
-            /*try
-            {*/
+            try
+            {
                 var processSlots = await _repository.GetPSList();
                 var processSlotDTOs = new List<ProcessRequestModel>();
 
@@ -53,7 +53,7 @@ namespace VinClean.Service.Service
                 _response.Success = true;
                 _response.Message = "OK";
                 _response.Data = processSlotDTOs;
-        /*}
+        }
             catch (Exception ex)
             {
                 _response.Success = false;
@@ -61,7 +61,7 @@ namespace VinClean.Service.Service
                 _response.Data = null;
                 _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message)
     };
-}*/
+}
 return _response;
         }
 

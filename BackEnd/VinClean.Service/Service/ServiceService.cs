@@ -16,7 +16,7 @@ namespace VinClean.Service.Service
         Task<ServiceResponse<List<ServiceDTO>>> GetServiceList();
         Task<ServiceResponse<List<ServiceDTO>>> GetServiceListById(int id);
         Task<ServiceResponse<ServiceDTO>> GetServiceById(int id);
-        Task<ServiceResponse<ServiceDTO>> AddService(ServiceDTO request);
+        Task<ServiceResponse<ServiceDTO>> AddService(newServiceDTO request);
         Task<ServiceResponse<ServiceDTO>> UpdateService(ServiceDTO request);
         Task<ServiceResponse<ServiceDTO>> DeleteService(int id);
 
@@ -32,7 +32,7 @@ namespace VinClean.Service.Service
             _mapper = mapper;
         }
 
-        public async Task<ServiceResponse<ServiceDTO>> AddService(ServiceDTO request)
+        public async Task<ServiceResponse<ServiceDTO>> AddService(newServiceDTO request)
         {
             ServiceResponse<ServiceDTO> _response = new();
             try
@@ -41,9 +41,10 @@ namespace VinClean.Service.Service
                 {
                     Name = request.Name,
                     Cost = request.Cost,
-                    MinimalSlot = request.MinimalSlot,
+                    TypeId = request.TypeId,
+                    MinimalSlot = 1,
                     Description = request.Description,
-                    Status = "Active",
+                    Status = "Available",
                     Avaiable = true,
                     IsDeleted = false,
                     CreatedDate = DateTime.Now,
