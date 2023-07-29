@@ -34,5 +34,6 @@ namespace VinClean.Service.DTO
         public string Gender { get; set; }
 
         public string Img { get; set; }
+        public string? VerificationToken { get; set; }
     }
 }
