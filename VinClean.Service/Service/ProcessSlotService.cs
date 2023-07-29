@@ -45,7 +45,7 @@ namespace VinClean.Service.Service
                 foreach (var processSlot in processSlots)
                 {
                     var processSlotDTO = _mapper.Map<ProcessRequestModel>(processSlot);
-                    
+
 
                     processSlotDTOs.Add(processSlotDTO);
                 }
@@ -98,27 +98,27 @@ return _response;
             ServiceResponse<ProcessSlotDTO> _response = new();
             /*try
             {*/
-                ProcessSlot _newProcess = new ProcessSlot()
-                {
-                    ProcessId = request.ProcessId,
-                    CreateBy = request.CreateBy,
-                    OldEmployeeId = request.OldEmployeeId,
-                    Note = request.Note,
-                    CreateAt = request.CreateAt,
-                    Satus = "Waiting"
-                };
-                if (!await _repository.AddPS(_newProcess))
-                {
-                    _response.Error = "RepoError";
-                    _response.Success = false;
-                    _response.Data = null;
-                    return _response;
-                }
+            ProcessSlot _newProcess = new ProcessSlot()
+            {
+                ProcessId = request.ProcessId,
+                CreateBy = request.CreateBy,
+                OldEmployeeId = request.OldEmployeeId,
+                Note = request.Note,
+                CreateAt = request.CreateAt,
+                Satus = "Waiting"
+            };
+            if (!await _repository.AddPS(_newProcess))
+            {
+                _response.Error = "RepoError";
+                _response.Success = false;
+                _response.Data = null;
+                return _response;
+            }
 
 
-                _response.Success = true;
-                _response.Data = _mapper.Map<ProcessSlotDTO>(_newProcess);
-                _response.Message = "Created";
+            _response.Success = true;
+            _response.Data = _mapper.Map<ProcessSlotDTO>(_newProcess);
+            _response.Message = "Created";
 
             /*}
             catch (Exception ex)
@@ -212,7 +212,7 @@ return _response;
             return _response;
         }
 
-       
+
 
         public async Task<ServiceResponse<ProcessSlotDTO>> DeletePS(int id)
         {

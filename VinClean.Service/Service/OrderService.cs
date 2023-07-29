@@ -9,6 +9,8 @@ using VinClean.Service.DTO.Employee;
 using AutoMapper;
 using VinClean.Repo.Repository;
 using VinClean.Repo.Models;
+using VinClean.Repo.Models.ProcessModel;
+using Azure;
 
 namespace VinClean.Service.Service
 {
@@ -19,6 +21,8 @@ namespace VinClean.Service.Service
         Task<ServiceResponse<OrderDTO>> AddOrder(NewOderDTO request);
         Task<ServiceResponse<OrderDTO>> UpdateOrder(OrderDTO request);
         Task<ServiceResponse<OrderDTO>> DeleteOrder(int id);
+        Task<ServiceResponse<List<OrderModelDTO>>> GetOrderRange(SelectOrder select);
+        Task<ServiceResponse<List<OrderModelDTO>>> GetAllOrderbyRange(SelectOrder select);
 
     }
     public class OrderService : IOrderService
@@ -31,9 +35,9 @@ namespace VinClean.Service.Service
         private readonly IProcessImageRepository _PImgrepository;
         private readonly IMapper _mapper;
 
-        public OrderService(IOrderRepository repository, IMapper mapper, IOrderDetailRepository odRepository, 
-            IFinishedByRepository fbRepository, IProcessRepository processRepository, 
-            ICustomerRepository cUrepository,IProcessImageRepository PImgrepository)
+        public OrderService(IOrderRepository repository, IMapper mapper, IOrderDetailRepository odRepository,
+            IFinishedByRepository fbRepository, IProcessRepository processRepository,
+            ICustomerRepository cUrepository, IProcessImageRepository PImgrepository)
         {
             _odRepository = odRepository;
             _odRepository = odRepository;
@@ -50,42 +54,42 @@ namespace VinClean.Service.Service
             ServiceResponse<OrderDTO> _response = new();
             /*try
             {*/
-                Order _newOrder = new Order()
-                {
-                    CustomerId = request.CustomerId,
-                    Note = request.Note,
-                    Total = request.Total,
-                    OrderDate = DateTime.Now,
-                    DateWork = request.DateWork,
-                    StartTime = request.StartTime,
-                    EndTime = request.EndTime,
-                    PointUsed = request.PointUsed,
-                    SubPrice = request.SubPrice
-                };
-                var check1 = await _repository.AddOrder(_newOrder);
-                FinshedBy _finshedBy = new FinshedBy()
-                {
-                    OrderId = _newOrder.OrderId,
-                    EmployeeId = request.EmployeeId
-                };
-                var check2 = await _fbRepository.AddFinishedBy(_finshedBy);
+            Order _newOrder = new Order()
+            {
+                CustomerId = request.CustomerId,
+                Note = request.Note,
+                Total = request.Total,
+                OrderDate = DateTime.Now,
+                DateWork = request.DateWork,
+                StartTime = request.StartTime,
+                EndTime = request.EndTime,
+                PointUsed = request.PointUsed,
+                SubPrice = request.SubPrice
+            };
+            var check1 = await _repository.AddOrder(_newOrder);
+            FinshedBy _finshedBy = new FinshedBy()
+            {
+                OrderId = _newOrder.OrderId,
+                EmployeeId = request.EmployeeId
+            };
+            var check2 = await _fbRepository.AddFinishedBy(_finshedBy);
 
-                OrderDetail _oderDetail = new OrderDetail()
-                {
-                    OrderId = _finshedBy.OrderId,
-                    ServiceId = request.ServiceId,
-                    StartWorking = request.StartWorking,
-                    EndWorking = request.EndWorking
-                };
-                var check3 = await _odRepository.AddOrderDetail(_oderDetail);
+            OrderDetail _oderDetail = new OrderDetail()
+            {
+                OrderId = _finshedBy.OrderId,
+                ServiceId = request.ServiceId,
+                StartWorking = request.StartWorking,
+                EndWorking = request.EndWorking
+            };
+            var check3 = await _odRepository.AddOrderDetail(_oderDetail);
 
-                var process = await _processRepository.GetProcessById(request.ProcessId);
-                process.IsDeleted = true;
-                var check4 = await _processRepository.UpdateProcess(process);
+            var process = await _processRepository.GetProcessById(request.ProcessId);
+            process.IsDeleted = true;
+            var check4 = await _processRepository.UpdateProcess(process);
 
-                var Customer = await _CUrepository.GetCustomerById(request.CustomerId);
-                Customer.TotalPoint = (int?)(Customer.TotalPoint + ((double)request.Total * 0.05));
-                var check5 = await _CUrepository.UpdateCustomer(Customer);
+            var Customer = await _CUrepository.GetCustomerById(request.CustomerId);
+            Customer.TotalPoint = (int?)(Customer.TotalPoint + ((double)request.Total * 0.05));
+            var check5 = await _CUrepository.UpdateCustomer(Customer);
             //update OrderId ProcessImage
             var existingProcessImg = await _PImgrepository.ProcessImageListByProcessId(request.ProcessId);
             foreach (var processImg in existingProcessImg)
@@ -95,30 +99,30 @@ namespace VinClean.Service.Service
             }
 
             if (!check1 && !check2 && !check3 && !check4 && !check5)
-                {
-                    _response.Error = "RepoError";
-                    _response.Success = false;
-                    _response.Data = null;
-                    return _response;
-                }
-
-                _response.Success = true;
-                _response.Data = _mapper.Map<OrderDTO>(_newOrder);
-                _response.Message = "Created";
-
-
-           /* }
-            catch (Exception ex)
             {
+                _response.Error = "RepoError";
                 _response.Success = false;
                 _response.Data = null;
-                _response.Message = "Error";
-                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message)
-            };
-            }*/
+                return _response;
+            }
 
-        return _response;
-    }
+            _response.Success = true;
+            _response.Data = _mapper.Map<OrderDTO>(_newOrder);
+            _response.Message = "Created";
+
+
+            /* }
+             catch (Exception ex)
+             {
+                 _response.Success = false;
+                 _response.Data = null;
+                 _response.Message = "Error";
+                 _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message)
+             };
+             }*/
+
+            return _response;
+        }
         public async Task<ServiceResponse<OrderDTO>> UpdateOrder(OrderDTO request)
         {
             ServiceResponse<OrderDTO> _response = new();
@@ -175,10 +179,10 @@ namespace VinClean.Service.Service
                     _response.Message = "NotFound";
                     _response.Data = null;
                     return _response;
-                } 
+                }
 
 
-                if (!await _repository.DeleteOrder(existingOrder) && 
+                if (!await _repository.DeleteOrder(existingOrder) &&
                     !await _odRepository.DeleteOrderDetail(existingOrderDetail) &&
                     !await _fbRepository.DeleteFinishedBy(existingFB))
                 {
@@ -257,6 +261,59 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        
+
+        public async Task<ServiceResponse<List<OrderModelDTO>>> GetOrderRange(SelectOrder select)
+        {
+            ServiceResponse<List<OrderModelDTO>> _response = new();
+            try
+            {
+                var ListOrder = await _repository.SelectOrder(select);
+                var ListOrderDTO = new List<OrderModelDTO>();
+                foreach (var order in ListOrder)
+                {
+                    ListOrderDTO.Add(_mapper.Map<OrderModelDTO>(order));
+                }
+
+                _response.Success = true;
+                _response.Message = "OK";
+                _response.Data = ListOrderDTO;
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Message = "Error";
+                _response.Data = null;
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message)
+            };
+            }
+            return _response;
+        }
+
+        public async Task<ServiceResponse<List<OrderModelDTO>>> GetAllOrderbyRange(SelectOrder select)
+        {
+            ServiceResponse<List<OrderModelDTO>> _response = new();
+            try
+            {
+                var ListOrder = await _repository.SelectAllOrder(select);
+                var ListOrderDTO = new List<OrderModelDTO>();
+                foreach (var order in ListOrder)
+                {
+                    ListOrderDTO.Add(_mapper.Map<OrderModelDTO>(order));
+                }
+
+                _response.Success = true;
+                _response.Message = "OK";
+                _response.Data = ListOrderDTO;
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Message = "Error";
+                _response.Data = null;
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message)
+            };
+            }
+            return _response;
+        }
     }
 }
