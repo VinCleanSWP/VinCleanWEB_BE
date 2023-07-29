@@ -82,7 +82,7 @@ namespace VinClean.Controllers
             var newAccount = await _service.Register(request);
             if (newAccount.Success == false && newAccount.Message == "Exist")
             {
-                return Ok(newAccount);
+                return StatusCode(500, ModelState);
             }
 
             if (newAccount.Success == false && newAccount.Message == "RepoError")

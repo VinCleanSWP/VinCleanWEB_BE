@@ -162,7 +162,7 @@ namespace VinClean.Service.Service
             ServiceResponse<CustomerDTO> _response = new();
             try
             {
-                if (await _customerRepository.CheckEmailCustomerExist(request.Email))
+                if ( _customerRepository.CheckEmailCustomerExist(request.Email))
                 {
                     _response.Message = "Exist";
                     _response.Success = false;
