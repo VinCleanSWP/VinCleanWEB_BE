@@ -37,15 +37,15 @@ namespace VinClean.Service.Service
         public async Task<ServiceResponse<List<ProcessRequestModel>>> GetPS()
         {
             ServiceResponse<List<ProcessRequestModel>> _response = new();
-            /*try
-            {*/
+            try
+            {
                 var processSlots = await _repository.GetPSList();
                 var processSlotDTOs = new List<ProcessRequestModel>();
 
                 foreach (var processSlot in processSlots)
                 {
                     var processSlotDTO = _mapper.Map<ProcessRequestModel>(processSlot);
-                    
+
 
                     processSlotDTOs.Add(processSlotDTO);
                 }
@@ -53,16 +53,15 @@ namespace VinClean.Service.Service
                 _response.Success = true;
                 _response.Message = "OK";
                 _response.Data = processSlotDTOs;
-        /*}
+            }
             catch (Exception ex)
             {
                 _response.Success = false;
                 _response.Message = "Error";
                 _response.Data = null;
-                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message)
-    };
-}*/
-return _response;
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message)};
+            }
+            return _response;
         }
 
         public async Task<ServiceResponse<ProcessRequestModel>> GetPSById(int id)
@@ -98,27 +97,27 @@ return _response;
             ServiceResponse<ProcessSlotDTO> _response = new();
             /*try
             {*/
-                ProcessSlot _newProcess = new ProcessSlot()
-                {
-                    ProcessId = request.ProcessId,
-                    CreateBy = request.CreateBy,
-                    OldEmployeeId = request.OldEmployeeId,
-                    Note = request.Note,
-                    CreateAt = request.CreateAt,
-                    Satus = "Waiting"
-                };
-                if (!await _repository.AddPS(_newProcess))
-                {
-                    _response.Error = "RepoError";
-                    _response.Success = false;
-                    _response.Data = null;
-                    return _response;
-                }
+            ProcessSlot _newProcess = new ProcessSlot()
+            {
+                ProcessId = request.ProcessId,
+                CreateBy = request.CreateBy,
+                OldEmployeeId = request.OldEmployeeId,
+                Note = request.Note,
+                CreateAt = request.CreateAt,
+                Satus = "Waiting"
+            };
+            if (!await _repository.AddPS(_newProcess))
+            {
+                _response.Error = "RepoError";
+                _response.Success = false;
+                _response.Data = null;
+                return _response;
+            }
 
 
-                _response.Success = true;
-                _response.Data = _mapper.Map<ProcessSlotDTO>(_newProcess);
-                _response.Message = "Created";
+            _response.Success = true;
+            _response.Data = _mapper.Map<ProcessSlotDTO>(_newProcess);
+            _response.Message = "Created";
 
             /*}
             catch (Exception ex)
@@ -212,7 +211,7 @@ return _response;
             return _response;
         }
 
-       
+
 
         public async Task<ServiceResponse<ProcessSlotDTO>> DeletePS(int id)
         {
