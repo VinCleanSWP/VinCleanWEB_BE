@@ -29,7 +29,5 @@ public partial class Customer
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
-    public virtual ICollection<Process> Processes { get; set; } = new List<Process>();
-
     public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
 }

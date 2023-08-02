@@ -46,7 +46,7 @@ namespace VinClean.Controllers
             }
             return Ok(EmployeeFound);
         }
-        // POST api/<EmployeeController>/
+        //POST api/<EmployeeController>/
         [HttpPost("selectemployee")]
         public async Task<ActionResult<List<Employee>>> SelectEmployee(SelectEmpDTO request)
         {
@@ -60,30 +60,30 @@ namespace VinClean.Controllers
 
             return Ok(response.Data);
         }
-            // POST api/<EmployeeController>
-        [HttpPost]
-        public async Task<ActionResult<Employee>> AddEmployee(RegisterEmployeeDTO request)
-        {
-            var newEmployee = await _service.AddEmployee(request);
-            if (newEmployee.Success == false && newEmployee.Message == "Exist")
-            {
-                ModelState.AddModelError("", $"Email {request} is Existed");
-                return StatusCode(500, ModelState);
-            }
+        //    // POST api/<EmployeeController>
+        //[HttpPost]
+        //public async Task<ActionResult<Employee>> AddEmployee(RegisterEmployeeDTO request)
+        //{
+        //    var newEmployee = await _service.AddEmployee(request);
+        //    if (newEmployee.Success == false && newEmployee.Message == "Exist")
+        //    {
+        //        ModelState.AddModelError("", $"Email {request} is Existed");
+        //        return StatusCode(500, ModelState);
+        //    }
 
-            if (newEmployee.Success == false && newEmployee.Message == "RepoError")
-            {
-                ModelState.AddModelError("", $"Some thing went wrong in respository layer when adding Employee {request}");
-                return StatusCode(500, ModelState);
-            }
+        //    if (newEmployee.Success == false && newEmployee.Message == "RepoError")
+        //    {
+        //        ModelState.AddModelError("", $"Some thing went wrong in respository layer when adding Employee {request}");
+        //        return StatusCode(500, ModelState);
+        //    }
 
-            if (newEmployee.Success == false && newEmployee.Message == "Error")
-            {
-                ModelState.AddModelError("", $"Some thing went wrong in service layer when adding Employee {request}");
-                return StatusCode(500, ModelState);
-            }
-            return Ok(newEmployee.Data);
-        }
+        //    if (newEmployee.Success == false && newEmployee.Message == "Error")
+        //    {
+        //        ModelState.AddModelError("", $"Some thing went wrong in service layer when adding Employee {request}");
+        //        return StatusCode(500, ModelState);
+        //    }
+        //    return Ok(newEmployee.Data);
+        //}
 
         // PUT api/<EmployeeController>/5
         [HttpPut]

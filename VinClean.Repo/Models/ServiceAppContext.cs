@@ -19,6 +19,10 @@ public partial class ServiceAppContext : DbContext
 
     public virtual DbSet<Blog> Blogs { get; set; }
 
+    public virtual DbSet<Building> Buildings { get; set; }
+
+    public virtual DbSet<BuildingType> BuildingTypes { get; set; }
+
     public virtual DbSet<Category> Categories { get; set; }
 
     public virtual DbSet<Comment> Comments { get; set; }
@@ -27,19 +31,13 @@ public partial class ServiceAppContext : DbContext
 
     public virtual DbSet<Employee> Employees { get; set; }
 
-    public virtual DbSet<FinshedBy> FinshedBies { get; set; }
+    public virtual DbSet<Location> Locations { get; set; }
 
     public virtual DbSet<Order> Orders { get; set; }
 
-    public virtual DbSet<OrderDetail> OrderDetails { get; set; }
+    public virtual DbSet<OrderImage> OrderImages { get; set; }
 
-    public virtual DbSet<Process> Processes { get; set; }
-
-    public virtual DbSet<ProcessDetail> ProcessDetails { get; set; }
-
-    public virtual DbSet<ProcessImage> ProcessImages { get; set; }
-
-    public virtual DbSet<ProcessSlot> ProcessSlots { get; set; }
+    public virtual DbSet<OrderRequest> OrderRequests { get; set; }
 
     public virtual DbSet<Rating> Ratings { get; set; }
 
@@ -47,29 +45,23 @@ public partial class ServiceAppContext : DbContext
 
     public virtual DbSet<Service> Services { get; set; }
 
-    public virtual DbSet<ServiceManage> ServiceManages { get; set; }
-
     public virtual DbSet<ServiceWorkIn> ServiceWorkIns { get; set; }
-
-    public virtual DbSet<Slot> Slots { get; set; }
 
     public virtual DbSet<Type> Types { get; set; }
 
-    public virtual DbSet<WorkingBy> WorkingBies { get; set; }
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=trongps-swp.database.windows.net;Initial Catalog=ServiceApp;Persist Security Info=True;User ID=swp;Password=GNBUbgCAZ857m2;TrustServerCertificate=True");
+        => optionsBuilder.UseSqlServer("Data Source=trongps-swp.database.windows.net;Initial Catalog=ServiceApp;Persist Security Info=True;User ID=swp;Password=Colen123;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Account>(entity =>
         {
-            entity.HasKey(e => e.AccountId).HasName("PK__Account__46A222CD0311171A");
+            entity.HasKey(e => e.AccountId).HasName("PK__Account__46A222CD07A7F4C9");
 
             entity.ToTable("Account");
 
-            entity.HasIndex(e => e.Email, "UQ__Account__AB6E61646867CFAC").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__Account__AB6E61641D829675").IsUnique();
 
             entity.Property(e => e.AccountId).HasColumnName("account_id");
             entity.Property(e => e.CreatedDate)
@@ -108,12 +100,12 @@ public partial class ServiceAppContext : DbContext
 
             entity.HasOne(d => d.Role).WithMany(p => p.Accounts)
                 .HasForeignKey(d => d.RoleId)
-                .HasConstraintName("FK__Account__role_id__10566F31");
+                .HasConstraintName("FK__Account__role_id__656C112C");
         });
 
         modelBuilder.Entity<Blog>(entity =>
         {
-            entity.HasKey(e => e.BlogId).HasName("PK__Blog__2975AA288E30DB72");
+            entity.HasKey(e => e.BlogId).HasName("PK__Blog__2975AA283CF2E426");
 
             entity.ToTable("Blog");
 
@@ -142,20 +134,43 @@ public partial class ServiceAppContext : DbContext
 
             entity.HasOne(d => d.Category).WithMany(p => p.Blogs)
                 .HasForeignKey(d => d.CategoryId)
-                .HasConstraintName("FK__Blog__category_i__114A936A");
+                .HasConstraintName("FK__Blog__category_i__66603565");
 
             entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.BlogCreatedByNavigations)
                 .HasForeignKey(d => d.CreatedBy)
-                .HasConstraintName("FK__Blog__CreatedBy__123EB7A3");
+                .HasConstraintName("FK__Blog__CreatedBy__6754599E");
 
             entity.HasOne(d => d.ModifiedByNavigation).WithMany(p => p.BlogModifiedByNavigations)
                 .HasForeignKey(d => d.ModifiedBy)
-                .HasConstraintName("FK__Blog__ModifiedBy__1332DBDC");
+                .HasConstraintName("FK__Blog__ModifiedBy__68487DD7");
+        });
+
+        modelBuilder.Entity<Building>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Building__3214EC07ED5178BF");
+
+            entity.ToTable("Building");
+
+            entity.Property(e => e.Name).HasMaxLength(50);
+            entity.Property(e => e.TypeId).HasColumnName("Type_id");
+
+            entity.HasOne(d => d.Type).WithMany(p => p.Buildings)
+                .HasForeignKey(d => d.TypeId)
+                .HasConstraintName("FK__Building__Type_i__693CA210");
+        });
+
+        modelBuilder.Entity<BuildingType>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Building__3214EC07B2BFE382");
+
+            entity.ToTable("Building_type");
+
+            entity.Property(e => e.Type).HasMaxLength(50);
         });
 
         modelBuilder.Entity<Category>(entity =>
         {
-            entity.HasKey(e => e.CategoryId).HasName("PK__Category__D54EE9B4D90B8F43");
+            entity.HasKey(e => e.CategoryId).HasName("PK__Category__D54EE9B48BC8C2E9");
 
             entity.ToTable("Category");
 
@@ -167,7 +182,7 @@ public partial class ServiceAppContext : DbContext
 
         modelBuilder.Entity<Comment>(entity =>
         {
-            entity.HasKey(e => e.CommentId).HasName("PK__Comment__E79576878C7676ED");
+            entity.HasKey(e => e.CommentId).HasName("PK__Comment__E7957687D64E14B7");
 
             entity.ToTable("Comment");
 
@@ -186,24 +201,24 @@ public partial class ServiceAppContext : DbContext
 
             entity.HasOne(d => d.Blog).WithMany(p => p.Comments)
                 .HasForeignKey(d => d.BlogId)
-                .HasConstraintName("FK__Comment__blog_id__14270015");
+                .HasConstraintName("FK__Comment__blog_id__6A30C649");
 
             entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.CommentCreatedByNavigations)
                 .HasForeignKey(d => d.CreatedBy)
-                .HasConstraintName("FK__Comment__Created__151B244E");
+                .HasConstraintName("FK__Comment__Created__6B24EA82");
 
             entity.HasOne(d => d.ModifiedByNavigation).WithMany(p => p.CommentModifiedByNavigations)
                 .HasForeignKey(d => d.ModifiedBy)
-                .HasConstraintName("FK__Comment__Modifie__160F4887");
+                .HasConstraintName("FK__Comment__Modifie__6C190EBB");
         });
 
         modelBuilder.Entity<Customer>(entity =>
         {
-            entity.HasKey(e => e.CustomerId).HasName("PK__Customer__CD65CB85FB8B1017");
+            entity.HasKey(e => e.CustomerId).HasName("PK__Customer__CD65CB85FACCACBA");
 
             entity.ToTable("Customer");
 
-            entity.HasIndex(e => e.Phone, "UQ__Customer__B43B145FC71E2BC1").IsUnique();
+            entity.HasIndex(e => e.Phone, "UQ__Customer__B43B145F149379A7").IsUnique();
 
             entity.Property(e => e.CustomerId).HasColumnName("customer_id");
             entity.Property(e => e.AccountId).HasColumnName("account_id");
@@ -233,12 +248,12 @@ public partial class ServiceAppContext : DbContext
 
             entity.HasOne(d => d.Account).WithMany(p => p.Customers)
                 .HasForeignKey(d => d.AccountId)
-                .HasConstraintName("FK__Customer__accoun__17036CC0");
+                .HasConstraintName("FK__Customer__accoun__6D0D32F4");
         });
 
         modelBuilder.Entity<Employee>(entity =>
         {
-            entity.HasKey(e => e.EmployeeId).HasName("PK__Employee__C52E0BA845F41A8C");
+            entity.HasKey(e => e.EmployeeId).HasName("PK__Employee__C52E0BA885740B83");
 
             entity.ToTable("Employee");
 
@@ -264,109 +279,51 @@ public partial class ServiceAppContext : DbContext
 
             entity.HasOne(d => d.Account).WithMany(p => p.Employees)
                 .HasForeignKey(d => d.AccountId)
-                .HasConstraintName("FK__Employee__accoun__17F790F9");
+                .HasConstraintName("FK__Employee__accoun__6E01572D");
         });
 
-        modelBuilder.Entity<FinshedBy>(entity =>
+        modelBuilder.Entity<Location>(entity =>
         {
-            //entity
-            //    .HasNoKey()
-            //    .ToTable("FinshedBy");
-            entity.HasKey(e => e.OrderId);
-            entity.ToTable("FinshedBy");
+            entity.HasKey(e => e.Id).HasName("PK__Location__3214EC070AC548BC");
+
+            entity.ToTable("Location");
 
             entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
-            entity.Property(e => e.OrderId).HasColumnName("order_id");
+            entity.Property(e => e.Latitude).HasColumnName("latitude");
+            entity.Property(e => e.Longtitude).HasColumnName("longtitude");
+            entity.Property(e => e.OrderId).HasColumnName("Order_id");
 
-            entity.HasOne(d => d.Employee).WithMany()
+            entity.HasOne(d => d.Employee).WithMany(p => p.Locations)
                 .HasForeignKey(d => d.EmployeeId)
-                .HasConstraintName("FK__FinshedBy__emplo__18EBB532");
+                .HasConstraintName("FK__Location__employ__6EF57B66");
 
-            entity.HasOne(d => d.Order).WithMany()
+            entity.HasOne(d => d.Order).WithMany(p => p.Locations)
                 .HasForeignKey(d => d.OrderId)
-                .HasConstraintName("FK__FinshedBy__order__19DFD96B");
+                .HasConstraintName("FK__Location__Order___6FE99F9F");
         });
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.OrderId).HasName("PK__Order__46596229AA1568DA");
+            entity.HasKey(e => e.OrderId).HasName("PK__Order__F1FF8453C79AEF0E");
 
             entity.ToTable("Order");
 
-            entity.Property(e => e.OrderId).HasColumnName("order_id");
-            entity.Property(e => e.CustomerId).HasColumnName("customer_id");
-            entity.Property(e => e.DateWork)
-                .HasColumnType("date")
-                .HasColumnName("date_work");
-            entity.Property(e => e.FinishedDate).HasColumnType("date");
-            entity.Property(e => e.Note)
-                .HasColumnType("ntext")
-                .HasColumnName("note");
-            entity.Property(e => e.OrderDate)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("date");
-            entity.Property(e => e.PointUsed).HasColumnName("Point_used");
-            entity.Property(e => e.SubPrice).HasColumnType("money");
-            entity.Property(e => e.Total)
-                .HasColumnType("money")
-                .HasColumnName("total");
-
-            entity.HasOne(d => d.Customer).WithMany(p => p.Orders)
-                .HasForeignKey(d => d.CustomerId)
-                .HasConstraintName("FK__Order__customer___1AD3FDA4");
-        });
-
-        modelBuilder.Entity<OrderDetail>(entity =>
-        {
-            //entity
-            //    .HasNoKey()
-            //    .ToTable("Order_Detail");
-            entity.HasKey(e => e.OrderId);
-            entity.ToTable("Order_Detail");
-
-            entity.Property(e => e.OrderId).HasColumnName("order_id");
-            entity.Property(e => e.RateId).HasColumnName("rate_id");
-            entity.Property(e => e.ServiceId).HasColumnName("service_id");
-            entity.Property(e => e.Slot)
-                .HasDefaultValueSql("((1))")
-                .HasColumnName("slot");
-            entity.Property(e => e.Total)
-                .HasColumnType("money")
-                .HasColumnName("total");
-
-            entity.HasOne(d => d.Order).WithMany()
-                .HasForeignKey(d => d.OrderId)
-                .HasConstraintName("FK__Order_Det__order__6477ECF3");
-
-            entity.HasOne(d => d.Rate).WithMany()
-                .HasForeignKey(d => d.RateId)
-                .HasConstraintName("FK_Order_Detail_Rating");
-
-            entity.HasOne(d => d.Service).WithMany()
-                .HasForeignKey(d => d.ServiceId)
-                .HasConstraintName("FK__Order_Det__servi__656C112C");
-        });
-
-        modelBuilder.Entity<Process>(entity =>
-        {
-            entity.HasKey(e => e.ProcessId).HasName("PK__Process__9446C3E126BC7ECB");
-
-            entity.ToTable("Process");
-
-            entity.Property(e => e.ProcessId).HasColumnName("process_id");
+            entity.Property(e => e.OrderId).HasColumnName("Order_id");
             entity.Property(e => e.Address)
                 .HasMaxLength(100)
                 .IsUnicode(false)
                 .HasColumnName("address");
+            entity.Property(e => e.BuildingId).HasColumnName("Building_id");
+            entity.Property(e => e.CancelDate).HasColumnType("datetime");
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("date");
             entity.Property(e => e.CustomerId).HasColumnName("customer_id");
             entity.Property(e => e.Date).HasColumnType("date");
+            entity.Property(e => e.EmployeeId).HasColumnName("Employee_id");
             entity.Property(e => e.IsDeleted)
                 .HasDefaultValueSql("((0))")
                 .HasColumnName("isDeleted");
-            entity.Property(e => e.ModifiedDate).HasColumnType("date");
             entity.Property(e => e.Note)
                 .HasColumnType("ntext")
                 .HasColumnName("note");
@@ -376,78 +333,67 @@ public partial class ServiceAppContext : DbContext
                 .HasColumnName("phone");
             entity.Property(e => e.PointUsed).HasColumnName("Point_used");
             entity.Property(e => e.Price).HasColumnType("money");
+            entity.Property(e => e.RatingId).HasColumnName("Rating_id");
+            entity.Property(e => e.ReasonCancel).HasMaxLength(255);
+            entity.Property(e => e.ServiceId).HasColumnName("service_id");
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
                 .HasColumnName("status");
             entity.Property(e => e.SubPrice).HasColumnType("money");
 
-            entity.HasOne(d => d.Customer).WithMany(p => p.Processes)
+            entity.HasOne(d => d.Building).WithMany(p => p.Orders)
+                .HasForeignKey(d => d.BuildingId)
+                .HasConstraintName("FK_orders_building");
+
+            entity.HasOne(d => d.CancelByNavigation).WithMany(p => p.Orders)
+                .HasForeignKey(d => d.CancelBy)
+                .HasConstraintName("FK__Order__ModifiedB__71D1E811");
+
+            entity.HasOne(d => d.Customer).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.CustomerId)
-                .HasConstraintName("FK__Process__custome__1EA48E88");
+                .HasConstraintName("FK__Order__customer___70DDC3D8");
 
-            entity.HasOne(d => d.ModifiedByNavigation).WithMany(p => p.Processes)
-                .HasForeignKey(d => d.ModifiedBy)
-                .HasConstraintName("FK__Process__Modifie__1F98B2C1");
-        });
+            entity.HasOne(d => d.Employee).WithMany(p => p.Orders)
+                .HasForeignKey(d => d.EmployeeId)
+                .HasConstraintName("FK_orders_employee");
 
-        modelBuilder.Entity<ProcessDetail>(entity =>
-        {
-            //entity
-            //    .HasNoKey()
-            //    .ToTable("Process_Detail");
-            entity.HasKey(e => e.ProcessId);
-            entity.ToTable("Process_Detail");
+            entity.HasOne(d => d.Rating).WithMany(p => p.Orders)
+                .HasForeignKey(d => d.RatingId)
+                .HasConstraintName("DF_Order_rateId_5CE63DAB");
 
-            entity.Property(e => e.ProcessId).HasColumnName("process_id");
-            entity.Property(e => e.ServiceId).HasColumnName("service_id");
-
-            entity.HasOne(d => d.Process).WithMany()
-                .HasForeignKey(d => d.ProcessId)
-                .HasConstraintName("FK__Process_D__proce__208CD6FA");
-
-            entity.HasOne(d => d.Service).WithMany()
+            entity.HasOne(d => d.Service).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.ServiceId)
-                .HasConstraintName("FK__Process_D__servi__2180FB33");
+                .HasConstraintName("FK_orders_service");
         });
 
-        modelBuilder.Entity<ProcessImage>(entity =>
+        modelBuilder.Entity<OrderImage>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__ProcessI__3213E83F4D0AD281");
+            entity.HasKey(e => e.Id).HasName("PK__OrderIma__3213E83FC9DC582D");
 
-            entity.ToTable("ProcessImage");
+            entity.ToTable("OrderImage");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Image)
                 .HasMaxLength(255)
-                .IsUnicode(false)
                 .HasColumnName("image");
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
-                .IsUnicode(false)
                 .HasColumnName("name");
-            entity.Property(e => e.OrderId).HasColumnName("order_id");
-            entity.Property(e => e.ProcessId).HasColumnName("process_id");
+            entity.Property(e => e.OrderId).HasColumnName("Order_id");
             entity.Property(e => e.Type)
                 .HasMaxLength(30)
-                .IsUnicode(false)
                 .HasColumnName("type");
 
-            entity.HasOne(d => d.Order).WithMany(p => p.ProcessImages)
+            entity.HasOne(d => d.Order).WithMany(p => p.OrderImages)
                 .HasForeignKey(d => d.OrderId)
-                .HasConstraintName("FK__ProcessIm__order__2739D489");
-
-            entity.HasOne(d => d.Process).WithMany(p => p.ProcessImages)
-                .HasForeignKey(d => d.ProcessId)
-                .HasConstraintName("FK__ProcessIm__proce__282DF8C2");
+                .HasConstraintName("FK__OrderImag__Order__797309D9");
         });
 
-        modelBuilder.Entity<ProcessSlot>(entity =>
+        modelBuilder.Entity<OrderRequest>(entity =>
         {
-            //entity
-            //    .HasNoKey()
-            //    .ToTable("Process_Slot");
-            entity.HasKey(e => e.ProcessId);
-            entity.ToTable("Process_Slot");
+            entity.HasKey(e => e.Id).HasName("PK__Order_re__3214EC07B5369919");
+
+            entity.ToTable("Order_request");
 
             entity.Property(e => e.CreateAt)
                 .HasColumnType("datetime")
@@ -458,37 +404,32 @@ public partial class ServiceAppContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("note");
             entity.Property(e => e.OldEmployeeId).HasColumnName("oldEmployee_id");
-            entity.Property(e => e.ProcessId).HasColumnName("process_id");
+            entity.Property(e => e.OrderId).HasColumnName("Order_id");
             entity.Property(e => e.Satus)
                 .HasMaxLength(20)
                 .IsUnicode(false)
                 .HasColumnName("satus");
-            entity.Property(e => e.SlotId).HasColumnName("slot_id");
 
-            entity.HasOne(d => d.CreateByNavigation).WithMany()
+            entity.HasOne(d => d.CreateByNavigation).WithMany(p => p.OrderRequests)
                 .HasForeignKey(d => d.CreateBy)
-                .HasConstraintName("fkcreateBy_Process_Slot_Account");
+                .HasConstraintName("fkcreateBy_Order_request_Account");
 
-            entity.HasOne(d => d.NewEmployee).WithMany()
+            entity.HasOne(d => d.NewEmployee).WithMany(p => p.OrderRequestNewEmployees)
                 .HasForeignKey(d => d.NewEmployeeId)
-                .HasConstraintName("fknewEmp_Process_Slot_Employee");
+                .HasConstraintName("fknewEmp_Order_request_Employee");
 
-            entity.HasOne(d => d.OldEmployee).WithMany()
+            entity.HasOne(d => d.OldEmployee).WithMany(p => p.OrderRequestOldEmployees)
                 .HasForeignKey(d => d.OldEmployeeId)
-                .HasConstraintName("fk_Process_Slot_Employee");
+                .HasConstraintName("fk_Order_request_Employee");
 
-            entity.HasOne(d => d.Process).WithMany()
-                .HasForeignKey(d => d.ProcessId)
-                .HasConstraintName("FK__Process_S__proce__22751F6C");
-
-            entity.HasOne(d => d.Slot).WithMany()
-                .HasForeignKey(d => d.SlotId)
-                .HasConstraintName("FK__Process_S__slot___236943A5");
+            entity.HasOne(d => d.Order).WithMany(p => p.OrderRequests)
+                .HasForeignKey(d => d.OrderId)
+                .HasConstraintName("FK__Order_req__Order__75A278F5");
         });
 
         modelBuilder.Entity<Rating>(entity =>
         {
-            entity.HasKey(e => e.RateId).HasName("PK__Rating__75920B42141D0118");
+            entity.HasKey(e => e.RateId).HasName("PK__Rating__75920B4282918FFE");
 
             entity.ToTable("Rating");
 
@@ -509,20 +450,20 @@ public partial class ServiceAppContext : DbContext
 
             entity.HasOne(d => d.Customer).WithMany(p => p.Ratings)
                 .HasForeignKey(d => d.CustomerId)
-                .HasConstraintName("FK__Rating__customer__29221CFB");
+                .HasConstraintName("FK__Rating__customer__7A672E12");
 
             entity.HasOne(d => d.ModifiedByNavigation).WithMany(p => p.Ratings)
                 .HasForeignKey(d => d.ModifiedBy)
-                .HasConstraintName("FK__Rating__Modified__2A164134");
+                .HasConstraintName("FK__Rating__Modified__7B5B524B");
 
             entity.HasOne(d => d.Service).WithMany(p => p.Ratings)
                 .HasForeignKey(d => d.ServiceId)
-                .HasConstraintName("FK__Rating__service___2B0A656D");
+                .HasConstraintName("FK__Rating__service___7C4F7684");
         });
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.RoleId).HasName("PK__Role__760965CCD59A6A89");
+            entity.HasKey(e => e.RoleId).HasName("PK__Role__760965CCF8A356CD");
 
             entity.ToTable("Role");
 
@@ -534,7 +475,7 @@ public partial class ServiceAppContext : DbContext
 
         modelBuilder.Entity<Service>(entity =>
         {
-            entity.HasKey(e => e.ServiceId).HasName("PK__Service__3E0DB8AF1364088D");
+            entity.HasKey(e => e.ServiceId).HasName("PK__Service__3E0DB8AF77976D52");
 
             entity.ToTable("Service");
 
@@ -566,37 +507,15 @@ public partial class ServiceAppContext : DbContext
 
             entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.ServiceCreatedByNavigations)
                 .HasForeignKey(d => d.CreatedBy)
-                .HasConstraintName("FK__Service__Created__2BFE89A6");
+                .HasConstraintName("FK__Service__Created__7D439ABD");
 
             entity.HasOne(d => d.ModifiedByNavigation).WithMany(p => p.ServiceModifiedByNavigations)
                 .HasForeignKey(d => d.ModifiedBy)
-                .HasConstraintName("FK__Service__Modifie__2CF2ADDF");
+                .HasConstraintName("FK__Service__Modifie__7E37BEF6");
 
             entity.HasOne(d => d.Type).WithMany(p => p.Services)
                 .HasForeignKey(d => d.TypeId)
-                .HasConstraintName("FK__Service__type_id__2DE6D218");
-        });
-
-        modelBuilder.Entity<ServiceManage>(entity =>
-        {
-            entity
-                .HasNoKey()
-                .ToTable("Service_Manage");
-
-            entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
-            entity.Property(e => e.EndDate).HasColumnType("date");
-            entity.Property(e => e.ServiceId).HasColumnName("service_id");
-            entity.Property(e => e.StartDate)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("date");
-
-            entity.HasOne(d => d.Employee).WithMany()
-                .HasForeignKey(d => d.EmployeeId)
-                .HasConstraintName("FK__Service_M__emplo__2EDAF651");
-
-            entity.HasOne(d => d.Service).WithMany()
-                .HasForeignKey(d => d.ServiceId)
-                .HasConstraintName("FK__Service_M__servi__2FCF1A8A");
+                .HasConstraintName("FK__Service__type_id__7F2BE32F");
         });
 
         modelBuilder.Entity<ServiceWorkIn>(entity =>
@@ -614,31 +533,16 @@ public partial class ServiceAppContext : DbContext
 
             entity.HasOne(d => d.Employee).WithMany()
                 .HasForeignKey(d => d.EmployeeId)
-                .HasConstraintName("FK__Service_W__emplo__30C33EC3");
+                .HasConstraintName("FK__Service_W__emplo__00200768");
 
             entity.HasOne(d => d.Service).WithMany()
                 .HasForeignKey(d => d.ServiceId)
-                .HasConstraintName("FK__Service_W__servi__31B762FC");
-        });
-
-        modelBuilder.Entity<Slot>(entity =>
-        {
-            entity.HasKey(e => e.SlotId).HasName("PK__Slot__971A01BB21672D94");
-
-            entity.ToTable("Slot");
-
-            entity.Property(e => e.SlotId).HasColumnName("slot_id");
-            entity.Property(e => e.DayOfweek).HasColumnName("dayOfweek");
-            entity.Property(e => e.EndTime).HasColumnName("endTime");
-            entity.Property(e => e.SlotName)
-                .HasMaxLength(50)
-                .HasColumnName("slot_name");
-            entity.Property(e => e.StartTime).HasColumnName("startTime");
+                .HasConstraintName("FK__Service_W__servi__01142BA1");
         });
 
         modelBuilder.Entity<Type>(entity =>
         {
-            entity.HasKey(e => e.TypeId).HasName("PK__Type__2C00059814793444");
+            entity.HasKey(e => e.TypeId).HasName("PK__Type__2C0005985559C86F");
 
             entity.ToTable("Type");
 
@@ -646,10 +550,6 @@ public partial class ServiceAppContext : DbContext
             entity.Property(e => e.Avaiable)
                 .HasDefaultValueSql("((1))")
                 .HasColumnName("avaiable");
-            entity.Property(e => e.Icon)
-                .HasMaxLength(255)
-                .IsUnicode(false)
-                .HasColumnName("icon");
             entity.Property(e => e.Img)
                 .HasMaxLength(255)
                 .IsUnicode(false)
@@ -657,28 +557,6 @@ public partial class ServiceAppContext : DbContext
             entity.Property(e => e.Type1)
                 .HasMaxLength(100)
                 .HasColumnName("type");
-        });
-
-        modelBuilder.Entity<WorkingBy>(entity =>
-        {
-            //entity
-            //    .HasNoKey()
-            //    .ToTable("WorkingBy");
-            entity.HasKey(e => e.ProcessId);
-            entity.ToTable("WorkingBy");
-
-            entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
-            entity.Property(e => e.Latitude).HasColumnName("latitude");
-            entity.Property(e => e.Longtitude).HasColumnName("longtitude");
-            entity.Property(e => e.ProcessId).HasColumnName("process_id");
-
-            entity.HasOne(d => d.Employee).WithMany()
-                .HasForeignKey(d => d.EmployeeId)
-                .HasConstraintName("FK__WorkingBy__emplo__32AB8735");
-
-            entity.HasOne(d => d.Process).WithMany()
-                .HasForeignKey(d => d.ProcessId)
-                .HasConstraintName("FK__WorkingBy__proce__339FAB6E");
         });
 
         OnModelCreatingPartial(modelBuilder);

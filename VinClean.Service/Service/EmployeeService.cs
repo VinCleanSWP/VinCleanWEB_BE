@@ -32,17 +32,15 @@ namespace VinClean.Service.Service
         private readonly IEmployeeRepository _repository;
         private readonly IMapper _mapper;
         private readonly IAccountRepository _accountRepository;
-        private readonly IWorkingByRepository _workingByRepository;
-        private readonly IFinishedByRepository _finishedByRepository;
+        private readonly ILocationRepository _locationRepository;
 
         public EmployeeService(IEmployeeRepository repository, IAccountRepository accountRepository, 
-            IMapper mapper, IWorkingByRepository workingByRepository, IFinishedByRepository finishedByRepository)
+            IMapper mapper, ILocationRepository workingByRepository)
         {
             _repository = repository;
             _accountRepository = accountRepository;
             _mapper = mapper;
-            _workingByRepository = workingByRepository;
-            _finishedByRepository = finishedByRepository;
+            _locationRepository = workingByRepository;
         }
 
         public async Task<ServiceResponse<EmployeeDTO>> AddEmployee(RegisterEmployeeDTO request)
@@ -126,21 +124,13 @@ namespace VinClean.Service.Service
             }
             else
             {
-                var check = await _workingByRepository.Check(id);
+                var check = await _locationRepository.Check(id);
                 if (check)
                 {
-                    var existingWBEmployee = await _workingByRepository.GetWorkingByListByEpmId(id);
+                    var existingWBEmployee = await _locationRepository.GetLocationListByEpmId(id);
                     foreach (var WBEmployee in existingWBEmployee)
                     {
-                        await _workingByRepository.DeleteWorkingBy(WBEmployee);
-                    }
-                }
-                var checkFB = await _finishedByRepository.GetFinishedByListEmpID(id);
-                if (checkFB != null)
-                {
-                    foreach (var FB in checkFB)
-                    {
-                        await _finishedByRepository.DeleteFinishedBy(FB);
+                        await _locationRepository.DeleteLocation(WBEmployee);
                     }
                 }
 
@@ -268,15 +258,15 @@ return _response;
             ServiceResponse<List<EmployeeDTO>> _response = new();
             //try
             //{
-                var ListEmployee = await _repository.SelectEmployeeList(request.start,request.end,request.date);
-                var ListEmployeeDTO = new List<EmployeeDTO>();
-                foreach (var employee in ListEmployee)
-                {
-                    ListEmployeeDTO.Add(_mapper.Map<EmployeeDTO>(employee));
-                }
-                _response.Success = true;
-                _response.Message = "OK";
-                _response.Data = ListEmployeeDTO;
+            var ListEmployee = await _repository.SelectEmployeeList(request.start, request.end, request.date);
+            var ListEmployeeDTO = new List<EmployeeDTO>();
+            foreach (var employee in ListEmployee)
+            {
+                ListEmployeeDTO.Add(_mapper.Map<EmployeeDTO>(employee));
+            }
+            _response.Success = true;
+            _response.Message = "OK";
+            _response.Data = ListEmployeeDTO;
             //}
             //catch (Exception ex)
             //{

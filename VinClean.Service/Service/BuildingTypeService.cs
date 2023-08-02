@@ -4,45 +4,43 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VinClean.Repo.Models;
 using VinClean.Repo.Repository;
 using VinClean.Service.DTO;
-using VinClean.Service.DTO.Service;
+using VinClean.Repo.Models;
+using VinClean.Service.DTO.Building;
+using VinClean.Service.DTO.Role;
 
 namespace VinClean.Service.Service
 {
-    public interface IServiceManageService
+    public interface IBuildingTypeService
     {
-        Task<ServiceResponse<List<ServiceManageDTO>>> GetServiceManageList();
-        Task<ServiceResponse<ServiceManageDTO>> GetServiceManageById(int id);
-        Task<ServiceResponse<ServiceManageDTO>> CreateServiceManage(ServiceManageDTO request);
-        Task<ServiceResponse<ServiceManageDTO>> UpdateServiceManage(ServiceManageDTO request);
-        Task<ServiceResponse<ServiceManageDTO>> DeleteServiceManage(int id);
+        Task<ServiceResponse<List<BuildingTypeDTO>>> GetBuildingTypeList();
+        Task<ServiceResponse<BuildingTypeDTO>> GetBuildingTypeById(int id);
+        Task<ServiceResponse<BuildingTypeDTO>> AddBuildingType(BuildingTypeDTO request);
+        Task<ServiceResponse<BuildingTypeDTO>> UpdateBuildingType(BuildingTypeDTO request);
+        Task<ServiceResponse<BuildingTypeDTO>> DeleteBuildingType(int id);
     }
-    public class ServiceManageService : IServiceManageService
+    public class BuildingTypeService : IBuildingTypeService
     {
-        private readonly IServiceWorkInRepository _repository;
+        private readonly IBuildingTypeRepository _buildingTypeRepositor;
         private readonly IMapper _mapper;
-
-        public ServiceManageService(IServiceWorkInRepository repository, IMapper mapper)
+        public BuildingTypeService(IBuildingTypeRepository buildingTypeRepository, IMapper mapper)
         {
-            _repository = repository;
+            _buildingTypeRepositor = buildingTypeRepository;
             _mapper = mapper;
         }
 
-        async Task<ServiceResponse<ServiceManageDTO>> IServiceManageService.CreateServiceManage(ServiceManageDTO request)
+        public async Task<ServiceResponse<BuildingTypeDTO>> AddBuildingType(BuildingTypeDTO request)
         {
-            ServiceResponse<ServiceManageDTO> _response = new();
+            ServiceResponse<BuildingTypeDTO> _response = new();
             try
             {
-
-                ServiceWorkIn _newServiceManage = new ServiceWorkIn()
+                BuildingType _newBuildingType = new BuildingType()
                 {
-                    StartDate = request.StartDate
-
+                    Id = request.Id,
                 };
 
-                if (!await _repository.CreateServiceWorkIn(_newServiceManage))
+                if (!await _buildingTypeRepositor.AddBuildingType(_newBuildingType))
                 {
                     _response.Error = "RepoError";
                     _response.Success = false;
@@ -51,7 +49,7 @@ namespace VinClean.Service.Service
                 }
 
                 _response.Success = true;
-                _response.Data = _mapper.Map<ServiceManageDTO>(_newServiceManage);
+                _response.Data = _mapper.Map<BuildingTypeDTO>(_newBuildingType);
                 _response.Message = "Created";
 
             }
@@ -66,13 +64,13 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        async Task<ServiceResponse<ServiceManageDTO>> IServiceManageService.DeleteServiceManage(int id)
+        public async Task<ServiceResponse<BuildingTypeDTO>> DeleteBuildingType(int id)
         {
-            ServiceResponse<ServiceManageDTO> _response = new();
+            ServiceResponse<BuildingTypeDTO> _response = new();
             try
             {
-                var existingServiceManage = await _repository.GetServiceWorkInById(id);
-                if (existingServiceManage == null)
+                var existingBuildingType = await _buildingTypeRepositor.GetBuildingTypeById(id);
+                if (existingBuildingType == null)
                 {
                     _response.Success = false;
                     _response.Message = "NotFound";
@@ -80,7 +78,7 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                if (!await _repository.DeleteServiceWorkIn(existingServiceManage))
+                if (!await _buildingTypeRepositor.DeleteBuildingType(existingBuildingType))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";
@@ -88,9 +86,9 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                var _ServiceManageDTO = _mapper.Map<ServiceManageDTO>(existingServiceManage);
+                var _OrderDTO = _mapper.Map<BuildingTypeDTO>(existingBuildingType);
                 _response.Success = true;
-                _response.Data = _ServiceManageDTO;
+                _response.Data = _OrderDTO;
                 _response.Message = "Deleted";
 
             }
@@ -104,22 +102,22 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        async Task<ServiceResponse<ServiceManageDTO>> IServiceManageService.GetServiceManageById(int id)
+        public async Task<ServiceResponse<BuildingTypeDTO>> GetBuildingTypeById(int id)
         {
-            ServiceResponse<ServiceManageDTO> _response = new();
+            ServiceResponse<BuildingTypeDTO> _response = new();
             try
             {
-                var ServiceManage = await _repository.GetServiceWorkInById(id);
-                if (ServiceManage == null)
+                var BuildingType = await _buildingTypeRepositor.GetBuildingTypeById(id);
+                if (BuildingType == null)
                 {
                     _response.Success = false;
                     _response.Message = "NotFound";
                     return _response;
                 }
-                var ServiceManagedto = _mapper.Map<ServiceManageDTO>(ServiceManage);
+                var BuildingTypeDTO = _mapper.Map<BuildingTypeDTO>(BuildingType);
                 _response.Success = true;
                 _response.Message = "OK";
-                _response.Data = ServiceManagedto;
+                _response.Data = BuildingTypeDTO;
 
             }
             catch (Exception ex)
@@ -132,24 +130,23 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-        async Task<ServiceResponse<List<ServiceManageDTO>>> IServiceManageService.GetServiceManageList()
+        public async Task<ServiceResponse<List<BuildingTypeDTO>>> GetBuildingTypeList()
         {
-            ServiceResponse<List<ServiceManageDTO>> _response = new();
+            ServiceResponse<List<BuildingTypeDTO>> _response = new();
             try
             {
-                var ListServiceManage = await _repository.GetServiceWorkInList();
-                var ListServiceManageDTO = new List<ServiceManageDTO>();
-                foreach (var ServiceManage in ListServiceManage)
+                var ListBuildingType = await _buildingTypeRepositor.GetBuildingTypeList();
+                var ListBuildingTypeDTO = new List<BuildingTypeDTO>();
+                foreach (var BuildingType in ListBuildingType)
                 {
-                    ListServiceManageDTO.Add(_mapper.Map<ServiceManageDTO>(ServiceManage));
+                    ListBuildingTypeDTO.Add(_mapper.Map<BuildingTypeDTO>(BuildingType));
                 }
                 _response.Success = true;
                 _response.Message = "OK";
-                _response.Data = ListServiceManageDTO;
+                _response.Data = ListBuildingTypeDTO;
             }
             catch (Exception ex)
             {
-
                 _response.Success = false;
                 _response.Message = "Error";
                 _response.Data = null;
@@ -158,28 +155,23 @@ namespace VinClean.Service.Service
             return _response;
         }
 
-
-
-        async Task<ServiceResponse<ServiceManageDTO>> IServiceManageService.UpdateServiceManage(ServiceManageDTO request)
+        public async Task<ServiceResponse<BuildingTypeDTO>> UpdateBuildingType(BuildingTypeDTO request)
         {
-            ServiceResponse<ServiceManageDTO> _response = new();
+            ServiceResponse<BuildingTypeDTO> _response = new();
             try
             {
-                var existingServiceManage = await _repository.GetServiceWorkInById(request.ServiceId);
-                if (existingServiceManage == null)
+                var existingBuildingType = await _buildingTypeRepositor.GetBuildingTypeById(request.Id);
+                if (existingBuildingType == null)
                 {
                     _response.Success = false;
                     _response.Message = "NotFound";
                     _response.Data = null;
                     return _response;
                 }
+                // cac gia trị cho sua
+                existingBuildingType.Type = request.Type;
 
-                existingServiceManage.EmployeeId = request.EmployeeId;
-                existingServiceManage.ServiceId = request.ServiceId;
-                existingServiceManage.StartDate = request.StartDate;
-
-
-                if (!await _repository.UpdateServiceWorkIn(existingServiceManage))
+                if (!await _buildingTypeRepositor.UpdateBuildingType(existingBuildingType))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";
@@ -187,9 +179,9 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                var _ServiceManageDTO = _mapper.Map<ServiceManageDTO>(existingServiceManage);
+                var _BuildingType = _mapper.Map<BuildingTypeDTO>(existingBuildingType);
                 _response.Success = true;
-                _response.Data = _ServiceManageDTO;
+                _response.Data = _BuildingType;
                 _response.Message = "Updated";
 
             }

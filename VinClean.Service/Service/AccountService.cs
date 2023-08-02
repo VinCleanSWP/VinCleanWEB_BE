@@ -36,13 +36,11 @@ namespace VinClean.Service.Service
     public class AccountService : IAccountService
     {
         private readonly IAccountRepository _repository;
-        private readonly IFinishedByRepository _finishedByRepository;
         private readonly IMapper    _mapper;
-        public AccountService (IAccountRepository repository, IMapper mapper, IFinishedByRepository finishedByRepository)
+        public AccountService (IAccountRepository repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
-            _finishedByRepository = finishedByRepository;
         }
 
         public async Task<ServiceResponse<List<AccountdDTO>>> GetAccountList()

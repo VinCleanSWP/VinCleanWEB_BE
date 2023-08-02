@@ -1,14 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using VinClean.Repo.Models;
 using VinClean.Repo.Models.ProcessModel;
-using VinClean.Service.DTO.Employee;
+using VinClean.Service.DTO;
 using VinClean.Service.DTO.Order;
+using VinClean.Service.DTO.Process;
 using VinClean.Service.Service;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
-namespace VinClean.Controllers
+namespace VinCleanDemo2.Controllers
 {
+    // API Deploy
+
     [Route("api/[controller]")]
     [ApiController]
     public class OrderController : ControllerBase
@@ -18,45 +19,76 @@ namespace VinClean.Controllers
         {
             _service = service;
         }
-        // GET: api/<OrderController>
+
         [HttpGet]
-        public async Task<ActionResult<List<OrderModelDTO>>> GetAllOrder()
+        public async Task<ActionResult<List<OrderModeDTO>>> Order()
         {
             return Ok(await _service.GetOrderList());
         }
 
-        // GET api/<OrderController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<OrderModelDTO>> GetOrderById(int id)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OrderDTO))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<Order>> GetById(int id)
         {
-            return Ok(await _service.GetOrderById(id));
+            if (id <= 0)
+            {
+                return BadRequest(id);
+            }
+            var processFound = await _service.GetOrderById(id);
+            if (processFound == null)
+            {
+                return NotFound();
+            }
+            return Ok(processFound);
         }
 
-        // POST api/<OrderController>
-        [HttpPost]
-        public async Task<ActionResult<OrderDTO>> AddOrder(NewOderDTO request)
+        [HttpGet("GetALL/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OrderModeDTO))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<OrderModeDTO>> GetAllInfo(int id)
         {
-            var newOrder = await _service.AddOrder(request);
-            if (newOrder.Success == false && newOrder.Message == "Exist")
+            if (id <= 0)
             {
-                return Ok(newOrder);
+                return BadRequest(id);
+            }
+            var processFound = await _service.GetAllInfoById(id);
+            if (processFound == null)
+            {
+                return NotFound();
+            }
+            return Ok(processFound);
+        }
+        [HttpPost]
+        public async Task<ActionResult<Order>> CreateOrder(NewBooking request)
+        {
+
+
+            var newProcess = await _service.AddOrder(request);
+            if (newProcess.Success == false && newProcess.Message == "Exist")
+            {
+                return Ok(newProcess);
             }
 
-            if (newOrder.Success == false && newOrder.Message == "RepoError")
+            if (newProcess.Success == false && newProcess.Message == "RepoError")
             {
-                ModelState.AddModelError("", $"Some thing went wrong in respository layer when adding Order {request}");
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when adding Process {request}");
                 return StatusCode(500, ModelState);
             }
 
-            if (newOrder.Success == false && newOrder.Message == "Error")
+            if (newProcess.Success == false && newProcess.Message == "Error")
             {
-                ModelState.AddModelError("", $"Some thing went wrong in service layer when adding Order {request}");
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when adding Process {request}");
                 return StatusCode(500, ModelState);
             }
-            return Ok(newOrder.Data);
+            return Ok(newProcess.Data);
         }
         [HttpPost("OrderRange")]
-        public async Task<ActionResult<List<OrderModelDTO>>> OrderRange(SelectOrder request)
+        public async Task<ActionResult<List<OrderModeDTO>>> OrderRange(SelectOrder request)
         {
 
             var response = await _service.GetOrderRange(request);
@@ -69,7 +101,7 @@ namespace VinClean.Controllers
             return Ok(response.Data);
         }
         [HttpPost("GetAllOrderRange")]
-        public async Task<ActionResult<List<OrderModelDTO>>> GetAllOrderRange(SelectOrder request)
+        public async Task<ActionResult<List<OrderModeDTO>>> GetAllOrderRange(SelectOrder request)
         {
 
             var response = await _service.GetAllOrderbyRange(request);
@@ -81,9 +113,8 @@ namespace VinClean.Controllers
 
             return Ok(response.Data);
         }
-        // PUT api/<OrderController>/5
         [HttpPut]
-        public async Task<ActionResult> UpdateOrder(OrderDTO request)
+        public async Task<ActionResult> UpdateProcess(OrderDTO request)
         {
             if (request == null)
             {
@@ -91,51 +122,250 @@ namespace VinClean.Controllers
             }
 
 
-            var updateOrder = await _service.UpdateOrder(request);
+            var updateProcess = await _service.UpdateOrder(request);
 
-            if (updateOrder.Success == false && updateOrder.Message == "NotFound")
+            if (updateProcess.Success == false && updateProcess.Message == "NotFound")
             {
-                return Ok(updateOrder);
+                return Ok(updateProcess);
             }
 
-            if (updateOrder.Success == false && updateOrder.Message == "RepoError")
+            if (updateProcess.Success == false && updateProcess.Message == "RepoError")
             {
-                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating Order {request}");
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating Process {request}");
                 return StatusCode(500, ModelState);
             }
 
-            if (updateOrder.Success == false && updateOrder.Message == "Error")
+            if (updateProcess.Success == false && updateProcess.Message == "Error")
             {
-                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating Order {request}");
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating Process {request}");
                 return StatusCode(500, ModelState);
             }
 
 
-            return Ok(updateOrder);
+            return Ok(updateProcess);
 
         }
-        // DELETE api/<OrderController>/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteOrder(int id)
+
+        [HttpPut("StartWorking")]
+        public async Task<ActionResult> UpdateStartWorking(ProcessStartWorking request)
         {
-            var deleteOrder = await _service.DeleteOrder(id);
-
-
-            if (deleteOrder.Success == false && deleteOrder.Message == "NotFound")
+            if (request == null)
             {
-                ModelState.AddModelError("", "Order Not found");
+                return BadRequest(ModelState);
+            }
+
+
+            var updateProcess = await _service.UpdateStartWorking(request);
+
+            if (updateProcess.Success == false && updateProcess.Message == "NotFound")
+            {
+                return Ok(updateProcess);
+            }
+
+            if (updateProcess.Success == false && updateProcess.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating Process {request}");
+                return StatusCode(500, ModelState);
+            }
+
+            if (updateProcess.Success == false && updateProcess.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating Process {request}");
+                return StatusCode(500, ModelState);
+            }
+
+
+            return Ok(updateProcess);
+
+        }
+
+        [HttpPut("EndWorking")]
+        public async Task<ActionResult> UpdateEndWorking(ProcessEndWorking request)
+        {
+            if (request == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            var updateProcess = await _service.UpdateEndWorking(request);
+
+            if (updateProcess.Success == false && updateProcess.Message == "NotFound")
+            {
+                return Ok(updateProcess);
+            }
+
+            if (updateProcess.Success == false && updateProcess.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating Process {request}");
+                return StatusCode(500, ModelState);
+            }
+
+            if (updateProcess.Success == false && updateProcess.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating Process {request}");
+                return StatusCode(500, ModelState);
+            }
+
+
+            return Ok(updateProcess);
+
+        }
+
+        [HttpPut("StatusCompleted")]
+        public async Task<ActionResult> UpdateStatus(int processid)
+        {
+            //if (request == null)
+            //{
+            //    return BadRequest(ModelState);
+            //}
+
+
+            var updateProcess = await _service.UpdateStatusCompleted(processid);
+
+            if (updateProcess.Success == false && updateProcess.Message == "NotFound")
+            {
+                return Ok(updateProcess);
+            }
+
+            if (updateProcess.Success == false && updateProcess.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating Process ");
+                return StatusCode(500, ModelState);
+            }
+
+            if (updateProcess.Success == false && updateProcess.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating Process ");
+                return StatusCode(500, ModelState);
+            }
+
+
+            return Ok(updateProcess);
+
+        }
+
+        [HttpPut("Cancel")]
+        public async Task<ActionResult> CancelOrder(CancelOrderDTO cancelOrder)
+        {
+            //if (request == null)
+            //{
+            //    return BadRequest(ModelState);
+            //}
+
+
+            var updateProcess = await _service.CancelOrder(cancelOrder);
+
+            if (updateProcess.Success == false && updateProcess.Message == "NotFound")
+            {
+                return Ok(updateProcess);
+            }
+
+            if (updateProcess.Success == false && updateProcess.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating Process ");
+                return StatusCode(500, ModelState);
+            }
+
+            if (updateProcess.Success == false && updateProcess.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating Process ");
+                return StatusCode(500, ModelState);
+            }
+
+
+            return Ok(updateProcess);
+
+        }
+
+        [HttpPut("SubPrice")]
+        public async Task<ActionResult> UpdateSubPrice(UpdateSubPirce request)
+        {
+            if (request == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            var updateProcess = await _service.UpdateSubPrice(request);
+
+            if (updateProcess.Success == false && updateProcess.Message == "NotFound")
+            {
+                return Ok(updateProcess);
+            }
+
+            if (updateProcess.Success == false && updateProcess.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating Process {request}");
+                return StatusCode(500, ModelState);
+            }
+
+            if (updateProcess.Success == false && updateProcess.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating Process {request}");
+                return StatusCode(500, ModelState);
+            }
+
+
+            return Ok(updateProcess);
+
+        }
+
+
+        [HttpPut("AssignEmployee")]
+        public async Task<ActionResult> AssignEmployee(AssignEmployeeDTO request)
+        {
+            if (request == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            var updateProcess = await _service.AssignEmployee(request);
+
+            if (updateProcess.Success == false && updateProcess.Message == "NotFound")
+            {
+                return Ok(updateProcess);
+            }
+
+            if (updateProcess.Success == false && updateProcess.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating Process {request}");
+                return StatusCode(500, ModelState);
+            }
+
+            if (updateProcess.Success == false && updateProcess.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating Process {request}");
+                return StatusCode(500, ModelState);
+            }
+
+
+            return Ok(updateProcess);
+
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteProcess(int id)
+        {
+            var deleteProcess = await _service.DeleteOrder(id);
+
+
+            if (deleteProcess.Success == false && deleteProcess.Message == "NotFound")
+            {
+                ModelState.AddModelError("", "Process Not found");
                 return StatusCode(404, ModelState);
             }
 
-            if (deleteOrder.Success == false && deleteOrder.Message == "RepoError")
+            if (deleteProcess.Success == false && deleteProcess.Message == "RepoError")
             {
-                ModelState.AddModelError("", $"Some thing went wrong in Repository when deleting Order");
+                ModelState.AddModelError("", $"Some thing went wrong in Repository when deleting Process");
                 return StatusCode(500, ModelState);
             }
 
-            if (deleteOrder.Success == false && deleteOrder.Message == "Error")
+            if (deleteProcess.Success == false && deleteProcess.Message == "Error")
             {
-                ModelState.AddModelError("", $"Some thing went wrong in service layer when deleting Order");
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when deleting Process");
                 return StatusCode(500, ModelState);
             }
 

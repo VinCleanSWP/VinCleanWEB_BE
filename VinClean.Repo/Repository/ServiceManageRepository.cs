@@ -8,54 +8,54 @@ using VinClean.Repo.Models;
 
 namespace VinClean.Repo.Repository
 {
-    public interface IServiceManageRepository
+    public interface IServiceWorkInRepository
     {
-        Task<ICollection<ServiceManage>> GetServiceManageList();
-        Task<ServiceManage> GetServiceManageById(int ServiceId);
-        Task<bool> CreateServiceManage(ServiceManage serviceManage);
-        Task<bool> DeleteServiceManage(ServiceManage serviceManage);
-        Task<bool> UpdateServiceManage(ServiceManage serviceManage);
+        Task<ICollection<ServiceWorkIn>> GetServiceWorkInList();
+        Task<ServiceWorkIn> GetServiceWorkInById(int ServiceId);
+        Task<bool> CreateServiceWorkIn(ServiceWorkIn ServiceWorkIn);
+        Task<bool> DeleteServiceWorkIn(ServiceWorkIn ServiceWorkIn);
+        Task<bool> UpdateServiceWorkIn(ServiceWorkIn ServiceWorkIn);
 
     }
 
 
-    public class ServiceManageRepository : IServiceManageRepository
+    public class ServiceWorkInRepository : IServiceWorkInRepository
     {
         private readonly ServiceAppContext _context;
-        public ServiceManageRepository(ServiceAppContext context)
+        public ServiceWorkInRepository(ServiceAppContext context)
         {
             _context = context;
         }
 
-        async Task<bool> IServiceManageRepository.CreateServiceManage(ServiceManage serviceManage)
+        async Task<bool> IServiceWorkInRepository.CreateServiceWorkIn(ServiceWorkIn ServiceWorkIn)
         {
-            _context.ServiceManages.Add(serviceManage);
+            _context.ServiceWorkIns.Add(ServiceWorkIn);
             return await _context.SaveChangesAsync() > 0 ? true : false;
         }
 
-        async Task<bool> IServiceManageRepository.DeleteServiceManage(ServiceManage serviceManage)
+        async Task<bool> IServiceWorkInRepository.DeleteServiceWorkIn(ServiceWorkIn ServiceWorkIn)
         {
-            _context.ServiceManages.Remove(serviceManage);
+            _context.ServiceWorkIns.Remove(ServiceWorkIn);
             return await _context.SaveChangesAsync() > 0 ? true : false;
         }
 
-        async Task<ServiceManage> IServiceManageRepository.GetServiceManageById(int ServiceId)
+        async Task<ServiceWorkIn> IServiceWorkInRepository.GetServiceWorkInById(int ServiceId)
         {
-            return await _context.ServiceManages.FirstOrDefaultAsync(a => a.ServiceId == ServiceId);
+            return await _context.ServiceWorkIns.FirstOrDefaultAsync(a => a.ServiceId == ServiceId);
         }
 
 
 
-        async Task<ICollection<ServiceManage>> IServiceManageRepository.GetServiceManageList()
+        async Task<ICollection<ServiceWorkIn>> IServiceWorkInRepository.GetServiceWorkInList()
         {
-            return await _context.ServiceManages.ToListAsync();
+            return await _context.ServiceWorkIns.ToListAsync();
         }
 
 
 
-        async Task<bool> IServiceManageRepository.UpdateServiceManage(ServiceManage serviceManage)
+        async Task<bool> IServiceWorkInRepository.UpdateServiceWorkIn(ServiceWorkIn ServiceWorkIn)
         {
-            _context.ServiceManages.Update(serviceManage);
+            _context.ServiceWorkIns.Update(ServiceWorkIn);
             return await _context.SaveChangesAsync() > 0 ? true : false;
         }
     }

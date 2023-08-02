@@ -35,6 +35,8 @@ public partial class Service
 
     public virtual Account? ModifiedByNavigation { get; set; }
 
+    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+
     public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
 
     public virtual Type? Type { get; set; }

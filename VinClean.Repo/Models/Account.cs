@@ -47,7 +47,9 @@ public partial class Account
 
     public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();
 
-    public virtual ICollection<Process> Processes { get; set; } = new List<Process>();
+    public virtual ICollection<OrderRequest> OrderRequests { get; set; } = new List<OrderRequest>();
+
+    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
     public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
 
