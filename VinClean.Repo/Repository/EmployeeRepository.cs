@@ -105,8 +105,8 @@ namespace VinClean.Repo.Repository
                                  from p in processJoin.DefaultIfEmpty()
                                  where ((p.StarTime >= startTimeSpan && p.StarTime <= endTimeSpan) ||
                                        (p.EndTime >= startTimeSpan && p.EndTime <= endTimeSpan)) &&
-                                       p.Date == dateValue
-                                 select e.EmployeeId).Contains(e.EmployeeId) && a.IsDeleted == false && e.Status == "Available"
+                                       p.Date == dateValue && p.Status != "Cancel"
+                                 select e.EmployeeId).Contains(e.EmployeeId) && a.IsDeleted == false && e.Status == "Available" 
                          select new Employee
                          {
                              EmployeeId = e.EmployeeId,
