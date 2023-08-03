@@ -89,6 +89,8 @@ namespace VinClean.Repo.Repository
         async Task<OrderRequestModel> IOrderRequestRepository.GetInfoPSById(int id)
         {
             var query = from ps in _context.OrderRequests
+                        join a in _context.Employees on ps.CreateBy equals a.AccountId into aGroup
+                        from a in aGroup.DefaultIfEmpty()
                         join oe in _context.Employees on ps.OldEmployeeId equals oe.EmployeeId into oeGroup
                         from oe in oeGroup.DefaultIfEmpty()
                         join oeac in _context.Accounts on oe.AccountId equals oeac.AccountId into oeacGroup
