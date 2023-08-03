@@ -71,7 +71,9 @@ namespace VinClean.Repo.Repository
                             NewEmployeEmail = neac.Email,
                             NewEmployeImg = neac.Img,
                             Status = ps.Satus,
-                            Reason = ps.Note
+                            Reason = ps.Note,
+                            CreatedDate = ps.CreateAt
+
                         };
             return await query.ToListAsync();
                         //join c in _context.Customers on p.CustomerId equals c.CustomerId into cGroup
@@ -119,7 +121,8 @@ namespace VinClean.Repo.Repository
                             NewEmployeEmail = neac.Email,
                             NewEmployeImg = neac.Img,
                             Status = ps.Satus,
-                            Reason = ps.Note
+                            Reason = ps.Note,
+                            CreatedDate = ps.CreateAt
                         };
             return await query.FirstOrDefaultAsync();
         }

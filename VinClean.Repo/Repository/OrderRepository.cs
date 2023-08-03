@@ -252,13 +252,14 @@ namespace VinClean.Repo.Repository
                          join s in _context.Services on o.ServiceId equals s.ServiceId
                          join t in _context.Types on s.TypeId equals t.TypeId
                          join ac2 in _context.Accounts on e.AccountId equals ac2.AccountId
-                         where (o.Date >= startDate && o.Date <= endDate) && o.EmployeeId == employeeId
+                         where (o.Date >= startDate && o.Date <= endDate) && ac2.AccountId == employeeId
                          select new OrderModeDTO
                          {
                              Address = c.Address,
                              Name = c.FirstName + c.LastName,
                              TypeName = t.Type1,
                              SubPrice = o.SubPrice,
+                             Date = (DateTime)o.Date,
                              Phone = c.Phone,
                              PointUsed = (int)o.PointUsed,
                              StartTime = o.StarTime,
@@ -296,6 +297,7 @@ namespace VinClean.Repo.Repository
                              TypeName = t.Type1,
                              SubPrice = o.SubPrice,
                              Phone = c.Phone,
+                             Date = (DateTime)o.Date,
                              PointUsed = (int)o.PointUsed,
                              StartTime = o.StarTime,
                              EndTime = o.EndTime,

@@ -104,7 +104,7 @@ return _response;
                 CreateBy = request.CreateBy,
                 OldEmployeeId = request.OldEmployeeId,
                 Note = request.Note,
-                CreateAt = request.CreateAt,
+                CreateAt = DateTime.Now,
                 Satus = "Waiting"
             };
             if (!await _repository.AddPS(_newProcess))
