@@ -147,7 +147,7 @@ namespace VinClean.Service.Service
                         {*/
             var service = await _serviceRepo.GetServiceById(request.ServiceId);
             var customer = await _Curepository.GetCustomerById(request.CustomerId);
-            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
+
             Order _newOrder = new Order()
             {
                 CustomerId = request.CustomerId,
@@ -155,7 +155,7 @@ namespace VinClean.Service.Service
                 Status = "Incoming",
                 StarTime = request.StarTime,
                 EndTime = request.StarTime + TimeSpan.FromHours((int)service.MinimalSlot),
-                CreatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone), // Lấy thời gian hiện tại theo múi giờ Việt Nam
+                CreatedDate = DateTime.Now,
                 Date = request.Date,
                 Phone = request.Phone,
                 Address = request.Address,
@@ -517,7 +517,6 @@ namespace VinClean.Service.Service
             ServiceResponse<OrderDTO> _response = new();
             try
             {
-                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
                 var existingOrder = await _repository.GetOrderById(cancelOrder.OrderId);
                 var customer = await _Curepository.GetCustomerById((int)existingOrder.CustomerId);
                 if (existingOrder == null)
@@ -530,7 +529,7 @@ namespace VinClean.Service.Service
 
                 existingOrder.Status = "Cancel";
                 existingOrder.CancelBy = cancelOrder.CancelBy;
-                existingOrder.CancelDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone); // Lấy thời gian hiện tại theo múi giờ Việt Nam
+                existingOrder.CancelDate = DateTime.UtcNow;
                 existingOrder.ReasonCancel = cancelOrder.ReasonCancel;
 
                 customer.TotalPoint = existingOrder.PointUsed;
