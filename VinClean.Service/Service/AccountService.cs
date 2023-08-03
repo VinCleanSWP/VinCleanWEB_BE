@@ -20,6 +20,7 @@ namespace VinClean.Service.Service
     {
         Task<ServiceResponse<List<AccountdDTO>>> GetAccountList();
         Task<ServiceResponse<AccountdDTO>> GetAccountById(int id);
+        Task<ServiceResponse<AccountdDTO>> ModifyActive(ActiveAccountDTO request);
         Task<ServiceResponse<AccountdDTO>> AddAccount(AccountdDTO request);
         Task<ServiceResponse<AccountdDTO>> UpdateAccount(AccountdDTO request);
         Task<ServiceResponse<AccountdDTO>> Verify(string token);
@@ -96,6 +97,38 @@ namespace VinClean.Service.Service
             return _response;
                 
         }
+
+        public async Task<ServiceResponse<AccountdDTO>> ModifyActive(ActiveAccountDTO request)
+        {
+            ServiceResponse<AccountdDTO> _response = new();
+            try
+            {
+                var account = await _repository.GetAccountById(request.AccountId);
+                if (account == null)
+                {
+                    _response.Success = false;
+                    _response.Message = "NotFound";
+                    return _response;
+                }
+
+                account.Status = request.Status;
+                var accoundto = _mapper.Map<AccountdDTO>(account);
+                _response.Success = true;
+                _response.Message = "OK";
+                _response.Data = accoundto;
+
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Message = "Error";
+                _response.Data = null;
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            }
+            return _response;
+
+        }
+
 
 
         public async Task<ServiceResponse<AccountdDTO>> Login(string email, string password)

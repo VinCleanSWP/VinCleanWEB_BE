@@ -216,6 +216,39 @@ namespace VinCleanDemo2.Controllers
 
         }
 
+        [HttpPut("Active")]
+        public async Task<ActionResult> ActiveAccount(ActiveAccountDTO request)
+        {
+            if (request == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            var updateAccount = await _service.ModifyActive(request);
+
+            if (updateAccount.Success == false && updateAccount.Message == "NotFound")
+            {
+                return Ok(updateAccount);
+            }
+
+            if (updateAccount.Success == false && updateAccount.Message == "RepoError")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in respository layer when updating account {request}");
+                return StatusCode(500, ModelState);
+            }
+
+            if (updateAccount.Success == false && updateAccount.Message == "Error")
+            {
+                ModelState.AddModelError("", $"Some thing went wrong in service layer when updating account {request}");
+                return StatusCode(500, ModelState);
+            }
+
+
+            return Ok(updateAccount);
+
+        }
+
         [HttpDelete("{id}")]
         public async Task<ActionResult> SoftDeleteAccount(int id)
         {
