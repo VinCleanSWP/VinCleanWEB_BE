@@ -272,7 +272,8 @@ namespace VinClean.Repo.Repository
                              ServiceName = s.Name,
                              EmployeeName = e.FirstName + e.LastName,
                              EmployeeId = e.EmployeeId,
-                             EmployeeImage = ac2.Img
+                             EmployeeImage = ac2.Img,
+                             Status = o.Status
                          });
             return await query.ToListAsync();
         }
@@ -309,8 +310,8 @@ namespace VinClean.Repo.Repository
                              ServiceName = s.Name,
                              EmployeeName = e.FirstName + e.LastName,
                              EmployeeId = e.EmployeeId,
-                             EmployeeImage = ac2.Img
-
+                             EmployeeImage = ac2.Img,
+                             Status = o.Status
                          });
             return await query.ToListAsync();
         }
