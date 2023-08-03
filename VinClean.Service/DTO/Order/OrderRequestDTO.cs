@@ -30,10 +30,6 @@ namespace VinClean.Service.DTO.Process
 
         /*public virtual Account_processDTO CreateByNavigation { get; set; }*/
 
-        public virtual EmployeeDTO NewEmployee { get; set; }
 
-        public virtual EmployeeDTO OldEmployee { get; set; }
-
-        public virtual OrderDTO Process { get; set; }
     }
 }
