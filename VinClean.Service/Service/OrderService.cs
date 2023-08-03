@@ -162,6 +162,8 @@ namespace VinClean.Service.Service
                 Price = request.Price,
                 PointUsed = request.PointUsed,
                 IsDeleted = false,
+                ServiceId = request.ServiceId,
+                BuildingId = request.BuildingId,
             };
             var check1 = await _repository.AddOrder(_newOrder);
 
