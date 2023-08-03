@@ -13,6 +13,8 @@ namespace VinClean.Repo.Models
         public string CustomerName { get; set; }
         public string Address { get; set; } 
         public int? AccountId { get; set; }
+        public string? Name { get; set; }
+        public string? Role { get; set; }
         public string OldEmployeeName { get; set; }
         public int OldEmployeeId { get; set; }
         public string OldEmployePhone { get; set; }
