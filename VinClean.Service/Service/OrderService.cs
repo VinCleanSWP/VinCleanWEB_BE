@@ -181,8 +181,8 @@ namespace VinClean.Service.Service
             OrderImage _OrderImage2 = new OrderImage()
             {
                  OrderId = _newOrder.OrderId,
-                 Type = "Ordering",
-                 Name = "Ordering"
+                 Type = "Processing",
+                 Name = "Processing"
             };
             await _PImgrepository.AddOrderImage(_OrderImage2);
             OrderImage _OrderImage3 = new OrderImage()
@@ -305,7 +305,7 @@ namespace VinClean.Service.Service
                 }
 
                 existingOrder.StartWorking = request.StartWorking;
-                existingOrder.Status = "Ordering";
+                existingOrder.Status = "Processing";
 
                 if (!await _repository.UpdateOrder(existingOrder))
                 {
