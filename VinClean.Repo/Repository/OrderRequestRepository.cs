@@ -37,6 +37,8 @@ namespace VinClean.Repo.Repository
                 .Include(e=>e.CreateByNavigation)
                 .ToListAsync();*/
             var query = from ps in _context.OrderRequests
+                        join a in _context.Employees on ps.CreateBy equals a.AccountId into aGroup
+                        from a in aGroup.DefaultIfEmpty()
                         join oe in _context.Employees on ps.OldEmployeeId equals oe.EmployeeId into oeGroup
                         from oe in oeGroup.DefaultIfEmpty()
                         join oeac in _context.Accounts on oe.AccountId equals oeac.AccountId into oeacGroup
@@ -53,9 +55,11 @@ namespace VinClean.Repo.Repository
                         {
                             OrderId = p.OrderId,
                             CustomerId = (int)p.CustomerId,
-                            CustomerName = c.LastName +" "+ c.FirstName,
+                            CustomerName = c.LastName + " " + c.FirstName,
                             Address = p.Address,
                             AccountId = ps.CreateBy,
+                            Role = a.Account.Role.Name,
+                            Name = a.FirstName + " "+ a.LastName,
                             OldEmployeeId = (int)ps.OldEmployeeId,
                             OldEmployeeName = oeac.Name,
                             OldEmployePhone = oe.Phone,
@@ -71,7 +75,8 @@ namespace VinClean.Repo.Repository
                             NewEmployeEmail = neac.Email,
                             NewEmployeImg = neac.Img,
                             Status = ps.Satus,
-                            Reason = ps.Note
+                            Reason = ps.Note,
+                            CreatedDate = ps.CreateAt
                         };
             return await query.ToListAsync();
                         //join c in _context.Customers on p.CustomerId equals c.CustomerId into cGroup
@@ -101,9 +106,11 @@ namespace VinClean.Repo.Repository
                         {
                             OrderId = p.OrderId,
                             CustomerId = (int)p.CustomerId,
-                            CustomerName = c.LastName + c.FirstName,
+                            CustomerName = c.LastName + " " + c.FirstName,
                             Address = p.Address,
                             AccountId = ps.CreateBy,
+                            Role = a.Account.Role.Name,
+                            Name = a.FirstName + " " + a.LastName,
                             OldEmployeeId = (int)ps.OldEmployeeId,
                             OldEmployeeName = oeac.Name,
                             OldEmployePhone = oe.Phone,
@@ -113,13 +120,14 @@ namespace VinClean.Repo.Repository
                             Date = p.Date,
                             StartTime = p.StarTime,
                             EndTime = p.EndTime,
-                            NewEmployeeId = (int)ps.NewEmployeeId,
+                            NewEmployeeId = ps.NewEmployeeId,
                             NewEmployeeName = neac.Name,
                             NewEmployePhone = ne.Phone,
                             NewEmployeEmail = neac.Email,
                             NewEmployeImg = neac.Img,
                             Status = ps.Satus,
-                            Reason = ps.Note
+                            Reason = ps.Note,
+                            CreatedDate = ps.CreateAt
                         };
             return await query.FirstOrDefaultAsync();
         }
