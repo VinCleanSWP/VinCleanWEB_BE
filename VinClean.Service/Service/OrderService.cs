@@ -381,7 +381,7 @@ namespace VinClean.Service.Service
                     return _response;
                 }
 
-                existingOrder.SubPrice = request.SubPrice + existingOrder.SubPrice;
+                existingOrder.SubPrice = request.SubPrice;
                 existingOrder.Price = request.SubPrice + existingOrder.Price;
 
                 if (!await _repository.UpdateOrder(existingOrder))
