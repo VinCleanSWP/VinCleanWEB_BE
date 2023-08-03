@@ -98,14 +98,14 @@ return _response;
             ServiceResponse<OrderRequestDTO> _response = new();
             /*try
             {*/
-            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
+
             OrderRequest _newProcess = new OrderRequest()
             {
                 OrderId = request.ProcessId,
                 CreateBy = request.CreateBy,
                 OldEmployeeId = request.OldEmployeeId,
                 Note = request.Note,
-                CreateAt = DateTime.Now, // Lấy thời gian hiện tại theo múi giờ Việt Nam
+                CreateAt = DateTime.Now,
                 Satus = "Waiting"
             };
             if (!await _repository.AddPS(_newProcess))
