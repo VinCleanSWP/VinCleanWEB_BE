@@ -105,7 +105,7 @@ return _response;
                 CreateBy = request.CreateBy,
                 OldEmployeeId = request.OldEmployeeId,
                 Note = request.Note,
-                CreateAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone), // Lấy thời gian hiện tại theo múi giờ Việt Nam
+                CreateAt = DateTime.Now, // Lấy thời gian hiện tại theo múi giờ Việt Nam
                 Satus = "Waiting"
             };
             if (!await _repository.AddPS(_newProcess))
