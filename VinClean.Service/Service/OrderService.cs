@@ -500,6 +500,7 @@ namespace VinClean.Service.Service
             try
             {
                 var existingOrder = await _repository.GetOrderById(cancelOrder.OrderId);
+                var customer = await _Curepository.GetCustomerById((int)existingOrder.CustomerId);
                 if (existingOrder == null)
                 {
                     _response.Success = false;
@@ -512,6 +513,8 @@ namespace VinClean.Service.Service
                 existingOrder.CancelBy = cancelOrder.CancelBy;
                 existingOrder.CancelDate = DateTime.UtcNow;
                 existingOrder.ReasonCancel = cancelOrder.ReasonCancel;
+
+                customer.TotalPoint = existingOrder.PointUsed;
 
                 if (!await _repository.UpdateOrder(existingOrder))
                 {
