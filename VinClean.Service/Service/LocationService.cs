@@ -166,7 +166,7 @@ namespace VinClean.Service.Service
             ServiceResponse<DTO.WorkingBy.UpdateLocation> _response = new();
             //try
             //{
-                var existingWSlot = await _repository.GetLocationByOrderId(request.ProcessId);
+                var existingWSlot = await _repository.GetLocationByOrderId(request.OrderId);
                 if (existingWSlot == null)
                 {
                     _response.Success = false;

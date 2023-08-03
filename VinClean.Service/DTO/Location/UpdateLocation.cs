@@ -8,7 +8,7 @@ namespace VinClean.Service.DTO.WorkingBy
 {
     public class UpdateLocation
     {
-        public int ProcessId { get; set; }
+        public int OrderId { get; set; }
 
         public double Latitude { get; set; }
 
