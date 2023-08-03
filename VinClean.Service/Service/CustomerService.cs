@@ -176,9 +176,10 @@ namespace VinClean.Service.Service
                     Email = request.Email,
                     RoleId = 1, // assign a default role for new accounts
                     Status = "Active", // set the status to active by default
-                    IsDeleted =  false, // set the isDeleted flag to false by default
+                    IsDeleted = false, // set the isDeleted flag to false by default
                     CreatedDate = DateTime.Now, // set the created date to the current date/time
-                    VerificationToken =  CreateRandomToken()
+                    VerificationToken = CreateRandomToken(),
+                    Img = "http://via.placeholder.com/300"
                 };
                 await _accountRepository.AddAccount(_newAccount);
 

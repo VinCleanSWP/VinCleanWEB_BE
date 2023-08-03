@@ -18,6 +18,7 @@ namespace VinClean.Service.Service
         Task<ServiceResponse<List<EmployeeDTO>>> GetEmployeeList();
         Task<ServiceResponse<List<EmployeeDTO>>> SearchEmployee(string search);
         Task<ServiceResponse<EmployeeDTO>> GetEmployeeById(int id);
+        Task<ServiceResponse<EmployeeDTO>> GetEmployeeByAccountId(int id);
 
 
         Task<ServiceResponse<List<EmployeeDTO>>> SelectEmployeeList(SelectEmpDTO request);
@@ -228,6 +229,34 @@ return _response;
             return _response;
         }
 
+
+        public async Task<ServiceResponse<EmployeeDTO>> GetEmployeeByAccountId(int id)
+        {
+            ServiceResponse<EmployeeDTO> _response = new();
+            try
+            {
+                var employee = await _repository.GetEmployeeByAccountId(id);
+                if (employee == null)
+                {
+                    _response.Success = false;
+                    _response.Message = "NotFound";
+                    return _response;
+                }
+                var employeedto = _mapper.Map<EmployeeDTO>(employee);
+                _response.Success = true;
+                _response.Message = "OK";
+                _response.Data = employeedto;
+
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Message = "Error";
+                _response.Data = null;
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            }
+            return _response;
+        }
         public async Task<ServiceResponse<List<EmployeeDTO>>> GetEmployeeList()
         {
             ServiceResponse<List<EmployeeDTO>> _response = new();

@@ -46,6 +46,21 @@ namespace VinClean.Controllers
             }
             return Ok(EmployeeFound);
         }
+
+        [HttpGet("Account/{id}")]
+        public async Task<ActionResult<Employee>> GetEmployeeByAccountId(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest(id);
+            }
+            var EmployeeFound = await _service.GetEmployeeByAccountId(id);
+            if (EmployeeFound == null)
+            {
+                return NotFound();
+            }
+            return Ok(EmployeeFound);
+        }
         //POST api/<EmployeeController>/
         [HttpPost("selectemployee")]
         public async Task<ActionResult<List<Employee>>> SelectEmployee(SelectEmpDTO request)

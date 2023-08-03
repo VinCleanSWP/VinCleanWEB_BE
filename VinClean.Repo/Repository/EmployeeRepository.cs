@@ -14,6 +14,7 @@ namespace VinClean.Repo.Repository
         Task<ICollection<Employee>> GetEmployeeList();
         Task<ICollection<Employee>> SearchEmployee(string search);
         Task<Employee> GetEmployeeById(int id);
+        Task<Employee> GetEmployeeByAccountId(int id);
         Task<bool> CheckEmailEmployeeExist(String email);
 
         Task<ICollection<Employee>> SelectEmployeeList(String startTime, String endTime, String date);
@@ -45,6 +46,11 @@ namespace VinClean.Repo.Repository
         async public Task<Employee> GetEmployeeById(int id)
         {
             return await _context.Employees.Include(e => e.Account).Where(a => a.Account.IsDeleted == false).FirstOrDefaultAsync(a => a.EmployeeId == id);
+        }
+
+        async public Task<Employee> GetEmployeeByAccountId(int id)
+        {
+            return await _context.Employees.Include(e => e.Account).Where(a => a.Account.IsDeleted == false).FirstOrDefaultAsync(a => a.AccountId == id);
         }
 
         async public Task<bool> CheckEmailEmployeeExist(string email)
