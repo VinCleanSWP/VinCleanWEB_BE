@@ -273,11 +273,6 @@ namespace VinClean.Service.Service
                         EmployeeId = request.EmployeeId,
 
                     };
-                    //AssignEmployeeDTO assign = new AssignEmployeeDTO()
-                    //{
-                    //    OrderId = request.OrderId,
-                    //    EmployeeId = request.EmployeeId
-                    //};
                     if (!await _repository.AddLocation(_newWB))
                     {
                         _response.Error = "RepoError";

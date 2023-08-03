@@ -181,8 +181,8 @@ namespace VinClean.Service.Service
             OrderImage _OrderImage2 = new OrderImage()
             {
                  OrderId = _newOrder.OrderId,
-                 Type = "Ordering",
-                 Name = "Ordering"
+                 Type = "Processing",
+                 Name = "Processing"
             };
             await _PImgrepository.AddOrderImage(_OrderImage2);
             OrderImage _OrderImage3 = new OrderImage()
@@ -305,7 +305,7 @@ namespace VinClean.Service.Service
                 }
 
                 existingOrder.StartWorking = request.StartWorking;
-                existingOrder.Status = "Ordering";
+                existingOrder.Status = "Processing";
 
                 if (!await _repository.UpdateOrder(existingOrder))
                 {
@@ -337,6 +337,7 @@ namespace VinClean.Service.Service
             try
             {
                 var existingOrder = await _repository.GetOrderById(request.OrderId);
+                var existingLocation = await _Lrepository.GetLocationByOrderId(request.OrderId);
                 if (existingOrder == null)
                 {
                     _response.Success = false;
@@ -344,6 +345,23 @@ namespace VinClean.Service.Service
                     _response.Data = null;
                     return _response;
                 }
+                if(existingLocation != null)
+                {
+                    existingLocation.EmployeeId = request.EmployeeId;
+                    await _Lrepository.UpdateLocation(existingLocation);
+                }
+                else
+                {
+                    Location location = new Location()
+                    {
+                        EmployeeId = request.EmployeeId,
+                        OrderId = request.OrderId,
+                        Longtitude = null,
+                        Latitude = null
+                    };
+                    await _Lrepository.AddLocation(location);
+                }
+
 
                 existingOrder.EmployeeId = request.EmployeeId;
 
