@@ -112,11 +112,12 @@ namespace VinClean.Service.Service
                 }
 
                 account.Status = request.Status;
+                await _repository.UpdateAccount(account);
                 var accoundto = _mapper.Map<AccountdDTO>(account);
                 _response.Success = true;
                 _response.Message = "OK";
                 _response.Data = accoundto;
-
+               
             }
             catch (Exception ex)
             {
