@@ -337,6 +337,7 @@ namespace VinClean.Service.Service
             try
             {
                 var existingOrder = await _repository.GetOrderById(request.OrderId);
+                var existingLocation = await _Lrepository.GetLocationByOrderId(request.OrderId);
                 if (existingOrder == null)
                 {
                     _response.Success = false;
@@ -344,6 +345,23 @@ namespace VinClean.Service.Service
                     _response.Data = null;
                     return _response;
                 }
+                if(existingLocation != null)
+                {
+                    existingLocation.EmployeeId = request.EmployeeId;
+                    await _Lrepository.UpdateLocation(existingLocation);
+                }
+                else
+                {
+                    Location location = new Location()
+                    {
+                        EmployeeId = request.EmployeeId,
+                        OrderId = request.OrderId,
+                        Longtitude = null,
+                        Latitude = null
+                    };
+                    await _Lrepository.AddLocation(location);
+                }
+
 
                 existingOrder.EmployeeId = request.EmployeeId;
 
