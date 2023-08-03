@@ -423,13 +423,22 @@ namespace VinClean.Service.Service
             //}
             return _response;
         }
-        
 
 
         private string CreateRandomToken()
         {
-            return Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
+            using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
+            {
+                byte[] randomBytes = new byte[4]; // 4 bytes = 8 characters in hexadecimal representation
+                rng.GetBytes(randomBytes);
+                return BitConverter.ToString(randomBytes).Replace("-", "").ToLower().Substring(0, 8);
+            }
         }
+
+        //private string CreateRandomToken()
+        //{
+        //    return Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
+        //}
 
 
 
