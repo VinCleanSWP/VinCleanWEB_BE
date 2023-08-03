@@ -44,9 +44,10 @@ namespace VinClean.Service.Service
         private readonly ICustomerRepository _Curepository;
         private readonly ILocationRepository _Lrepository;
         private readonly IOrderImageRepository _PImgrepository;
+        private readonly IOrderRequestRepository _ORmgrepository;
         public readonly IMapper _mapper;
         public OrderService(IOrderRepository repository, IMapper mapper, 
-            IServiceRepository serviceRepo, ICustomerRepository Curepository, ILocationRepository WBrepository, IOrderImageRepository pImgrepository)
+            IServiceRepository serviceRepo, ICustomerRepository Curepository, ILocationRepository WBrepository, IOrderImageRepository pImgrepository, IOrderRequestRepository oRmgrepository)
         {
             _repository = repository;
             _mapper = mapper;
@@ -54,6 +55,7 @@ namespace VinClean.Service.Service
             _Curepository = Curepository;
             _Lrepository = WBrepository;
             _PImgrepository = pImgrepository;
+            _ORmgrepository = oRmgrepository;
         }
 
         public async Task<ServiceResponse<List<OrderModeDTO>>> GetOrderList()
@@ -538,6 +540,7 @@ namespace VinClean.Service.Service
                 var existingOrder = await _repository.GetOrderById(id);
                 var existingWorkingBy = await _Lrepository.GetLocationByOrderId(id);
                 var existingOrderImg = await _PImgrepository.OrderImageListByProcessId(id);
+                var existingOrderRequest = await _ORmgrepository.GetPSById(id);
                 if (existingOrder == null)
                 {
                     _response.Success = false;
@@ -545,14 +548,21 @@ namespace VinClean.Service.Service
                     _response.Data = null;
                     return _response;
                 }
+                if(existingWorkingBy != null)
+                {
+                await _Lrepository.DeleteLocation(existingWorkingBy);
+                }
+                if (existingOrderRequest != null)
+                {
+                    await _ORmgrepository.DeletePS(existingOrderRequest);
+                }
 
                 foreach ( var img in existingOrderImg)
                 {
                     await _PImgrepository.DeleteOrderImage(img);
                 }
 
-                if (!await _Lrepository.DeleteLocation(existingWorkingBy)
-                && (!await _repository.DeleteOrder(existingOrder)))
+                if(!await _repository.DeleteOrder(existingOrder))
                 {
                     _response.Success = false;
                     _response.Message = "RepoError";
