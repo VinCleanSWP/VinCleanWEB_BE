@@ -459,6 +459,7 @@ namespace VinClean.Service.Service
             try
             {
                 var existingOrder = await _repository.GetOrderById(id);
+                var customer  = await _Curepository.GetCustomerById((int)existingOrder.CustomerId);
                 if (existingOrder == null)
                 {
                     _response.Success = false;
@@ -468,6 +469,7 @@ namespace VinClean.Service.Service
                 }
 
                 existingOrder.Status = "Completed";
+                customer.TotalPoint = (int?)((double)existingOrder.Price * 0.05);
 
                 if (!await _repository.UpdateOrder(existingOrder))
                 {
